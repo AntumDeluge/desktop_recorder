@@ -1,0 +1,22 @@
+0.1
+- initial release
+
+0.1.1
+- muxing done by ffmpeg in place of mkvtoolnix
+- added "-y" argument to suppress overwrite prompt of ffmpeg for temporary files
+
+0.1.2
+- changed kill signal from SIGTERM to SIGINT for background ffmpeg process
+
+0.2.0 Beta 1
+- complete rewrite using python and wxpython to add GUI
+
+0.2.0 Beta 2
+- check for libxvid and libx264 support in ffmpeg
+
+0.2.0 Beta 3
+- tests for correct wxpython version and ffmpeg
+- added flv (sorenson) support
+
+0.2.0 Beta 4
+- removed non-functioning pause option
