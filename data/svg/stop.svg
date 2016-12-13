@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="64"
+   height="64"
+   viewBox="0 0 64.000001 64"
+   id="svg5522"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="stop.svg">
+  <title
+     id="title6115">Stop Button</title>
+  <defs
+     id="defs5524">
+    <linearGradient
+       id="linearGradient3610"
+       y2="475.95001"
+       xlink:href="#linearGradient2237"
+       gradientUnits="userSpaceOnUse"
+       x2="333.20999"
+       gradientTransform="matrix(0.89966,0,0,0.89966,542.17,-118.96)"
+       y1="424.01001"
+       x1="297.89001"
+       inkscape:collect="always" />
+    <linearGradient
+       id="linearGradient2237">
+      <stop
+         id="stop2239"
+         style="stop-color:#006000"
+         offset="0" />
+      <stop
+         id="stop2241"
+         style="stop-color:#48ff00"
+         offset="1" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient3998"
+       y2="472.75"
+       xlink:href="#linearGradient3207"
+       gradientUnits="userSpaceOnUse"
+       x2="330.01001"
+       gradientTransform="matrix(0.89966,0,0,0.89966,543.08,-117.97)"
+       y1="423.04001"
+       x1="293.34"
+       inkscape:collect="always" />
+    <linearGradient
+       id="linearGradient3207">
+      <stop
+         id="stop3209"
+         style="stop-color:#ffffff"
+         offset="0" />
+      <stop
+         id="stop3211"
+         style="stop-color:#48ff00;stop-opacity:0"
+         offset="1" />
+    </linearGradient>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="5.6"
+     inkscape:cx="5.5019544"
+     inkscape:cy="65.433918"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1600"
+     inkscape:window-height="949"
+     inkscape:window-x="1366"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     units="px" />
+  <metadata
+     id="metadata5527">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>Stop Button</dc:title>
+        <cc:license
+           rdf:resource="http://creativecommons.org/publicdomain/zero/1.0/" />
+        <dc:source>https://openclipart.org/detail/17304/deck-or-vcr-button-by-czara1</dc:source>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>czara1</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:publisher>
+          <cc:Agent>
+            <dc:title>OpenClipart Librar</dc:title>
+          </cc:Agent>
+        </dc:publisher>
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/publicdomain/zero/1.0/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-60.428549,-319.36221)">
+    <g
+       id="g4000"
+       transform="matrix(2.1606808,0,0,2.1606808,-1686.4761,-259.93218)">
+      <rect
+         id="rect3598"
+         style="fill:url(#linearGradient3610);fill-rule:evenodd;stroke:#006100;stroke-width:0.89965999px"
+         ry="3.5887001"
+         height="27.795"
+         width="27.795"
+         y="269.01999"
+         x="809.40997" />
+      <path
+         inkscape:connector-curvature="0"
+         id="rect3612"
+         sodipodi:nodetypes="ccccc"
+         style="fill:url(#linearGradient3998);fill-rule:evenodd"
+         d="m 813.92,270.01 20.01,0 c 10.54,7.32 -17.46,10.46 -23.6,24.2 l 0,-20.61 c 0,-1.99 1.6,-3.59 3.59,-3.59 z" />
+    </g>
+  </g>
+</svg>
