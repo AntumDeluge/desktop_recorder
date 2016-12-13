@@ -7,7 +7,7 @@
 # See: LICENSE.txt
 
 
-import wxversion, os, sys, shutil, subprocess, signal, time
+import wxversion, os, sys, shutil, subprocess, signal, time, errno
 from subprocess import PIPE
 
 try:
@@ -19,26 +19,24 @@ except wxversion.VersionError:
 
 import wx
 
-# --- Test for ffmpeg
-try:
-    no_ffmpeg = subprocess.call('ffmpeg -version', stdout=PIPE, stderr=PIPE, shell=True)
-    if no_ffmpeg:
-        print 'ERROR: could not find ffmpeg'
-        sys.exit(1)
-except OSError:
-    print 'ERROR: could not find ffmpeg'
-    sys.exit(1)
+from globals.ffmpeg import CMD_ffmpeg
+
+if not CMD_ffmpeg:
+    print(u'ERROR: Could not find ffmpeg executable')
+    sys.exit(errno.ENOENT)
+
+print(u'Found ffmpeg executable: {}'.format(CMD_ffmpeg))
 
 version = u'0.2.0 Beta 4'
 
 # --- Check to see if ffmpeg supports xvid and x264
-no_xvid = subprocess.call('ffmpeg -codecs | grep -i "libxvid"', stdout=PIPE, stderr=PIPE, shell=True)
+no_xvid = subprocess.call('{} -codecs | grep -i "libxvid"'.format(CMD_ffmpeg), stdout=PIPE, stderr=PIPE, shell=True)
 if no_xvid:
-    no_xvid = subprocess.call('ffmpeg -formats | grep -i "libxvid"', stdout=PIPE, stderr=PIPE, shell=True)
+    no_xvid = subprocess.call('{} -formats | grep -i "libxvid"'.format(CMD_ffmpeg), stdout=PIPE, stderr=PIPE, shell=True)
 
-no_x264 = subprocess.call('ffmpeg -codecs | grep -i "libx264"', stdout=PIPE, stderr=PIPE, shell=True)
+no_x264 = subprocess.call('{} -codecs | grep -i "libx264"'.format(CMD_ffmpeg), stdout=PIPE, stderr=PIPE, shell=True)
 if no_x264:
-    no_x264 = subprocess.call('ffmpeg -formats | grep -i "libx264"', stdout=PIPE, stderr=PIPE, shell=True)
+    no_x264 = subprocess.call('{} -formats | grep -i "libx264"'.format(CMD_ffmpeg), stdout=PIPE, stderr=PIPE, shell=True)
 
 
 exedir = os.path.dirname(__file__)
@@ -208,7 +206,7 @@ WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
             os.kill(self.P2.pid, signal.SIGINT)
             self.P1.wait()
             self.P2.wait()
-            self.P3 = subprocess.call(['ffmpeg', '-y', '-i', self.tempvid, '-i', self.tempaud, '-vcodec', 'copy', '-acodec', 'copy', self.output])
+            self.P3 = subprocess.call([CMD_ffmpeg, '-y', '-i', self.tempvid, '-i', self.tempaud, '-vcodec', 'copy', '-acodec', 'copy', self.output])
         elif self.options.video.GetValue():
             os.kill(self.P1.pid, signal.SIGINT)
             self.P1.wait()
@@ -285,17 +283,17 @@ WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
                 self.quality = self.options.qual.GetValue()
                 if int(self.quality) < 0:
                     #self.quality = '-sameq'
-                    vidcommand = ('ffmpeg', '-y', '-f', 'x11grab', '-r', self.frate, '-s', self.display, '-i', ':0.0', '-sameq', '-vcodec', self.vcodec, self.tempvid)
+                    vidcommand = (CMD_ffmpeg, '-y', '-f', 'x11grab', '-r', self.frate, '-s', self.display, '-i', ':0.0', '-sameq', '-vcodec', self.vcodec, self.tempvid)
                 else:
                     #self.quality = '-b %s' % str(self.quality)
-                                    vidcommand = ('ffmpeg', '-y', '-f', 'x11grab', '-r', self.frate, '-s', self.display, '-i', ':0.0', '-b', self.quality, '-vcodec', self.vcodec, self.tempvid)
+                                    vidcommand = (CMD_ffmpeg, '-y', '-f', 'x11grab', '-r', self.frate, '-s', self.display, '-i', ':0.0', '-b', self.quality, '-vcodec', self.vcodec, self.tempvid)
 
                 self.acodec = self.options.acodecs[self.options.acodec.GetSelection()]
                 
                 if self.options.video.GetValue():
                     self.P1 = subprocess.Popen(vidcommand)
                 if self.options.audio.GetValue():
-                    self.P2 = subprocess.Popen(['ffmpeg', '-y', '-f', 'alsa', '-i', 'hw:0,0', '-acodec', self.acodec, '-ar', self.samplerate, '-ab', self.bitrate, '-ac', self.channels, self.tempaud])
+                    self.P2 = subprocess.Popen([CMD_ffmpeg, '-y', '-f', 'alsa', '-i', 'hw:0,0', '-acodec', self.acodec, '-ar', self.samplerate, '-ab', self.bitrate, '-ac', self.channels, self.tempaud])
             
         self.IsPaused = False
         self.options.Hide()
