@@ -13,6 +13,8 @@ import os
 from globals.paths import PATH_root
 
 
+EXE_name = None
+
 FILE_settings = u'{}/settings'.format(PATH_root)
 
 def GetAppInfo(key_search):

@@ -21,8 +21,12 @@ import errno, os, shutil, signal, subprocess, wx
 from subprocess import PIPE
 
 from globals.commandline    import args
+from globals.settings       import EXE_name
 from globals.settings       import GetAppInfo
 
+
+if not EXE_name:
+    EXE_name = os.path.basename(__file__)
 
 VERSION = GetAppInfo(u'VERSION')
 
