@@ -12,6 +12,7 @@ import os
 # Application paths
 PATH_globals = os.path.dirname(__file__)
 PATH_root = os.path.dirname(PATH_globals)
+PATH_icons = u'{}/icons'.format(PATH_root)
 
 # System paths
 PATH_home = os.getenv(u'HOME')
