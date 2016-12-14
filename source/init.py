@@ -20,7 +20,14 @@ except wxversion.VersionError:
 import errno, os, shutil, signal, subprocess, wx
 from subprocess import PIPE
 
+from globals.settings       import GetAppInfo
+
+
+VERSION = GetAppInfo(u'VERSION')
+
+
 from globals.ffmpeg import CMD_ffmpeg
+
 
 if not CMD_ffmpeg:
     print(u'ERROR: Could not find ffmpeg executable')
@@ -28,7 +35,6 @@ if not CMD_ffmpeg:
 
 print(u'Found ffmpeg executable: {}'.format(CMD_ffmpeg))
 
-version = u'0.2.0 Beta 4'
 
 # --- Check to see if ffmpeg supports xvid and x264
 no_xvid = subprocess.call(u'{} -codecs | grep -i "libxvid"'.format(CMD_ffmpeg), stdout=PIPE, stderr=PIPE, shell=True)
@@ -77,6 +83,7 @@ if os.path.isfile(u'{}/lock'.format(PATH_confdir)):
     locked.MainLoop()
 else:
     lock = open(u'{}/lock'.format(PATH_confdir), u'w')
+
 
 # --- Delete the config file
 if (len(sys.argv) > 1) and (sys.argv[1] == u'delete-config'):
@@ -182,7 +189,7 @@ bitrate={}'.format(int(self.options.video.GetValue()), int(self.options.audio.Ge
         about = wx.AboutDialogInfo()
         about.SetIcon(self.icon_main)
         about.SetName(u'Desktop Recorder')
-        about.SetVersion(version)
+        about.SetVersion(VERSION)
         about.SetCopyright(u'(c) 2012 Jordan Irwin')
         about.SetLicense(u'Copyright (c) 2012, Jordan Irwin\n\
 All rights reserved.\n\
