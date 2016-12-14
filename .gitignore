@@ -5,3 +5,7 @@
 /.project
 /.pydevproject
 /.settings/
+
+# Misc. files
+*.orig
+*.new
