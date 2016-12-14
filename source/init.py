@@ -39,16 +39,17 @@ if no_x264:
     no_x264 = subprocess.call(u'{} -formats | grep -i "libx264"'.format(CMD_ffmpeg), stdout=PIPE, stderr=PIPE, shell=True)
 
 
+from globals.paths import PATH_confdir
+from globals.paths import PATH_home
+
 exedir = os.path.dirname(__file__)
-home = os.getenv(u'HOME')
 icondir = u'{}/icons'.format(exedir)
-confdir = u'{}/.config/desktop_recorder'.format(home)
 
 # --- Create config file
-if not os.path.isfile(u'{}/config'.format(confdir)):
-    if not os.path.isdir(confdir):
-        os.mkdir(confdir)
-    config = open(u'{}/config'.format(confdir), u'w')
+if not os.path.isfile(u'{}/config'.format(PATH_confdir)):
+    if not os.path.isdir(PATH_confdir):
+        os.mkdir(PATH_confdir)
+    config = open(u'{}/config'.format(PATH_confdir), u'w')
     data = u'[CONFIG]\n\
 video=1\n\
 audio=1\n\
@@ -61,23 +62,23 @@ framerate=6\n\
 acodec=0\n\
 channels=0\n\
 samplerate=1\n\
-bitrate=2'.format(home)
+bitrate=2'.format(PATH_home)
     config.write(data)
     config.close()
 
 # --- Lock script so only one instance can be run
-if os.path.isfile(u'{}/lock'.format(confdir)):
+if os.path.isfile(u'{}/lock'.format(PATH_confdir)):
     locked = wx.App(0)
     wx.MessageDialog(None, u'An instance of Desktop Recorder is already running.\n\nIf this is an error type "rm ~/.config/desktop_recorder/lock"', u'Cannot Start', wx.OK|wx.ICON_ERROR).ShowModal()
     sys.exit(1)
     locked.MainLoop()
 else:
-    lock = open(u'{}/lock'.format(confdir), u'w')
+    lock = open(u'{}/lock'.format(PATH_confdir), u'w')
 
 # --- Delete the config file
 if (len(sys.argv) > 1) and (sys.argv[1] == u'delete-config'):
-    if os.path.isdir(confdir):
-        shutil.rmtree(confdir)
+    if os.path.isdir(PATH_confdir):
+        shutil.rmtree(PATH_confdir)
     exit(0)
 
 # --- Icons
@@ -166,13 +167,13 @@ channels={}\n\
 samplerate={}\n\
 bitrate={}'.format(int(self.options.video.GetValue()), int(self.options.audio.GetValue()), self.options.filename.GetValue(), self.options.folder.GetValue(), self.options.vcontainer.GetSelection(), self.options.vcodec.GetSelection(), self.options.qual.GetValue(), self.options.frate.GetSelection(), self.options.acodec.GetSelection(), self.options.chan.GetSelection(), self.options.samplerate.GetSelection(), self.options.bitrate.GetSelection())
         
-        FILE_BUFFER = open(u'{}/config'.format(confdir), u'w')
+        FILE_BUFFER = open(u'{}/config'.format(PATH_confdir), u'w')
         FILE_BUFFER.write(data)
         FILE_BUFFER.close()
         
         self.app.ExitMainLoop()
         lock.close()
-        os.remove(u'{}/lock'.format(confdir))
+        os.remove(u'{}/lock'.format(PATH_confdir))
     
     def ShowInfo(self, event):
         about = wx.AboutDialogInfo()
@@ -446,7 +447,7 @@ class Options(wx.Dialog):
     def ParseOptions(self):
         try:
             
-            FILE_BUFFER = open(u'{}/config'.format(confdir), u'r')
+            FILE_BUFFER = open(u'{}/config'.format(PATH_confdir), u'r')
             options = FILE_BUFFER.read().split(u'\n')[1:]
             FILE_BUFFER.close()
             
@@ -458,7 +459,7 @@ class Options(wx.Dialog):
                     self.config[o[0]] = o[1]
         except IndexError:
             wx.MessageDialog(None, u'Possible corrupted configuration file.\n\nTry deleting it: rm ~/.config/desktop_recorder/config', u'Error', wx.OK|wx.ICON_ERROR).ShowModal()
-            os.remove(u'{}/lock'.format(confdir))
+            os.remove(u'{}/lock'.format(PATH_confdir))
             sys.exit(1)
     
     def SelectDest(self, event):
