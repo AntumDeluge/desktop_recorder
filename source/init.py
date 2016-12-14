@@ -130,7 +130,7 @@ class Icon(wx.TaskBarIcon):
         self.menu.AppendItem(self.menu_options)
         self.menu.AppendSeparator()
         self.menu.AppendItem(self.menu_rec)
-#        self.menu.AppendItem(self.menu_pause)
+        #self.menu.AppendItem(self.menu_pause)
         self.menu.AppendItem(self.menu_stop)
         self.menu.AppendItem(self.menu_exit)
         self.menu.AppendItem(self.menu_about)
@@ -165,9 +165,11 @@ acodec=%s\n\
 channels=%s\n\
 samplerate=%s\n\
 bitrate=%s' % (int(self.options.video.GetValue()), int(self.options.audio.GetValue()), self.options.filename.GetValue(), self.options.folder.GetValue(), self.options.vcontainer.GetSelection(), self.options.vcodec.GetSelection(), self.options.qual.GetValue(), self.options.frate.GetSelection(), self.options.acodec.GetSelection(), self.options.chan.GetSelection(), self.options.samplerate.GetSelection(), self.options.bitrate.GetSelection())
-        file = open(u'%s/config' % confdir, u'w')
-        file.write(data)
-        file.close()
+        
+        FILE_BUFFER = open(u'%s/config' % confdir, u'w')
+        FILE_BUFFER.write(data)
+        FILE_BUFFER.close()
+        
         self.app.ExitMainLoop()
         lock.close()
         os.remove(u'%s/lock' % confdir)
@@ -322,8 +324,8 @@ WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
             self.options.Show()
 
 class Options(wx.Dialog):
-    def __init__(self, parent, id, title):
-        wx.Dialog.__init__(self, parent, id, title, size=(300, 450))
+    def __init__(self, parent, ID, title):
+        wx.Dialog.__init__(self, parent, ID, title, size=(300, 450))
         self.Show(False)
         
         self.vcontainers = (u'avi', u'mkv', u'flv', u'ogg')
@@ -443,9 +445,11 @@ class Options(wx.Dialog):
     
     def ParseOptions(self):
         try:
-            file = open(u'%s/config' % confdir, u'r')
-            options = file.read().split(u'\n')[1:]
-            file.close()
+            
+            FILE_BUFFER = open(u'%s/config' % confdir, u'r')
+            options = FILE_BUFFER.read().split(u'\n')[1:]
+            FILE_BUFFER.close()
+            
             for o in options:
                 o = o.split(u'=')
                 try:
