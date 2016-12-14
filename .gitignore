@@ -1,6 +1,7 @@
 # Python bytecode
 *.pyc
 
-# Eclipse project files
+# Eclipse project files & directories
 /.project
 /.pydevproject
+/.settings/
