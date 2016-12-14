@@ -41,19 +41,19 @@ if no_x264:
 
 exedir = os.path.dirname(__file__)
 home = os.getenv(u'HOME')
-icondir = u'%s/icons' % (exedir)
-confdir = u'%s/.config/desktop_recorder' % (home)
+icondir = u'{}/icons'.format(exedir)
+confdir = u'{}/.config/desktop_recorder'.format(home)
 
 # --- Create config file
-if not os.path.isfile(u'%s/config' % (confdir)):
+if not os.path.isfile(u'{}/config'.format(confdir)):
     if not os.path.isdir(confdir):
         os.mkdir(confdir)
-    config = open(u'%s/config' % (confdir), u'w')
+    config = open(u'{}/config'.format(confdir), u'w')
     data = u'[CONFIG]\n\
 video=1\n\
 audio=1\n\
 filename=out\n\
-dest=%s\n\
+dest={}\n\
 container=0\n\
 vcodec=0\n\
 quality=-1\n\
@@ -61,18 +61,18 @@ framerate=6\n\
 acodec=0\n\
 channels=0\n\
 samplerate=1\n\
-bitrate=2' % (home)
+bitrate=2'.format(home)
     config.write(data)
     config.close()
 
 # --- Lock script so only one instance can be run
-if os.path.isfile(u'%s/lock' % confdir):
+if os.path.isfile(u'{}/lock'.format(confdir)):
     locked = wx.App(0)
     wx.MessageDialog(None, u'An instance of Desktop Recorder is already running.\n\nIf this is an error type "rm ~/.config/desktop_recorder/lock"', u'Cannot Start', wx.OK|wx.ICON_ERROR).ShowModal()
     sys.exit(1)
     locked.MainLoop()
 else:
-    lock = open(u'%s/lock' % confdir, u'w')
+    lock = open(u'{}/lock'.format(confdir), u'w')
 
 # --- Delete the config file
 if (len(sys.argv) > 1) and (sys.argv[1] == u'delete-config'):
@@ -81,10 +81,10 @@ if (len(sys.argv) > 1) and (sys.argv[1] == u'delete-config'):
     exit(0)
 
 # --- Icons
-icon_stop = u'%s/stop.png' % (icondir)
-icon_rec = u'%s/record.png' % (icondir)
-icon_pause = u'%s/pause.png' % (icondir)
-icon_main = u'%s/icon.png' % (icondir)
+icon_stop = u'{}/stop.png'.format(icondir)
+icon_rec = u'{}/record.png'.format(icondir)
+icon_pause = u'{}/pause.png'.format(icondir)
+icon_main = u'{}/icon.png'.format(icondir)
 
 ID_STOP = wx.NewId()
 ID_REC = wx.NewId()
@@ -153,26 +153,26 @@ class Icon(wx.TaskBarIcon):
     
     def Exit(self, event):
         data=u'[CONFIG]\n\
-video=%s\n\
-audio=%s\n\
-filename=%s\n\
-dest=%s\n\
-container=%s\n\
-vcodec=%s\n\
-quality=%s\n\
-framerate=%s\n\
-acodec=%s\n\
-channels=%s\n\
-samplerate=%s\n\
-bitrate=%s' % (int(self.options.video.GetValue()), int(self.options.audio.GetValue()), self.options.filename.GetValue(), self.options.folder.GetValue(), self.options.vcontainer.GetSelection(), self.options.vcodec.GetSelection(), self.options.qual.GetValue(), self.options.frate.GetSelection(), self.options.acodec.GetSelection(), self.options.chan.GetSelection(), self.options.samplerate.GetSelection(), self.options.bitrate.GetSelection())
+video={}\n\
+audio={}\n\
+filename={}\n\
+dest={}\n\
+container={}\n\
+vcodec={}\n\
+quality={}\n\
+framerate={}\n\
+acodec={}\n\
+channels={}\n\
+samplerate={}\n\
+bitrate={}'.format(int(self.options.video.GetValue()), int(self.options.audio.GetValue()), self.options.filename.GetValue(), self.options.folder.GetValue(), self.options.vcontainer.GetSelection(), self.options.vcodec.GetSelection(), self.options.qual.GetValue(), self.options.frate.GetSelection(), self.options.acodec.GetSelection(), self.options.chan.GetSelection(), self.options.samplerate.GetSelection(), self.options.bitrate.GetSelection())
         
-        FILE_BUFFER = open(u'%s/config' % confdir, u'w')
+        FILE_BUFFER = open(u'{}/config'.format(confdir), u'w')
         FILE_BUFFER.write(data)
         FILE_BUFFER.close()
         
         self.app.ExitMainLoop()
         lock.close()
-        os.remove(u'%s/lock' % confdir)
+        os.remove(u'{}/lock'.format(confdir))
     
     def ShowInfo(self, event):
         about = wx.AboutDialogInfo()
@@ -212,11 +212,11 @@ WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
         elif self.options.video.GetValue():
             os.kill(self.P1.pid, signal.SIGINT)
             self.P1.wait()
-            shutil.move(self.tempvid, u'%s/%s.%s' % (self.dest, self.filename, self.vidext))
+            shutil.move(self.tempvid, u'{}/{}.{}'.format(self.dest, self.filename, self.vidext))
         elif self.options.audio.GetValue():
             os.kill(self.P2.pid, signal.SIGINT)
             self.P2.wait()
-            shutil.move(self.tempaud, u'%s/%s.%s' % (self.dest, self.filename, self.audext))
+            shutil.move(self.tempaud, u'{}/{}.{}'.format(self.dest, self.filename, self.audext))
         if os.path.isfile(self.output): # Protect against accidentally deleting temp files
             if os.path.isfile(self.tempvid):
                 os.remove(self.tempvid)
@@ -273,21 +273,21 @@ WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
                 self.bitrate = self.options.bitrates[self.options.bitrate.GetSelection()]
                 self.frate = self.options.framerates[self.options.frate.GetSelection()]
                 self.display = wx.GetDisplaySize()
-                self.display = u'%sx%s' % (self.display[0], self.display[1])
+                self.display = u'{}x{}'.format(self.display[0], self.display[1])
                 self.vidext = self.options.vcontainers[self.options.vcontainer.GetSelection()]
                 audio_extensions = {u'libmp3lame': u'mp3', u'libvorbis': u'ogg', u'pcm_s32le': u'wav', u'flac': u'flac'}
                 self.audext = audio_extensions[self.options.acodecs[self.options.acodec.GetSelection()]]
-                self.tempvid = u'/tmp/video.tmp.%s' % self.vidext
-                self.tempaud = u'/tmp/audio.tmp.%s' % self.audext
+                self.tempvid = u'/tmp/video.tmp.{}'.format(self.vidext)
+                self.tempaud = u'/tmp/audio.tmp.{}'.format(self.audext)
                 self.dest = self.options.folder.GetValue()
                 self.filename = self.options.filename.GetValue()
-                self.output = u'%s/%s.%s' % (self.dest, self.filename, self.vidext)
+                self.output = u'{}/{}.{}'.format(self.dest, self.filename, self.vidext)
                 self.quality = self.options.qual.GetValue()
                 if int(self.quality) < 0:
                     #self.quality = u'-sameq'
                     vidcommand = (CMD_ffmpeg, u'-y', u'-f', u'x11grab', u'-r', self.frate, u'-s', self.display, u'-i', u':0.0', u'-sameq', u'-vcodec', self.vcodec, self.tempvid)
                 else:
-                    #self.quality = u'-b %s' % str(self.quality)
+                    #self.quality = u'-b {}'.format(str(self.quality))
                                     vidcommand = (CMD_ffmpeg, u'-y', u'-f', u'x11grab', u'-r', self.frate, u'-s', self.display, u'-i', u':0.0', u'-b', self.quality, u'-vcodec', self.vcodec, self.tempvid)
 
                 self.acodec = self.options.acodecs[self.options.acodec.GetSelection()]
@@ -446,7 +446,7 @@ class Options(wx.Dialog):
     def ParseOptions(self):
         try:
             
-            FILE_BUFFER = open(u'%s/config' % confdir, u'r')
+            FILE_BUFFER = open(u'{}/config'.format(confdir), u'r')
             options = FILE_BUFFER.read().split(u'\n')[1:]
             FILE_BUFFER.close()
             
@@ -458,7 +458,7 @@ class Options(wx.Dialog):
                     self.config[o[0]] = o[1]
         except IndexError:
             wx.MessageDialog(None, u'Possible corrupted configuration file.\n\nTry deleting it: rm ~/.config/desktop_recorder/config', u'Error', wx.OK|wx.ICON_ERROR).ShowModal()
-            os.remove(u'%s/lock' % confdir)
+            os.remove(u'{}/lock'.format(confdir))
             sys.exit(1)
     
     def SelectDest(self, event):
