@@ -20,6 +20,7 @@ except wxversion.VersionError:
 import errno, os, shutil, signal, subprocess, wx
 from subprocess import PIPE
 
+from globals.commandline    import args
 from globals.settings       import GetAppInfo
 
 
@@ -75,15 +76,18 @@ bitrate=2'.format(PATH_home)
     FILE_BUFFER.close()
 
 
-# --- Lock script so only one instance can be run
-if os.path.isfile(u'{}/lock'.format(PATH_confdir)):
-    locked = wx.App(0)
-    wx.MessageDialog(None, u'An instance of Desktop Recorder is already running.\n\nIf this is an error type "rm ~/.config/desktop_recorder/lock"', u'Cannot Start', wx.OK|wx.ICON_ERROR).ShowModal()
-    sys.exit(1)
-    locked.MainLoop()
-else:
-    lock = open(u'{}/lock'.format(PATH_confdir), u'w')
+FILE_lock = u'{}/lock'.format(PATH_confdir)
+locked = os.path.exists(FILE_lock)
 
+# Main wx.App instance
+APP_wx = wx.App()
+
+# --- Lock script so only one instance can be run
+if locked:
+    wx.MessageDialog(None, u'An instance of Desktop Recorder is already running.\n\nIf this is an error type "rm ~/.config/desktop_recorder/lock" in a terminal', u'Cannot Start', wx.OK|wx.ICON_ERROR).ShowModal()
+    APP_wx.MainLoop()
+    
+    sys.exit(1)
 
 # --- Delete the config file
 if (len(sys.argv) > 1) and (sys.argv[1] == u'delete-config'):
@@ -182,7 +186,7 @@ bitrate={}'.format(int(self.options.video.GetValue()), int(self.options.audio.Ge
         FILE_BUFFER.close()
         
         self.app.ExitMainLoop()
-        lock.close()
+        APP_wx.close()
         os.remove(u'{}/lock'.format(PATH_confdir))
     
     def ShowInfo(self, event):
