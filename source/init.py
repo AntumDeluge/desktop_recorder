@@ -42,9 +42,8 @@ if no_x264:
 from globals.paths import FILE_config
 from globals.paths import PATH_confdir
 from globals.paths import PATH_home
+from globals.paths import PATH_icons
 
-exedir = os.path.dirname(__file__)
-icondir = u'{}/icons'.format(exedir)
 
 # --- Create config file
 if not os.path.isfile(FILE_config):
@@ -85,10 +84,10 @@ if (len(sys.argv) > 1) and (sys.argv[1] == u'delete-config'):
     exit(0)
 
 # --- Icons
-icon_stop = u'{}/stop.png'.format(icondir)
-icon_rec = u'{}/record.png'.format(icondir)
-icon_pause = u'{}/pause.png'.format(icondir)
-icon_main = u'{}/icon.png'.format(icondir)
+icon_stop = u'{}/stop.png'.format(PATH_icons)
+icon_rec = u'{}/record.png'.format(PATH_icons)
+icon_pause = u'{}/pause.png'.format(PATH_icons)
+icon_main = u'{}/icon.png'.format(PATH_icons)
 
 ID_STOP = wx.NewId()
 ID_REC = wx.NewId()
