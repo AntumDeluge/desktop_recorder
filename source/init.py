@@ -27,6 +27,11 @@ from globals.settings       import GetAppInfo
 VERSION = GetAppInfo(u'VERSION')
 
 
+if u'-v' in args or u'--version' in args:
+    print(VERSION)
+    sys.exit(0)
+
+
 from globals.ffmpeg import CMD_ffmpeg
 
 
