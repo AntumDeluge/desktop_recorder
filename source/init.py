@@ -39,6 +39,7 @@ if no_x264:
     no_x264 = subprocess.call(u'{} -formats | grep -i "libx264"'.format(CMD_ffmpeg), stdout=PIPE, stderr=PIPE, shell=True)
 
 
+from globals.paths import FILE_config
 from globals.paths import PATH_confdir
 from globals.paths import PATH_home
 
@@ -46,12 +47,11 @@ exedir = os.path.dirname(__file__)
 icondir = u'{}/icons'.format(exedir)
 
 # --- Create config file
-if not os.path.isfile(u'{}/config'.format(PATH_confdir)):
+if not os.path.isfile(FILE_config):
     if not os.path.isdir(PATH_confdir):
         os.mkdir(PATH_confdir)
-    config = open(u'{}/config'.format(PATH_confdir), u'w')
-    data = u'[CONFIG]\n\
-video=1\n\
+    
+    data = u'video=1\n\
 audio=1\n\
 filename=out\n\
 dest={}\n\
@@ -63,8 +63,11 @@ acodec=0\n\
 channels=0\n\
 samplerate=1\n\
 bitrate=2'.format(PATH_home)
-    config.write(data)
-    config.close()
+    
+    FILE_BUFFER = open(FILE_config, u'w')
+    FILE_BUFFER.write(data)
+    FILE_BUFFER.close()
+
 
 # --- Lock script so only one instance can be run
 if os.path.isfile(u'{}/lock'.format(PATH_confdir)):
