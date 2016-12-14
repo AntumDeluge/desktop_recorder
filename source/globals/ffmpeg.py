@@ -13,11 +13,14 @@ from subprocess import PIPE
 from subprocess import STDOUT
 
 
+## Locates an executable
+#  
+#  \param cmd
+#    \b \e unicode|str : Name of the executable to search for
+#  \return
+#    \b \e unicode|str : Absolute path to executable or None if not found
 def GetExecutable(cmd):
-    sp = subprocess.Popen([u'which', cmd,], stdout=PIPE, stderr=STDOUT)
-    output, returncode = sp.communicate()
-    
-    print(u'Return code: {}\nSTDOUT: {}'.format(returncode, output))
+    output, returncode  = subprocess.Popen([u'which', cmd,], stdout=PIPE, stderr=STDOUT).communicate()
     
     if returncode:
         return None
