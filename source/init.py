@@ -11,10 +11,10 @@ import wxversion, os, sys, shutil, subprocess, signal, time, errno
 from subprocess import PIPE
 
 try:
-    wxversion.select(u'2.8')
+    wxversion.select((u'3.0', u'2.8'))
 
 except wxversion.VersionError:
-    print u'You do not have the correct version of wxPython installed.\nPlease install version 2.8'
+    print(u'You do not have a compatible version of wxPython installed.\nVersion 3.0 or 2.8 is required')
     sys.exit(1)
 
 import wx
