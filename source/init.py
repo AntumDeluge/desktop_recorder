@@ -7,8 +7,7 @@
 # See: LICENSE.txt
 
 
-import wxversion, os, sys, shutil, subprocess, signal, time, errno
-from subprocess import PIPE
+import wxversion, sys
 
 try:
     wxversion.select((u'3.0', u'2.8'))
@@ -17,7 +16,9 @@ except wxversion.VersionError:
     print(u'You do not have a compatible version of wxPython installed.\nVersion 3.0 or 2.8 is required')
     sys.exit(1)
 
-import wx
+
+import errno, os, shutil, signal, subprocess, wx
+from subprocess import PIPE
 
 from globals.ffmpeg import CMD_ffmpeg
 
