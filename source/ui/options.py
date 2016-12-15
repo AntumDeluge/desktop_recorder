@@ -26,7 +26,7 @@ class Options(wx.Dialog):
         
         self.Show(False)
         
-        self.SetIcon(GetIcon(u'icon'))
+        self.SetIcon(GetIcon(u'logo'))
         
         # TODO: Use ffmpeg to find available containers
         vcontainers = (u'avi', u'mkv', u'flv', u'ogg')

@@ -25,7 +25,7 @@ class Icon(wx.TaskBarIcon):
         self.options = Options(None, -1, u'Desktop Recorder Options')
         
         self.menu_icons = [
-            GetImage(u'icon'),
+            GetImage(u'logo'),
             GetImage(u'record'),
             GetImage(u'pause'),
             GetImage(u'stop'),
@@ -95,7 +95,7 @@ class Icon(wx.TaskBarIcon):
     ## Displays an about dialog
     def ShowInfo(self, event):
         about = wx.AboutDialogInfo()
-        about.SetIcon(GetIcon(u'icon'))
+        about.SetIcon(GetIcon(u'logo'))
         about.SetName(u'Desktop Recorder')
         about.SetVersion(APP_version_string)
         about.SetCopyright(u'(c) 2012 Jordan Irwin')
