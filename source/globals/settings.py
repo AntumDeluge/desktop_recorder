@@ -22,7 +22,14 @@ if not os.path.isfile(FILE_settings):
     print(u'Error: App settings file does not exists: {}'.format(FILE_settings))
     sys.exit(1)
 
-def GetAppInfo(key_search):
+
+## Reads the settings file
+#  
+#  \param key_search
+#    \b \e string : Key to search for
+#  \return
+#    \b \e string : Value of key if found
+def GetSetting(key_search):
     FILE_BUFFER = open(FILE_settings)
     info_lines = FILE_BUFFER.read().split(u'\n')
     FILE_BUFFER.close()
@@ -40,8 +47,8 @@ def GetAppInfo(key_search):
                     return value
 
 
-APP_name = GetAppInfo(u'NAME')
-APP_version_string = GetAppInfo(u'VERSION')
+APP_name = GetSetting(u'NAME')
+APP_version_string = GetSetting(u'VERSION')
 
 APP_version = []
 APP_version_maj = None
