@@ -245,11 +245,11 @@ bitrate={}'.format(int(self.options.video.GetValue()), int(self.options.audio.Ge
         FILE_BUFFER.write(config_data)
         FILE_BUFFER.close()
         
-        self.app.ExitMainLoop()
-        APP_wx.close()
-        
         if os.path.exists(FILE_lock):
             os.remove(FILE_lock)
+        
+        self.options.Destroy()
+        self.Destroy()
     
     
     def ShowInfo(self, event):
