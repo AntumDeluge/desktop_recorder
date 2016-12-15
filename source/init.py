@@ -198,7 +198,7 @@ class Icon(wx.TaskBarIcon):
         self.menu.AppendItem(self.menu_options)
         self.menu.AppendSeparator()
         self.menu.AppendItem(self.menu_rec)
-        #self.menu.AppendItem(self.menu_pause)
+        self.menu.AppendItem(self.menu_pause)
         self.menu.AppendItem(self.menu_stop)
         self.menu.AppendItem(self.menu_exit)
         self.menu.AppendItem(self.menu_about)
