@@ -20,3 +20,4 @@ PATH_confdir = u'{}/.config/desktop_recorder'.format(PATH_home)
 
 # System files
 FILE_config = u'{}/config'.format(PATH_confdir)
+FILE_lock = u'{}/lock'.format(PATH_confdir)

@@ -71,6 +71,7 @@ print(u'Found ffmpeg executable: {}'.format(CMD_ffmpeg))
 from globals.ffmpeg import no_x264
 from globals.ffmpeg import no_xvid
 from globals.paths  import FILE_config
+from globals.paths  import FILE_lock
 from globals.paths  import PATH_home
 from globals.paths  import PATH_icons
 
@@ -98,7 +99,6 @@ bitrate=2'.format(PATH_home)
     FILE_BUFFER.close()
 
 
-FILE_lock = u'{}/lock'.format(PATH_confdir)
 locked = os.path.exists(FILE_lock)
 
 wx_compat = (u'3.0', u'2.8')
