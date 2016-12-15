@@ -209,6 +209,8 @@ class Icon(wx.TaskBarIcon):
         self.menu.Enable(ID_PAUSE, False)
         self.menu.Enable(ID_STOP, False)
         
+        # *** Event handlers *** #
+        
         wx.EVT_MENU(self.menu, ID_OPT, self.ToggleOptions)
         wx.EVT_MENU(self.menu, ID_REC, self.Record)
         wx.EVT_MENU(self.menu, ID_PAUSE, self.Pause)
@@ -458,24 +460,55 @@ class Options(wx.Dialog):
         
         self.video = wx.CheckBox(self.panel, -1, u'Include Video')
         self.video.SetValue(self.config[u'video'])
+        
         self.vcodec = wx.Choice(self.panel, choices=self.vcodecs)
         self.vcodec.Select(self.config[u'vcodec'])
+        
+        self.qual = wx.TextCtrl(self.panel, -1, unicode(self.config[u'quality']))
+        
+        self.frate = wx.Choice(self.panel, choices=self.framerates)
+        self.frate.Select(unicode(self.config[u'framerate']))
+        
+        vcontain_txt = wx.StaticText(self.panel, -1, u'Container')
+        self.vcontainer = wx.Choice(self.panel, choices=self.vcontainers)
+        self.vcontainer.Select(self.config[u'container'])
+        
+        self.audio = wx.CheckBox(self.panel, -1, u'Include Audio')
+        self.audio.SetValue(self.config[u'audio'])
+        
+        self.acodec = wx.Choice(self.panel, choices=self.acodecs)
+        self.acodec.Select(self.config[u'acodec'])
+        
+        self.chan = wx.Choice(self.panel, choices=self.channels)
+        self.chan.Select(self.config[u'channels'])
+        
+        self.samplerate = wx.Choice(self.panel, choices=self.samplerates)
+        self.samplerate.Select(self.config[u'samplerate'])
+        
+        self.bitrate = wx.Choice(self.panel, choices=self.bitrates)
+        self.bitrate.Select(self.config[u'bitrate'])
+        
+        filename_txt = wx.StaticText(self.panel, -1, u'Filename')
+        self.filename = wx.TextCtrl(self.panel, -1, self.config[u'filename'])
+        
+        folder_button = wx.Button(self.panel, -1, u'Folder')
+        self.folder = wx.TextCtrl(self.panel, -1, self.config[u'dest'])
+        
+        # *** Layout *** #
+        
         vcodec_sizer = wx.BoxSizer(wx.HORIZONTAL)
         vcodec_sizer.Add(wx.StaticText(self.panel, -1, u'Video Codec'), 0, wx.ALIGN_CENTER)
         vcodec_sizer.Add(self.vcodec, 0)
-        self.qual = wx.TextCtrl(self.panel, -1, unicode(self.config[u'quality']))
+        
         qual_sizer = wx.BoxSizer(wx.HORIZONTAL)
         qual_sizer.Add(wx.StaticText(self.panel, -1, u'Quality'), 0, wx.ALIGN_CENTER)
         qual_sizer.Add(self.qual, 1, wx.EXPAND)
-        self.frate = wx.Choice(self.panel, choices=self.framerates)
-        self.frate.Select(self.config[u'framerate'])
+        
         frate_sizer = wx.BoxSizer(wx.HORIZONTAL)
         frate_sizer.Add(wx.StaticText(self.panel, -1, u'Framerate'), 0, wx.ALIGN_CENTER)
         frate_sizer.Add(self.frate, 0)
         frate_sizer.Add(wx.StaticText(self.panel, -1, u'FPS'), 0, wx.ALIGN_CENTER)
-        vcontain_txt = wx.StaticText(self.panel, -1, u'Container')
-        self.vcontainer = wx.Choice(self.panel, choices=self.vcontainers)
-        self.vcontainer.Select(self.config[u'container'])
+        
         vcont_sizer = wx.BoxSizer(wx.HORIZONTAL)
         vcont_sizer.Add(vcontain_txt, 0, wx.ALIGN_CENTER)
         vcont_sizer.Add(self.vcontainer, 1, wx.EXPAND)
@@ -488,26 +521,19 @@ class Options(wx.Dialog):
         vidbox_sizer.Add(frate_sizer, 0)
         vidbox_sizer.Add(vcont_sizer, 0)
         
-        self.audio = wx.CheckBox(self.panel, -1, u'Include Audio')
-        self.audio.SetValue(self.config[u'audio'])
-        self.acodec = wx.Choice(self.panel, choices=self.acodecs)
-        self.acodec.Select(self.config[u'acodec'])
         acodec_sizer = wx.BoxSizer(wx.HORIZONTAL)
         acodec_sizer.Add(wx.StaticText(self.panel, -1, u'Audio Codec'), 0, wx.ALIGN_CENTER)
         acodec_sizer.Add(self.acodec, 0)
-        self.chan = wx.Choice(self.panel, choices=self.channels)
-        self.chan.Select(self.config[u'channels'])
+        
         chan_sizer = wx.BoxSizer(wx.HORIZONTAL)
         chan_sizer.Add(wx.StaticText(self.panel, -1, u'Channels'), 0, wx.ALIGN_CENTER)
         chan_sizer.Add(self.chan, 0)
-        self.samplerate = wx.Choice(self.panel, choices=self.samplerates)
-        self.samplerate.Select(self.config[u'samplerate'])
+        
         samp_sizer = wx.BoxSizer(wx.HORIZONTAL)
         samp_sizer.Add(wx.StaticText(self.panel, -1, u'Samplerate'), 0, wx.ALIGN_CENTER)
         samp_sizer.Add(self.samplerate, 0)
         samp_sizer.Add(wx.StaticText(self.panel, -1, u'Hz'), 0, wx.ALIGN_CENTER)
-        self.bitrate = wx.Choice(self.panel, choices=self.bitrates)
-        self.bitrate.Select(self.config[u'bitrate'])
+        
         br_sizer = wx.BoxSizer(wx.HORIZONTAL)
         br_sizer.Add(wx.StaticText(self.panel, -1, u'Bitrate'), 0, wx.ALIGN_CENTER)
         br_sizer.Add(self.bitrate, 0)
@@ -520,19 +546,13 @@ class Options(wx.Dialog):
         audbox_sizer.Add(samp_sizer, 0)
         audbox_sizer.Add(br_sizer, 0)
         
-        filename_txt = wx.StaticText(self.panel, -1, u'Filename')
-        self.filename = wx.TextCtrl(self.panel, -1, self.config[u'filename'])
         fname_sizer = wx.BoxSizer(wx.HORIZONTAL)
         fname_sizer.Add(filename_txt, 0, wx.ALIGN_CENTER)
         fname_sizer.Add(self.filename, 1, wx.EXPAND)
         
-        folder_button = wx.Button(self.panel, -1, u'Folder')
-        self.folder = wx.TextCtrl(self.panel, -1, self.config[u'dest'])
         fold_sizer = wx.BoxSizer(wx.HORIZONTAL)
         fold_sizer.Add(folder_button, 0, wx.ALIGN_CENTER)
         fold_sizer.Add(self.folder, 1, wx.EXPAND)
-        
-        wx.EVT_BUTTON(folder_button, -1, self.SelectDest)
         
         misc_box = wx.StaticBox(self.panel, -1, u'Misc')
         misc_sizer = wx.StaticBoxSizer(misc_box, wx.VERTICAL)
@@ -547,6 +567,10 @@ class Options(wx.Dialog):
         self.panel.SetAutoLayout(True)
         self.panel.SetSizer(main_sizer)
         self.panel.Layout()
+        
+        # *** Event handlers *** #
+        
+        wx.EVT_BUTTON(folder_button, -1, self.SelectDest)
     
     
     def ParseOptions(self):
