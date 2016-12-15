@@ -11,14 +11,12 @@ import errno, os, shutil, signal, subprocess, sys
 
 from globals.commandline    import args
 from globals.paths          import PATH_confdir
+from globals.settings       import APP_version_string
 from globals.settings       import EXE_name
-from globals.settings       import GetAppInfo
 
 
 if not EXE_name:
     EXE_name = os.path.basename(__file__)
-
-VERSION = GetAppInfo(u'VERSION')
 
 
 legacy = False
@@ -54,7 +52,7 @@ del deleted, deletefile
 
 
 if u'-v' in args or u'--version' in args:
-    print(VERSION)
+    print(APP_version_string)
     sys.exit(0)
 
 
@@ -197,7 +195,7 @@ class Icon(wx.TaskBarIcon):
         about = wx.AboutDialogInfo()
         about.SetIcon(self.icon_main)
         about.SetName(u'Desktop Recorder')
-        about.SetVersion(VERSION)
+        about.SetVersion(APP_version_string)
         about.SetCopyright(u'(c) 2012 Jordan Irwin')
         about.SetLicense(u'Copyright (c) 2012, Jordan Irwin\n\
 All rights reserved.\n\
