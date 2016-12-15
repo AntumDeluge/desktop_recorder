@@ -6,6 +6,9 @@
 /.pydevproject
 /.settings/
 
+# Installed status file
+/source/STATUS
+
 # Misc. files
 *.orig
 *.new
