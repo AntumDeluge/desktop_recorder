@@ -46,32 +46,32 @@ class Options(wx.Dialog):
         
         self.SetIcon(self.icon_main)
         
-        self.video = wx.CheckBox(self.panel, label=u'Include Video')
+        self.video = wx.CheckBox(self.panel, label=u'Include Video', name=u'video')
         
-        self.vcodec = wx.Choice(self.panel, choices=self.vcodecs)
+        self.vcodec = wx.Choice(self.panel, choices=self.vcodecs, name=u'vcodec')
         
-        self.qual = wx.TextCtrl(self.panel)
+        self.qual = wx.TextCtrl(self.panel, name=u'quality')
         
-        self.frate = wx.Choice(self.panel, choices=self.framerates)
+        self.frate = wx.Choice(self.panel, choices=self.framerates, name=u'framerate')
         
         vcontain_txt = wx.StaticText(self.panel, label=u'Container')
-        self.vcontainer = wx.Choice(self.panel, choices=self.vcontainers)
+        self.vcontainer = wx.Choice(self.panel, choices=self.vcontainers, name=u'container')
         
-        self.audio = wx.CheckBox(self.panel, label=u'Include Audio')
+        self.audio = wx.CheckBox(self.panel, label=u'Include Audio', name=u'audio')
         
-        self.acodec = wx.Choice(self.panel, choices=self.acodecs)
+        self.acodec = wx.Choice(self.panel, choices=self.acodecs, name=u'acodec')
         
-        self.chan = wx.Choice(self.panel, choices=self.channels)
+        self.chan = wx.Choice(self.panel, choices=self.channels, name=u'channels')
         
-        self.samplerate = wx.Choice(self.panel, choices=self.samplerates)
+        self.samplerate = wx.Choice(self.panel, choices=self.samplerates, name=u'samplerate')
         
-        self.bitrate = wx.Choice(self.panel, choices=self.bitrates)
+        self.bitrate = wx.Choice(self.panel, choices=self.bitrates, name=u'bitrate')
         
         filename_txt = wx.StaticText(self.panel, label=u'Filename')
-        self.filename = wx.TextCtrl(self.panel)
+        self.filename = wx.TextCtrl(self.panel, name=u'filename')
         
         folder_button = wx.Button(self.panel, label=u'Folder')
-        self.folder = wx.TextCtrl(self.panel)
+        self.folder = wx.TextCtrl(self.panel, name=u'dest')
         
         # *** Layout *** #
         
@@ -167,8 +167,9 @@ class Options(wx.Dialog):
                         C.SetValue(value)
                         continue
                     
+                    # TODO: Use string value instead of index integer???
                     if isinstance(C, wx.Choice):
-                        C.SetStringSelection(value)
+                        C.SetSelection(value)
         
         else:
             # Reset fields
