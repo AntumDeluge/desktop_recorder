@@ -7,7 +7,7 @@
 # See: LICENSE.txt
 
 
-import wxversion, sys
+import sys, wxversion
 
 try:
     wxversion.select((u'3.0', u'2.8'))
