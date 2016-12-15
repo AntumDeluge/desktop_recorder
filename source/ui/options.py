@@ -149,7 +149,7 @@ class Options(wx.Dialog):
         
         # *** Event handlers *** #
         
-        wx.EVT_BUTTON(folder_button, -1, self.SelectDest)
+        folder_button.Bind(wx.EVT_BUTTON, self.SelectDest)
     
     
     def ParseOptions(self):
