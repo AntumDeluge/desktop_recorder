@@ -12,6 +12,8 @@ import subprocess
 from subprocess import PIPE
 from subprocess import STDOUT
 
+from globals.system import PY_VER_MAJ
+
 
 ## Locates an executable
 #  
@@ -27,6 +29,9 @@ def GetExecutable(cmd):
     
     if returncode:
         return None
+    
+    if PY_VER_MAJ < 3:
+        output = unicode(output)
     
     return output
 
