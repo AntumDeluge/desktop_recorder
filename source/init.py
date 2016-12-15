@@ -108,10 +108,24 @@ if locked:
     sys.exit(1)
 
 
+import traceback
+
 from ui.taskbar import Icon
 
 
 if __name__ == u'__main__':
     app = wx.App()
-    tray_icon = Icon()
-    app.MainLoop()
+    try:
+        tray_icon = Icon()
+        app.MainLoop()
+    
+    except:
+        app.EndMainLoop()
+        
+        err_msg = u'A fatal error has occured'
+        err_info = unicode(traceback.format_exc())
+        
+        print(u'\n{}:\n\n    {}'.format(err_msg, err_info))
+        wx.MessageDialog(None, u'{}:\n\n{}'.format(err_msg, err_info), u'Error', style=wx.OK|wx.ICON_ERROR).ShowModal()
+        
+        sys.exit(1)
