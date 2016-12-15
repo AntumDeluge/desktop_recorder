@@ -8,7 +8,7 @@
 # See: LICENSE.txt
 
 
-import os
+import os, sys
 
 from globals.paths import PATH_root
 
@@ -17,11 +17,12 @@ EXE_name = None
 
 FILE_settings = u'{}/settings'.format(PATH_root)
 
+# Settings file is required
+if not os.path.isfile(FILE_settings):
+    print(u'Error: App settings file does not exists: {}'.format(FILE_settings))
+    sys.exit(1)
+
 def GetAppInfo(key_search):
-    if not os.path.isfile(FILE_settings):
-        print(u'Error: App settings file does not exists: {}'.format(FILE_settings))
-        return None
-    
     FILE_BUFFER = open(FILE_settings)
     info_lines = FILE_BUFFER.read().split(u'\n')
     FILE_BUFFER.close()
