@@ -416,19 +416,7 @@ WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
             self.options.Show()
 
 
-
-
-
-class App(wx.App):
-    def __init__(self):
-        wx.App.__init__(self)
-        
-        # --- Icons
-        self.icon = Icon()
-        self.icon.app = self
-        
-        return None
-
 if __name__ == u'__main__':
-    app = App()
+    app = wx.App()
+    tray_icon = Icon()
     app.MainLoop()
