@@ -8,7 +8,6 @@
 
 
 import errno, os, shutil, signal, subprocess, sys
-from subprocess import PIPE
 
 from globals.commandline    import args
 from globals.paths          import PATH_confdir
@@ -69,19 +68,11 @@ if not CMD_ffmpeg:
 print(u'Found ffmpeg executable: {}'.format(CMD_ffmpeg))
 
 
-# --- Check to see if ffmpeg supports xvid and x264
-no_xvid = subprocess.call(u'{} -codecs | grep -i "libxvid"'.format(CMD_ffmpeg), stdout=PIPE, stderr=PIPE, shell=True)
-if no_xvid:
-    no_xvid = subprocess.call(u'{} -formats | grep -i "libxvid"'.format(CMD_ffmpeg), stdout=PIPE, stderr=PIPE, shell=True)
-
-no_x264 = subprocess.call(u'{} -codecs | grep -i "libx264"'.format(CMD_ffmpeg), stdout=PIPE, stderr=PIPE, shell=True)
-if no_x264:
-    no_x264 = subprocess.call(u'{} -formats | grep -i "libx264"'.format(CMD_ffmpeg), stdout=PIPE, stderr=PIPE, shell=True)
-
-
-from globals.paths import FILE_config
-from globals.paths import PATH_home
-from globals.paths import PATH_icons
+from globals.ffmpeg import no_x264
+from globals.ffmpeg import no_xvid
+from globals.paths  import FILE_config
+from globals.paths  import PATH_home
+from globals.paths  import PATH_icons
 
 
 # --- Create config file
