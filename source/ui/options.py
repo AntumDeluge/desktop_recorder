@@ -297,7 +297,7 @@ class Options(wx.Dialog):
                     self.config[key] = value
         
         except IndexError:
-            wx.MessageDialog(None, u'Possible corrupted configuration file.\n\nTry deleting it: rm ~/.config/desktop_recorder/config', u'Error', wx.OK|wx.ICON_ERROR).ShowModal()
+            wx.MessageDialog(None, u'Possible corrupted configuration file.\n\nTry deleting it: rm "{}"'.format(FILE_config), u'Error', wx.OK|wx.ICON_ERROR).ShowModal()
             
             # ???: Not sure why this is called here (should use UnlockApp())
             if os.path.exists(FILE_lock):
