@@ -216,8 +216,10 @@ class Icon(wx.TaskBarIcon):
         wx.EVT_TASKBAR_LEFT_DOWN(self, self.OnClick)
         wx.EVT_TASKBAR_RIGHT_DOWN(self, self.OnClick)
     
+    
     def OnClick(self, event):
         self.PopupMenu(self.menu)
+    
     
     def Exit(self, event):
         config_data=u'[CONFIG]\n\
@@ -241,6 +243,7 @@ bitrate={}'.format(int(self.options.video.GetValue()), int(self.options.audio.Ge
         self.app.ExitMainLoop()
         APP_wx.close()
         os.remove(u'{}/lock'.format(PATH_confdir))
+    
     
     def ShowInfo(self, event):
         about = wx.AboutDialogInfo()
@@ -270,6 +273,7 @@ WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
         about.AddDeveloper(u'Jordan Irwin')
         wx.AboutBox(about)
     
+    
     def Stop(self, event):
         if self.options.video.GetValue() and self.options.audio.GetValue():
             os.kill(self.P1.pid, signal.SIGINT)
@@ -277,17 +281,22 @@ WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
             self.P1.wait()
             self.P2.wait()
             self.P3 = subprocess.call([CMD_ffmpeg, u'-y', u'-i', self.tempvid, u'-i', self.tempaud, u'-vcodec', u'copy', u'-acodec', u'copy', self.output])
+        
         elif self.options.video.GetValue():
             os.kill(self.P1.pid, signal.SIGINT)
             self.P1.wait()
             shutil.move(self.tempvid, u'{}/{}.{}'.format(self.dest, self.filename, self.vidext))
+        
         elif self.options.audio.GetValue():
             os.kill(self.P2.pid, signal.SIGINT)
             self.P2.wait()
             shutil.move(self.tempaud, u'{}/{}.{}'.format(self.dest, self.filename, self.audext))
-        if os.path.isfile(self.output): # Protect against accidentally deleting temp files
+        
+        # Protect against accidentally deleting temp files
+        if os.path.isfile(self.output):
             if os.path.isfile(self.tempvid):
                 os.remove(self.tempvid)
+            
             if os.path.isfile(self.tempaud):
                 os.remove(self.tempaud)
         
@@ -300,39 +309,50 @@ WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
         self.SetIcon(self.icon_stop)
         self.options.panel.Enable()
     
+    
     def Record(self, event):
         def DisableThem():
             self.menu.Enable(ID_REC, False)
             self.menu.Enable(ID_OPT, False)
             self.menu.Enable(wx.ID_EXIT, False)
+        
         def EnableThem():
             self.menu.Enable(ID_REC, True)
             self.menu.Enable(ID_OPT, True)
             self.menu.Enable(wx.ID_EXIT, True)
+        
         filename = self.options.filename.GetValue()
         filename = u''.join(filename.split(u' '))
+        
         if self.IsPaused:
             if self.options.video.GetValue():
                 os.kill(self.P1.pid, signal.SIGCONT)
+            
             if self.options.audio.GetValue():
                 os.kill(self.P2.pid, signal.SIGCONT)
+        
         else:
             try:
                 # Test for int in quality
                 int(self.options.qual.GetValue())
+            
             except ValueError:
                 DisableThem()
                 wx.MessageDialog(self.options, u'Quality must be an integer value.', u'Error', wx.OK|wx.ICON_ERROR).ShowModal()
                 EnableThem()
+                
                 return
+            
             if not filename or not os.path.isdir(self.options.folder.GetValue()):
                 DisableThem()
                 wx.MessageDialog(self.options, u'Please make sure you have suppied a filename and\nselected an existing folder to save the output.', u'Error', wx.OK|wx.ICON_ERROR).ShowModal()
                 EnableThem()
+            
             elif not self.options.video.GetValue() and not self.options.audio.GetValue():
                 DisableThem()
                 wx.MessageDialog(self.options, u'You must include at least one of video and audio to record.', u'Error!', wx.OK|wx.ICON_ERROR).ShowModal()
                 EnableThem()
+            
             else:
                 # --- Recording
                 self.vcodec = self.options.vcodecs[self.options.vcodec.GetSelection()]
@@ -351,20 +371,23 @@ WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
                 self.filename = self.options.filename.GetValue()
                 self.output = u'{}/{}.{}'.format(self.dest, self.filename, self.vidext)
                 self.quality = self.options.qual.GetValue()
+                
                 if int(self.quality) < 0:
                     #self.quality = u'-sameq'
                     vidcommand = (CMD_ffmpeg, u'-y', u'-f', u'x11grab', u'-r', self.frate, u'-s', self.display, u'-i', u':0.0', u'-sameq', u'-vcodec', self.vcodec, self.tempvid)
+                
                 else:
                     #self.quality = u'-b {}'.format(str(self.quality))
                                     vidcommand = (CMD_ffmpeg, u'-y', u'-f', u'x11grab', u'-r', self.frate, u'-s', self.display, u'-i', u':0.0', u'-b', self.quality, u'-vcodec', self.vcodec, self.tempvid)
-
+                
                 self.acodec = self.options.acodecs[self.options.acodec.GetSelection()]
                 
                 if self.options.video.GetValue():
                     self.P1 = subprocess.Popen(vidcommand)
+                
                 if self.options.audio.GetValue():
                     self.P2 = subprocess.Popen([CMD_ffmpeg, u'-y', u'-f', u'alsa', u'-i', u'hw:0,0', u'-acodec', self.acodec, u'-ar', self.samplerate, u'-ab', self.bitrate, u'-ac', self.channels, self.tempaud])
-            
+        
         self.IsPaused = False
         self.options.Hide()
         self.options.panel.Disable()
@@ -375,21 +398,28 @@ WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
         self.menu.Enable(wx.ID_EXIT, False)
         self.SetIcon(self.icon_rec)
     
+    
     def Pause(self, event):
         if self.options.video.GetValue():
             os.kill(self.P1.pid, signal.SIGSTOP)
+        
         if self.options.audio.GetValue():
             os.kill(self.P2.pid, signal.SIGSTOP)
+        
         self.IsPaused = True
         self.menu.Enable(ID_REC, True)
         self.menu.Enable(ID_PAUSE, False)
         self.SetIcon(self.icon_pause)
     
+    
     def ToggleOptions(self, event):
         if self.options.IsShown():
             self.options.Hide()
+        
         else:
             self.options.Show()
+
+
 
 class Options(wx.Dialog):
     def __init__(self, parent, ID, title):
@@ -400,16 +430,19 @@ class Options(wx.Dialog):
         self.acontainers = (u'mp3', u'wav', u'ogg')
         self.containers = self.vcontainers + self.acontainers [:-1]
         self.vcodecs = [u'libtheora', u'huffyuv', u'flv']
+        
         if not no_xvid:
             self.vcodecs.insert(0, u'libxvid')
+        
         if not no_x264:
             self.vcodecs.insert(0, u'libx264')
+        
         self.acodecs = (u'libmp3lame', u'libvorbis', u'pcm_s32le', u'flac')
         self.channels = (u'1', u'2')
         self.samplerates = (u'22050', u'44100', u'48000')
         self.bitrates = (u'64k', u'96k', u'128k', u'196k', u'224k', u'320k')
         self.framerates = (u'15', u'23.98', u'24', u'24.975', u'25', u'29.97', u'30', u'50', u'60')
-
+        
         self.config = {}
         self.ParseOptions()
         
@@ -511,9 +544,9 @@ class Options(wx.Dialog):
         self.panel.SetSizer(main_sizer)
         self.panel.Layout()
     
+    
     def ParseOptions(self):
         try:
-            
             FILE_BUFFER = open(u'{}/config'.format(PATH_confdir), u'r')
             options = FILE_BUFFER.read().split(u'\n')[1:]
             FILE_BUFFER.close()
@@ -522,17 +555,23 @@ class Options(wx.Dialog):
                 o = o.split(u'=')
                 try:
                     self.config[o[0]] = int(o[1])
+                
                 except ValueError:
                     self.config[o[0]] = o[1]
+        
         except IndexError:
             wx.MessageDialog(None, u'Possible corrupted configuration file.\n\nTry deleting it: rm ~/.config/desktop_recorder/config', u'Error', wx.OK|wx.ICON_ERROR).ShowModal()
             os.remove(u'{}/lock'.format(PATH_confdir))
+            
             sys.exit(1)
+    
     
     def SelectDest(self, event):
         dest = wx.DirDialog(self, defaultPath=os.getcwd(), style=wx.DD_DEFAULT_STYLE|wx.DD_DIR_MUST_EXIST|wx.DD_CHANGE_DIR)
         if dest.ShowModal() == wx.ID_OK:
             self.folder.SetValue(dest.GetPath())
+
+
 
 class App(wx.App):
     def __init__(self):
@@ -542,6 +581,7 @@ class App(wx.App):
         self.icon = Icon()
         self.icon.options = Options(None, -1, u'Desktop Recorder Options')
         self.icon.app = self
+        
         return None
 
 if __name__ == u'__main__':
