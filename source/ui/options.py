@@ -46,40 +46,31 @@ class Options(wx.Dialog):
         self.SetIcon(self.icon_main)
         
         self.video = wx.CheckBox(self.panel, -1, u'Include Video')
-        self.video.SetValue(self.config[u'video'])
         
         self.vcodec = wx.Choice(self.panel, choices=self.vcodecs)
-        self.vcodec.Select(self.config[u'vcodec'])
         
-        self.qual = wx.TextCtrl(self.panel, -1, unicode(self.config[u'quality']))
+        self.qual = wx.TextCtrl(self.panel, -1)
         
         self.frate = wx.Choice(self.panel, choices=self.framerates)
-        self.frate.Select(unicode(self.config[u'framerate']))
         
         vcontain_txt = wx.StaticText(self.panel, -1, u'Container')
         self.vcontainer = wx.Choice(self.panel, choices=self.vcontainers)
-        self.vcontainer.Select(self.config[u'container'])
         
         self.audio = wx.CheckBox(self.panel, -1, u'Include Audio')
-        self.audio.SetValue(self.config[u'audio'])
         
         self.acodec = wx.Choice(self.panel, choices=self.acodecs)
-        self.acodec.Select(self.config[u'acodec'])
         
         self.chan = wx.Choice(self.panel, choices=self.channels)
-        self.chan.Select(self.config[u'channels'])
         
         self.samplerate = wx.Choice(self.panel, choices=self.samplerates)
-        self.samplerate.Select(self.config[u'samplerate'])
         
         self.bitrate = wx.Choice(self.panel, choices=self.bitrates)
-        self.bitrate.Select(self.config[u'bitrate'])
         
         filename_txt = wx.StaticText(self.panel, -1, u'Filename')
-        self.filename = wx.TextCtrl(self.panel, -1, self.config[u'filename'])
+        self.filename = wx.TextCtrl(self.panel, -1)
         
         folder_button = wx.Button(self.panel, -1, u'Folder')
-        self.folder = wx.TextCtrl(self.panel, -1, self.config[u'dest'])
+        self.folder = wx.TextCtrl(self.panel, -1)
         
         # *** Layout *** #
         
