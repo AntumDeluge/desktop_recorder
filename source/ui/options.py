@@ -8,6 +8,7 @@
 
 import os, wx
 
+from globals.ffmpeg import GetCodecs
 from globals.ffmpeg import no_x264
 from globals.ffmpeg import no_xvid
 from globals.icons  import ICON_main
@@ -30,17 +31,21 @@ class Options(wx.Dialog):
         vcontainers = (u'avi', u'mkv', u'flv', u'ogg')
         acontainers = (u'mp3', u'wav', u'ogg')
         containers = vcontainers + acontainers [:-1]
+        
+        # These basic lists are used if SetVideoCodecs & SetAudioCodecs fail (ordered in priority)
         vcodecs = [u'libtheora', u'huffyuv', u'flv']
-        acodecs = (u'libmp3lame', u'libvorbis', u'pcm_s32le', u'flac')
+        acodecs = (u'libmp3lame', u'libvorbis', u'pcm_s16le', u'pcm_s32le', u'flac')
+        codecs = GetCodecs()
+        
         samplerates = (u'22050', u'44100', u'48000')
         bitrates = (u'64k', u'96k', u'128k', u'196k', u'224k', u'320k')
         framerates = (u'15', u'23.98', u'24', u'24.975', u'25', u'29.97', u'30', u'50', u'60')
         
-        if not no_xvid:
-            vcodecs.insert(0, u'libxvid')
-        
         if not no_x264:
             vcodecs.insert(0, u'libx264')
+        
+        if not no_xvid:
+            vcodecs.insert(0, u'libxvid')
         
         vcodecs = tuple(vcodecs)
         
@@ -57,18 +62,29 @@ class Options(wx.Dialog):
         chk_video = wx.CheckBox(self, label=u'Include Video', name=u'video')
         chk_video.default = True
         
-        pnl_video = wx.Panel(self, style=PANEL_BORDER)
+        self.pnl_video = wx.Panel(self, style=PANEL_BORDER)
         
-        sel_vcodec = wx.Choice(pnl_video, choices=vcodecs, name=u'vcodec')
-        sel_vcodec.default = u'libtheora'
+        sel_vcodec = wx.Choice(self.pnl_video, choices=sorted(vcodecs), name=u'vcodec')
         
-        ti_quality = wx.TextCtrl(pnl_video, name=u'quality')
+        # Override default video codec list
+        if u'video' in codecs:
+            self.SetVideoCodecs(codecs[u'video'])
+        
+        sel_vcodec.default = sel_vcodec.GetStrings()[0]
+        for C in vcodecs:
+            if C in sel_vcodec.GetStrings():
+                sel_vcodec.default = C
+                break
+        
+        sel_vcodec.SetStringSelection(sel_vcodec.default)
+        
+        ti_quality = wx.TextCtrl(self.pnl_video, name=u'quality')
         ti_quality.default = u'-1'
         
-        sel_framerate = wx.Choice(pnl_video, choices=framerates, name=u'framerate')
+        sel_framerate = wx.Choice(self.pnl_video, choices=framerates, name=u'framerate')
         sel_framerate.default = u'30'
         
-        sel_vcontainer = wx.Choice(pnl_video, choices=vcontainers, name=u'container')
+        sel_vcontainer = wx.Choice(self.pnl_video, choices=vcontainers, name=u'container')
         sel_vcontainer.default = u'avi'
         
         # *** Audio *** #
@@ -76,18 +92,29 @@ class Options(wx.Dialog):
         chk_audio = wx.CheckBox(self, label=u'Include Audio', name=u'audio')
         chk_audio.default = True
         
-        pnl_audio = wx.Panel(self, style=PANEL_BORDER)
+        self.pnl_audio = wx.Panel(self, style=PANEL_BORDER)
         
-        sel_acodec = wx.Choice(pnl_audio, choices=acodecs, name=u'acodec')
-        sel_acodec.default = u'libmp3lame'
+        sel_acodec = wx.Choice(self.pnl_audio, choices=sorted(acodecs), name=u'acodec')
         
-        spin_channels = wx.SpinCtrl(pnl_audio, name=u'channels')
+        # Override default audio codec list
+        if u'audio' in codecs:
+            self.SetAudioCodecs(codecs[u'audio'])
+        
+        sel_acodec.default = sel_acodec.GetStrings()[0]
+        for C in acodecs:
+            if C in sel_acodec.GetStrings():
+                sel_acodec.default = C
+                break
+        
+        sel_acodec.SetStringSelection(sel_acodec.default)
+        
+        spin_channels = wx.SpinCtrl(self.pnl_audio, name=u'channels')
         spin_channels.default = 1
         
-        sel_samplerate = wx.Choice(pnl_audio, choices=samplerates, name=u'samplerate')
+        sel_samplerate = wx.Choice(self.pnl_audio, choices=samplerates, name=u'samplerate')
         sel_samplerate.default = u'44100'
         
-        sel_bitrate = wx.Choice(pnl_audio, choices=bitrates, name=u'bitrate')
+        sel_bitrate = wx.Choice(self.pnl_audio, choices=bitrates, name=u'bitrate')
         sel_bitrate.default = u'128k'
         
         # *** Output *** #
@@ -105,48 +132,48 @@ class Options(wx.Dialog):
         lyt_video = wx.GridBagSizer()
         
         # Row 1
-        lyt_video.Add(wx.StaticText(pnl_video, label=u'Video Codec'), (0, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.TOP, border=5)
+        lyt_video.Add(wx.StaticText(self.pnl_video, label=u'Video Codec'), (0, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.TOP, border=5)
         lyt_video.Add(sel_vcodec, (0, 1), (1, 2), wx.TOP, 5)
         
         # Row 2
-        lyt_video.Add(wx.StaticText(pnl_video, label=u'Quality'), (1, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT, border=5)
+        lyt_video.Add(wx.StaticText(self.pnl_video, label=u'Quality'), (1, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT, border=5)
         lyt_video.Add(ti_quality, (1, 1), (1, 2))
         
         # Row 3
-        lyt_video.Add(wx.StaticText(pnl_video, label=u'Framerate'), (2, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT, border=5)
+        lyt_video.Add(wx.StaticText(self.pnl_video, label=u'Framerate'), (2, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT, border=5)
         lyt_video.Add(sel_framerate, (2, 1))
-        lyt_video.Add(wx.StaticText(pnl_video, label=u'FPS'), (2, 2), flag=wx.ALIGN_CENTER_VERTICAL)
+        lyt_video.Add(wx.StaticText(self.pnl_video, label=u'FPS'), (2, 2), flag=wx.ALIGN_CENTER_VERTICAL)
         
         # Row 4
-        lyt_video.Add(wx.StaticText(pnl_video, label=u'Container'), (3, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.BOTTOM, border=5)
+        lyt_video.Add(wx.StaticText(self.pnl_video, label=u'Container'), (3, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.BOTTOM, border=5)
         lyt_video.Add(sel_vcontainer, (3, 1), (1, 2), wx.BOTTOM, 5)
         
-        pnl_video.SetAutoLayout(True)
-        pnl_video.SetSizer(lyt_video)
-        pnl_video.Layout()
+        self.pnl_video.SetAutoLayout(True)
+        self.pnl_video.SetSizer(lyt_video)
+        self.pnl_video.Layout()
         
         lyt_audio = wx.GridBagSizer()
         
         # Row 1
-        lyt_audio.Add(wx.StaticText(pnl_audio, label=u'Audio Codec'), (0, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.TOP, border=5)
+        lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Audio Codec'), (0, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.TOP, border=5)
         lyt_audio.Add(sel_acodec, (0, 1), (1, 2), wx.TOP, 5)
         
         # Row 2
-        lyt_audio.Add(wx.StaticText(pnl_audio, label=u'Channels'), (1, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT, border=5)
+        lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Channels'), (1, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT, border=5)
         lyt_audio.Add(spin_channels, (1, 1), (1, 2))
         
         # Row 3
-        lyt_audio.Add(wx.StaticText(pnl_audio, label=u'Samplerate'), (2, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT, border=5)
+        lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Samplerate'), (2, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT, border=5)
         lyt_audio.Add(sel_samplerate, (2, 1))
-        lyt_audio.Add(wx.StaticText(pnl_audio, label=u'Hz'), (2, 2), flag=wx.ALIGN_CENTER_VERTICAL)
+        lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Hz'), (2, 2), flag=wx.ALIGN_CENTER_VERTICAL)
         
         # Row 4
-        lyt_audio.Add(wx.StaticText(pnl_audio, label=u'Bitrate'), (3, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.BOTTOM, border=5)
+        lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Bitrate'), (3, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.BOTTOM, border=5)
         lyt_audio.Add(sel_bitrate, (3, 1), (1, 2), wx.BOTTOM, 5)
         
-        pnl_audio.SetAutoLayout(True)
-        pnl_audio.SetSizer(lyt_audio)
-        pnl_audio.Layout()
+        self.pnl_audio.SetAutoLayout(True)
+        self.pnl_audio.SetSizer(lyt_audio)
+        self.pnl_audio.Layout()
         
         lyt_misc = wx.FlexGridSizer(2, vgap=5)
         lyt_misc.AddGrowableCol(1)
@@ -159,9 +186,9 @@ class Options(wx.Dialog):
         lyt_main = wx.BoxSizer(wx.VERTICAL)
         
         lyt_main.Add(chk_video, flag=wx.TOP|wx.LEFT, border=7)
-        lyt_main.Add(pnl_video, flag=wx.EXPAND|wx.LEFT|wx.RIGHT, border=7)
+        lyt_main.Add(self.pnl_video, flag=wx.EXPAND|wx.LEFT|wx.RIGHT, border=7)
         lyt_main.Add(chk_audio, flag=wx.TOP|wx.LEFT, border=7)
-        lyt_main.Add(pnl_audio, flag=wx.EXPAND|wx.LEFT|wx.RIGHT, border=7)
+        lyt_main.Add(self.pnl_audio, flag=wx.EXPAND|wx.LEFT|wx.RIGHT, border=7)
         lyt_main.Add(lyt_misc, flag=wx.EXPAND|wx.TOP|wx.LEFT|wx.RIGHT, border=5)
         
         self.SetAutoLayout(True)
@@ -282,6 +309,28 @@ class Options(wx.Dialog):
         dest = wx.DirDialog(self, defaultPath=os.getcwd(), style=wx.DD_DEFAULT_STYLE|wx.DD_DIR_MUST_EXIST|wx.DD_CHANGE_DIR)
         if dest.ShowModal() == wx.ID_OK:
             self.ti_target.SetValue(dest.GetPath())
+    
+    
+    ## TODO: Doxygen
+    def SetAudioCodecs(self, codec_list):
+        for C in self.pnl_audio.GetChildren():
+            if isinstance(C, wx.Choice) and C.GetName() == u'acodec':
+                C.Set(codec_list)
+                
+                return True
+        
+        return False
+    
+    
+    ## TODO: Doxygen
+    def SetVideoCodecs(self, codec_list):
+        for C in self.pnl_video.GetChildren():
+            if isinstance(C, wx.Choice) and C.GetName() == u'vcodec':
+                C.Set(codec_list)
+                
+                return True
+        
+        return False
     
     
     ## TODO: Doxygen
