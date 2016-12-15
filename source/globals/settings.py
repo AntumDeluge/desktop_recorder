@@ -10,6 +10,7 @@
 
 import os, sys
 
+from globals.files import ReadFile
 from globals.paths import PATH_root
 
 
@@ -30,9 +31,10 @@ if not os.path.isfile(FILE_settings):
 #  \return
 #    \b \e string : Value of key if found
 def GetSetting(key_search):
-    FILE_BUFFER = open(FILE_settings)
-    info_lines = FILE_BUFFER.read().split(u'\n')
-    FILE_BUFFER.close()
+    info_lines = ReadFile(FILE_settings)
+    
+    if not info_lines:
+        return None
     
     for LI in info_lines:
         # Ignore empty lines & lines that begin with a hashtag
