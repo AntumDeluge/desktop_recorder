@@ -73,7 +73,6 @@ from globals.ffmpeg import no_xvid
 from globals.paths  import FILE_config
 from globals.paths  import FILE_lock
 from globals.paths  import PATH_home
-from globals.paths  import PATH_icons
 
 
 # --- Create config file
@@ -139,11 +138,12 @@ if locked:
     
     sys.exit(1)
 
-# --- Icons
-icon_stop = u'{}/stop.png'.format(PATH_icons)
-icon_rec = u'{}/record.png'.format(PATH_icons)
-icon_pause = u'{}/pause.png'.format(PATH_icons)
-icon_main = u'{}/icon.png'.format(PATH_icons)
+
+from globals.icons import ICON_rec
+from globals.icons import ICON_main
+from globals.icons import ICON_pause
+from globals.icons import ICON_stop
+
 
 ID_STOP = wx.NewId()
 ID_REC = wx.NewId()
@@ -159,12 +159,12 @@ class Icon(wx.TaskBarIcon):
         self.options = Options(None, -1, u'Desktop Recorder Options')
         self.options.ParseOptions()
         
-        self.icon_main = wx.Icon(icon_main, wx.BITMAP_TYPE_PNG)
-        self.icon_rec = wx.Icon(icon_rec, wx.BITMAP_TYPE_PNG)
-        self.icon_pause = wx.Icon(icon_pause, wx.BITMAP_TYPE_PNG)
-        self.icon_stop = wx.Icon(icon_stop, wx.BITMAP_TYPE_PNG)
-        self.menu_icons = [wx.Image(icon_main, wx.BITMAP_TYPE_PNG), wx.Image(icon_rec, wx.BITMAP_TYPE_PNG),
-            wx.Image(icon_pause, wx.BITMAP_TYPE_PNG), wx.Image(icon_stop, wx.BITMAP_TYPE_PNG)]
+        self.icon_main = wx.Icon(ICON_main, wx.BITMAP_TYPE_PNG)
+        self.icon_rec = wx.Icon(ICON_rec, wx.BITMAP_TYPE_PNG)
+        self.icon_pause = wx.Icon(ICON_pause, wx.BITMAP_TYPE_PNG)
+        self.icon_stop = wx.Icon(ICON_stop, wx.BITMAP_TYPE_PNG)
+        self.menu_icons = [wx.Image(ICON_main, wx.BITMAP_TYPE_PNG), wx.Image(ICON_rec, wx.BITMAP_TYPE_PNG),
+            wx.Image(ICON_pause, wx.BITMAP_TYPE_PNG), wx.Image(ICON_stop, wx.BITMAP_TYPE_PNG)]
         
         for ico in xrange(len(self.menu_icons)):
             self.menu_icons[ico].Rescale(16, 16, wx.IMAGE_QUALITY_HIGH)
@@ -443,7 +443,7 @@ class Options(wx.Dialog):
         
         self.config = {}
         
-        self.icon_main = wx.Icon(icon_main, wx.BITMAP_TYPE_PNG)
+        self.icon_main = wx.Icon(ICON_main, wx.BITMAP_TYPE_PNG)
         
         self.panel = wx.Panel(self, -1)
         
