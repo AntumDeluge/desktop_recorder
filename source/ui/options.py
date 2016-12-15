@@ -48,6 +48,7 @@ class Options(wx.Dialog):
         self.SetIcon(self.icon_main)
         
         self.video = wx.CheckBox(self.panel, label=u'Include Video', name=u'video')
+        self.video.default = True
         
         self.vcodec = wx.Choice(self.panel, choices=self.vcodecs, name=u'vcodec')
         
@@ -59,10 +60,12 @@ class Options(wx.Dialog):
         self.vcontainer = wx.Choice(self.panel, choices=self.vcontainers, name=u'container')
         
         self.audio = wx.CheckBox(self.panel, label=u'Include Audio', name=u'audio')
+        self.audio.default = True
         
         self.acodec = wx.Choice(self.panel, choices=self.acodecs, name=u'acodec')
         
-        self.chan = wx.Choice(self.panel, choices=self.channels, name=u'channels')
+        self.chan = wx.SpinCtrl(self.panel, name=u'channels')
+        self.chan.default = 1
         
         self.samplerate = wx.Choice(self.panel, choices=self.samplerates, name=u'samplerate')
         
@@ -164,12 +167,16 @@ class Options(wx.Dialog):
                 if c_name in self.config:
                     value = self.config[c_name]
                     
-                    if isinstance(C, (wx.TextCtrl, wx.CheckBox)):
+                    if isinstance(C, (wx.TextCtrl, wx.CheckBox, wx.SpinCtrl)):
                         C.SetValue(value)
                         continue
                     
                     # TODO: Use string value instead of index integer???
                     if isinstance(C, wx.Choice):
+                        # Some wx.Choice field values are stored as integers & need to be converted to string
+                        if not isinstance(value, (unicode, str)):
+                            value = unicode(value)
+                        
                         C.SetStringSelection(value)
         
         else:
@@ -184,11 +191,11 @@ class Options(wx.Dialog):
                     C.Clear()
                     continue
                 
-                if isinstance(C, wx.CheckBox):
+                if isinstance(C, (wx.CheckBox, wx.SpinCtrl)):
                     self.config[c_name] = C.GetValue()
                     
                     # Reset field
-                    C.SetValue(False)
+                    C.SetValue(C.default)
                     continue
                 
                 if isinstance(C, wx.Choice):
@@ -220,6 +227,11 @@ class Options(wx.Dialog):
                     # Boolean types
                     if value.lower() in (u'true', u'false'):
                         self.config[key] = value.lower() == u'true'
+                        continue
+                    
+                    # Integer types
+                    if value.isnumeric():
+                        self.config[key] = int(value)
                         continue
                     
                     self.config[key] = value
