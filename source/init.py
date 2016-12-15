@@ -64,11 +64,6 @@ if not CMD_ffmpeg:
 print(u'Found ffmpeg executable: {}'.format(CMD_ffmpeg))
 
 
-from globals.paths  import FILE_lock
-
-
-locked = os.path.exists(FILE_lock)
-
 wx_compat = (u'3.0', u'2.8')
 import wxversion
 
@@ -93,6 +88,10 @@ if not wxversion._selected:
 
 import wx
 
+from globals.lock import AppIsLocked
+from globals.lock import LockApp
+from globals.lock import UnlockApp
+
 
 # Remove from memory
 del wx_compat
@@ -101,7 +100,7 @@ del wx_compat
 APP_wx = wx.App()
 
 # --- Lock script so only one instance can be run
-if locked:
+if AppIsLocked():
     wx.MessageDialog(None, u'An instance of Desktop Recorder is already running.\n\nIf this is an error type "rm ~/.config/desktop_recorder/lock" in a terminal', u'Cannot Start', wx.OK|wx.ICON_ERROR).ShowModal()
     APP_wx.MainLoop()
     
@@ -116,11 +115,14 @@ from ui.taskbar import Icon
 if __name__ == u'__main__':
     app = wx.App()
     try:
+        # FIXME: Method using processes to lock app???
+        LockApp()
+        
         tray_icon = Icon()
         app.MainLoop()
     
     except:
-        app.EndMainLoop()
+        UnlockApp()
         
         err_msg = u'A fatal error has occured'
         err_info = unicode(traceback.format_exc())
@@ -129,3 +131,5 @@ if __name__ == u'__main__':
         wx.MessageDialog(None, u'{}:\n\n{}'.format(err_msg, err_info), u'Error', style=wx.OK|wx.ICON_ERROR).ShowModal()
         
         sys.exit(1)
+
+UnlockApp()
