@@ -7,17 +7,7 @@
 # See: LICENSE.txt
 
 
-import sys, wxversion
-
-try:
-    wxversion.select((u'3.0', u'2.8'))
-
-except wxversion.VersionError:
-    print(u'You do not have a compatible version of wxPython installed.\nVersion 3.0 or 2.8 is required')
-    sys.exit(1)
-
-
-import errno, os, shutil, signal, subprocess, wx
+import errno, os, shutil, signal, subprocess, sys
 from subprocess import PIPE
 
 from globals.commandline    import args
@@ -113,6 +103,19 @@ bitrate=2'.format(PATH_home)
 
 FILE_lock = u'{}/lock'.format(PATH_confdir)
 locked = os.path.exists(FILE_lock)
+
+
+import wxversion
+
+try:
+    wxversion.select((u'3.0', u'2.8'))
+
+except wxversion.VersionError:
+    print(u'You do not have a compatible version of wxPython installed.\nVersion 3.0 or 2.8 is required')
+    sys.exit(1)
+
+import wx
+
 
 # Main wx.App instance
 APP_wx = wx.App()
