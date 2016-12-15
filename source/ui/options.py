@@ -8,6 +8,7 @@
 
 import os, wx
 
+from globals        import ident as ID
 from globals.ffmpeg import GetCodecs
 from globals.ffmpeg import no_x264
 from globals.ffmpeg import no_xvid
@@ -20,8 +21,8 @@ from globals.paths  import PATH_home
 
 ## TODO: Doxygen
 class Options(wx.Dialog):
-    def __init__(self, parent, ID, title, style=wx.DEFAULT_DIALOG_STYLE):
-        wx.Dialog.__init__(self, parent, ID, title, size=(300, 450), style=style|wx.RESIZE_BORDER)
+    def __init__(self, parent, window_id, title, style=wx.DEFAULT_DIALOG_STYLE):
+        wx.Dialog.__init__(self, parent, window_id, title, size=(300, 450), style=style|wx.RESIZE_BORDER)
         
         self.Show(False)
         
@@ -59,8 +60,8 @@ class Options(wx.Dialog):
         
         # *** Video *** #
         
-        chk_video = wx.CheckBox(self, label=u'Include Video', name=u'video')
-        chk_video.default = True
+        self.chk_video = wx.CheckBox(self, ID.VIDEO, u'Include Video', name=u'video')
+        self.chk_video.default = True
         
         self.pnl_video = wx.Panel(self, style=PANEL_BORDER)
         
@@ -89,8 +90,8 @@ class Options(wx.Dialog):
         
         # *** Audio *** #
         
-        chk_audio = wx.CheckBox(self, label=u'Include Audio', name=u'audio')
-        chk_audio.default = True
+        self.chk_audio = wx.CheckBox(self, ID.AUDIO, u'Include Audio', name=u'audio')
+        self.chk_audio.default = True
         
         self.pnl_audio = wx.Panel(self, style=PANEL_BORDER)
         
@@ -185,9 +186,9 @@ class Options(wx.Dialog):
         
         lyt_main = wx.BoxSizer(wx.VERTICAL)
         
-        lyt_main.Add(chk_video, flag=wx.TOP|wx.LEFT, border=7)
+        lyt_main.Add(self.chk_video, flag=wx.TOP|wx.LEFT, border=7)
         lyt_main.Add(self.pnl_video, flag=wx.EXPAND|wx.LEFT|wx.RIGHT, border=7)
-        lyt_main.Add(chk_audio, flag=wx.TOP|wx.LEFT, border=7)
+        lyt_main.Add(self.chk_audio, flag=wx.TOP|wx.LEFT, border=7)
         lyt_main.Add(self.pnl_audio, flag=wx.EXPAND|wx.LEFT|wx.RIGHT, border=7)
         lyt_main.Add(lyt_misc, flag=wx.EXPAND|wx.TOP|wx.LEFT|wx.RIGHT, border=5)
         
@@ -199,6 +200,9 @@ class Options(wx.Dialog):
         
         wx.EVT_SHOW(self, self.OnShow)
         
+        self.chk_video.Bind(wx.EVT_CHECKBOX, self.ToggleOptions)
+        self.chk_audio.Bind(wx.EVT_CHECKBOX, self.ToggleOptions)
+        
         btn_target.Bind(wx.EVT_BUTTON, self.SelectDest)
         
         # *** Actions *** #
@@ -207,6 +211,9 @@ class Options(wx.Dialog):
             self.WriteDefaultConfig()
         
         self.ParseOptions()
+        
+        # Disables fields if check boxes unchecked
+        self.ToggleOptions()
     
     
     ## TODO: Doxygen
@@ -327,6 +334,18 @@ class Options(wx.Dialog):
                 return True
         
         return False
+    
+    
+    ## TODO: Doxygen
+    def ToggleOptions(self, event=None):
+        v_enabled = self.chk_video.GetValue()
+        a_enabled = self.chk_audio.GetValue()
+        
+        for C in self.pnl_video.GetChildren():
+            C.Enable(v_enabled)
+        
+        for C in self.pnl_audio.GetChildren():
+            C.Enable(a_enabled)
     
     
     ## TODO: Doxygen
