@@ -18,3 +18,7 @@ STOP = wx.NewId()
 
 AUDIO = wx.NewId()
 VIDEO = wx.NewId()
+
+# Installed status
+SYSTEM = wx.NewId()
+PORTABLE = wx.NewId()
