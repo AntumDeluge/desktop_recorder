@@ -548,7 +548,7 @@ class Options(wx.Dialog):
     def ParseOptions(self):
         try:
             FILE_BUFFER = open(FILE_config, u'r')
-            options = FILE_BUFFER.read().split(u'\n')[1:]
+            options = FILE_BUFFER.read().split(u'\n')
             FILE_BUFFER.close()
             
             for o in options:
