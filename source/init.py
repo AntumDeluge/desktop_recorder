@@ -52,9 +52,6 @@ for A in args:
         deleted = True
 
 if deleted:
-    # DEBUG LINE
-    print(u'Exiting after delete ...')
-    
     sys.exit(0)
 
 # Remove from memory
