@@ -242,7 +242,7 @@ bitrate={}'.format(int(self.options.video.GetValue()), int(self.options.audio.Ge
         
         self.app.ExitMainLoop()
         APP_wx.close()
-        os.remove(u'{}/lock'.format(PATH_confdir))
+        os.remove(FILE_lock)
     
     
     def ShowInfo(self, event):
@@ -561,7 +561,7 @@ class Options(wx.Dialog):
         
         except IndexError:
             wx.MessageDialog(None, u'Possible corrupted configuration file.\n\nTry deleting it: rm ~/.config/desktop_recorder/config', u'Error', wx.OK|wx.ICON_ERROR).ShowModal()
-            os.remove(u'{}/lock'.format(PATH_confdir))
+            os.remove(FILE_lock)
             
             sys.exit(1)
     
