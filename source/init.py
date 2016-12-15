@@ -137,17 +137,12 @@ if locked:
     sys.exit(1)
 
 
+from globals        import ident as ID
 from globals.icons  import ICON_rec
 from globals.icons  import ICON_main
 from globals.icons  import ICON_pause
 from globals.icons  import ICON_stop
 from ui.options     import Options
-
-
-ID_STOP = wx.NewId()
-ID_REC = wx.NewId()
-ID_PAUSE = wx.NewId()
-ID_OPT = wx.NewId()
 
 
 
@@ -175,12 +170,12 @@ class Icon(wx.TaskBarIcon):
         self.IsPaused = False
         
         self.menu = wx.Menu()
-        self.menu_options = wx.MenuItem(self.menu, ID_OPT, u'Show/Hide Options')
-        self.menu_rec = wx.MenuItem(self.menu, ID_REC, u'Record')
-        self.menu_pause = wx.MenuItem(self.menu, ID_PAUSE, u'Pause')
-        self.menu_stop = wx.MenuItem(self.menu, ID_STOP, u'Stop')
-        self.menu_exit = wx.MenuItem(self.menu, wx.ID_EXIT, u'Quit')
-        self.menu_about = wx.MenuItem(self.menu, wx.ID_ABOUT, u'About')
+        self.menu_options = wx.MenuItem(self.menu, ID.OPT, u'Show/Hide Options')
+        self.menu_rec = wx.MenuItem(self.menu, ID.REC, u'Record')
+        self.menu_pause = wx.MenuItem(self.menu, ID.PAUSE, u'Pause')
+        self.menu_stop = wx.MenuItem(self.menu, ID.STOP, u'Stop')
+        self.menu_exit = wx.MenuItem(self.menu, ID.EXIT, u'Quit')
+        self.menu_about = wx.MenuItem(self.menu, ID.ABOUT, u'About')
         
         self.menu_options.SetBitmap(self.menu_icons[0].ConvertToBitmap())
         self.menu_rec.SetBitmap(self.menu_icons[1].ConvertToBitmap())
@@ -195,17 +190,17 @@ class Icon(wx.TaskBarIcon):
         self.menu.AppendItem(self.menu_exit)
         self.menu.AppendItem(self.menu_about)
         
-        self.menu.Enable(ID_PAUSE, False)
-        self.menu.Enable(ID_STOP, False)
+        self.menu.Enable(ID.PAUSE, False)
+        self.menu.Enable(ID.STOP, False)
         
         # *** Event handlers *** #
         
-        wx.EVT_MENU(self.menu, ID_OPT, self.ToggleOptions)
-        wx.EVT_MENU(self.menu, ID_REC, self.Record)
-        wx.EVT_MENU(self.menu, ID_PAUSE, self.Pause)
-        wx.EVT_MENU(self.menu, ID_STOP, self.Stop)
-        wx.EVT_MENU(self.menu, wx.ID_EXIT, self.Exit)
-        wx.EVT_MENU(self.menu, wx.ID_ABOUT, self.ShowInfo)
+        wx.EVT_MENU(self.menu, ID.OPT, self.ToggleOptions)
+        wx.EVT_MENU(self.menu, ID.REC, self.Record)
+        wx.EVT_MENU(self.menu, ID.PAUSE, self.Pause)
+        wx.EVT_MENU(self.menu, ID.STOP, self.Stop)
+        wx.EVT_MENU(self.menu, ID.EXIT, self.Exit)
+        wx.EVT_MENU(self.menu, ID.ABOUT, self.ShowInfo)
         
         wx.EVT_TASKBAR_LEFT_DOWN(self, self.OnClick)
         wx.EVT_TASKBAR_RIGHT_DOWN(self, self.OnClick)
@@ -297,25 +292,25 @@ WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
                 os.remove(self.tempaud)
         
         self.IsPaused = False
-        self.menu.Enable(ID_OPT, True)
-        self.menu.Enable(ID_REC, True)
-        self.menu.Enable(ID_PAUSE, False)
-        self.menu.Enable(ID_STOP, False)
-        self.menu.Enable(wx.ID_EXIT, True)
+        self.menu.Enable(ID.OPT, True)
+        self.menu.Enable(ID.REC, True)
+        self.menu.Enable(ID.PAUSE, False)
+        self.menu.Enable(ID.STOP, False)
+        self.menu.Enable(ID.EXIT, True)
         self.SetIcon(self.icon_stop)
         self.options.panel.Enable()
     
     
     def Record(self, event):
         def DisableThem():
-            self.menu.Enable(ID_REC, False)
-            self.menu.Enable(ID_OPT, False)
-            self.menu.Enable(wx.ID_EXIT, False)
+            self.menu.Enable(ID.REC, False)
+            self.menu.Enable(ID.OPT, False)
+            self.menu.Enable(ID.EXIT, False)
         
         def EnableThem():
-            self.menu.Enable(ID_REC, True)
-            self.menu.Enable(ID_OPT, True)
-            self.menu.Enable(wx.ID_EXIT, True)
+            self.menu.Enable(ID.REC, True)
+            self.menu.Enable(ID.OPT, True)
+            self.menu.Enable(ID.EXIT, True)
         
         filename = self.options.filename.GetValue()
         filename = u''.join(filename.split(u' '))
@@ -387,11 +382,11 @@ WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
         self.IsPaused = False
         self.options.Hide()
         self.options.panel.Disable()
-        self.menu.Enable(ID_OPT, False)
-        self.menu.Enable(ID_REC, False)
-        self.menu.Enable(ID_PAUSE, True)
-        self.menu.Enable(ID_STOP, True)
-        self.menu.Enable(wx.ID_EXIT, False)
+        self.menu.Enable(ID.OPT, False)
+        self.menu.Enable(ID.REC, False)
+        self.menu.Enable(ID.PAUSE, True)
+        self.menu.Enable(ID.STOP, True)
+        self.menu.Enable(ID.EXIT, False)
         self.SetIcon(self.icon_rec)
     
     
@@ -403,8 +398,8 @@ WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
             os.kill(self.P2.pid, signal.SIGSTOP)
         
         self.IsPaused = True
-        self.menu.Enable(ID_REC, True)
-        self.menu.Enable(ID_PAUSE, False)
+        self.menu.Enable(ID.REC, True)
+        self.menu.Enable(ID.PAUSE, False)
         self.SetIcon(self.icon_pause)
     
     
