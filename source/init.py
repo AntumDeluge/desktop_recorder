@@ -44,6 +44,7 @@ for A in args:
     if A == u'legacy':
         legacy = True
 
+# Don't start up app if 'rmlocal' command(s) used
 if deleted:
     sys.exit(0)
 
