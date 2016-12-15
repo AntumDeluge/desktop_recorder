@@ -9,6 +9,7 @@
 import os
 
 from globals.paths import PATH_confdir
+from globals.paths import PATH_root
 
 
 FILE_lock = u'{}/lock'.format(PATH_confdir)
@@ -73,10 +74,16 @@ def WriteEmptyFile(filename):
 #  \param lines
 #    \b \e bool : If True, returned vale will be a line separated tuple
 def ReadFile(filename, lines=True):
+    # Look for file in app root directory if 'filename' is not a path
+    if u'/' not in filename:
+        filename = u'{}/{}'.format(PATH_root, filename)
+    
     if not os.path.isfile(filename) or not os.access(filename, os.R_OK):
-        print(u'Error: Could not read file: {}'.format(filename))
+        print(u'Warning: Could not read file: {}'.format(filename))
         
         return
+    
+    print(u'DEBUG: Reading file: {}'.format(filename))
     
     FILE_BUFFER = open(filename, u'r')
     contents = FILE_BUFFER.read().strip(u' \t\n')
