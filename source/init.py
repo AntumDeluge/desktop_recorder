@@ -81,7 +81,7 @@ if not os.path.isfile(FILE_config):
     config_data = u'video=True\n\
 audio=True\n\
 filename=out\n\
-dest={}\n\
+dest={}/Videos\n\
 container=0\n\
 vcodec=0\n\
 quality=-1\n\
