@@ -124,12 +124,6 @@ if locked:
     
     sys.exit(1)
 
-# --- Delete the config file
-if (len(sys.argv) > 1) and (sys.argv[1] == u'delete-config'):
-    if os.path.isdir(PATH_confdir):
-        shutil.rmtree(PATH_confdir)
-    exit(0)
-
 # --- Icons
 icon_stop = u'{}/stop.png'.format(PATH_icons)
 icon_rec = u'{}/record.png'.format(PATH_icons)
