@@ -9,7 +9,7 @@
 
 import errno, os, shutil, sys
 
-from globals.commandline    import args
+from globals.commandline    import args, GetOption
 from globals.paths          import PATH_confdir
 from globals.settings       import APP_version_string
 from globals.settings       import EXE_name
@@ -50,11 +50,9 @@ if deleted:
 # Remove from memory
 del deleted, deletefile
 
-
-if u'-v' in args or u'--version' in args:
+if GetOption(u'v') or GetOption(u'version'):
     print(APP_version_string)
     sys.exit(0)
-
 
 from globals.ffmpeg import CMD_ffmpeg
 
