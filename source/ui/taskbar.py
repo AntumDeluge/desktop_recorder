@@ -19,7 +19,7 @@ from globals.settings   import APP_version_string
 from ui.options         import Options
 
 
-## TODO: Doxygen
+## Class for the taskbar icon
 class Icon(wx.TaskBarIcon):
     def __init__(self):
         wx.TaskBarIcon.__init__(self)
@@ -80,10 +80,12 @@ class Icon(wx.TaskBarIcon):
         wx.EVT_TASKBAR_RIGHT_DOWN(self, self.OnClick)
     
     
+    ## Shows a context menu when left or right clicked
     def OnClick(self, event):
         self.PopupMenu(self.menu)
     
     
+    ## Actions to take when the app exits
     def Exit(self, event):
         if os.path.exists(FILE_lock):
             os.remove(FILE_lock)
@@ -92,6 +94,7 @@ class Icon(wx.TaskBarIcon):
         self.Destroy()
     
     
+    ## Displays an about dialog
     def ShowInfo(self, event):
         about = wx.AboutDialogInfo()
         about.SetIcon(self.icon_main)
@@ -121,6 +124,7 @@ WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
         wx.AboutBox(about)
     
     
+    ## Stops recording
     def Stop(self, event):
         if self.options.video.GetValue() and self.options.audio.GetValue():
             os.kill(self.P1.pid, signal.SIGINT)
@@ -157,6 +161,7 @@ WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
         self.options.panel.Enable()
     
     
+    ## Begins recording
     def Record(self, event):
         def DisableThem():
             self.menu.Enable(ID.REC, False)
@@ -246,6 +251,7 @@ WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
         self.SetIcon(self.icon_rec)
     
     
+    ## Pauses recording
     def Pause(self, event):
         if self.options.video.GetValue():
             os.kill(self.P1.pid, signal.SIGSTOP)
@@ -259,6 +265,7 @@ WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
         self.SetIcon(self.icon_pause)
     
     
+    ## Shows/Hides the options window
     def ToggleOptions(self, event):
         if self.options.IsShown():
             self.options.Hide()

@@ -19,7 +19,7 @@ from globals.paths  import PATH_confdir
 from globals.paths  import PATH_home
 
 
-## TODO: Doxygen
+## Class for the options window
 class Options(wx.Dialog):
     def __init__(self, parent, window_id, title, style=wx.DEFAULT_DIALOG_STYLE):
         wx.Dialog.__init__(self, parent, window_id, title, size=(300, 450), style=style|wx.RESIZE_BORDER)
@@ -216,7 +216,7 @@ class Options(wx.Dialog):
         self.ToggleOptions()
     
     
-    ## TODO: Doxygen
+    ## Actions to take when the Options window if shown/hidden
     def OnShow(self, event=None):
         field_list = list(self.GetChildren()) + list(self.pnl_video.GetChildren()) + list(self.pnl_audio.GetChildren())
         
@@ -270,7 +270,7 @@ class Options(wx.Dialog):
             event.Skip()
     
     
-    ## TODO: Doxygen
+    ## Reads the options file & sets value for each field
     def ParseOptions(self):
         try:
             FILE_BUFFER = open(FILE_config, u'r')
@@ -299,6 +299,7 @@ class Options(wx.Dialog):
         except IndexError:
             wx.MessageDialog(None, u'Possible corrupted configuration file.\n\nTry deleting it: rm ~/.config/desktop_recorder/config', u'Error', wx.OK|wx.ICON_ERROR).ShowModal()
             
+            # ???: Not sure why this is called here (should use UnlockApp())
             if os.path.exists(FILE_lock):
                 os.remove(FILE_lock)
             
@@ -307,14 +308,19 @@ class Options(wx.Dialog):
         return True
     
     
-    ## TODO: Doxygen
+    ## Opens a directory dialog to select output destination
     def SelectDest(self, event):
         dest = wx.DirDialog(self, defaultPath=os.getcwd(), style=wx.DD_DEFAULT_STYLE|wx.DD_DIR_MUST_EXIST|wx.DD_CHANGE_DIR)
         if dest.ShowModal() == wx.ID_OK:
             self.ti_target.SetValue(dest.GetPath())
     
     
-    ## TODO: Doxygen
+    ## Sets the list of audio codecs available from FFmpeg
+    #  
+    #  \param codec_list
+    #    \b \e tuple|list : String list of codec names
+    #  \return
+    #    \b \e bool : True if list was set successfully
     def SetAudioCodecs(self, codec_list):
         for C in self.pnl_audio.GetChildren():
             if isinstance(C, wx.Choice) and C.GetName() == u'acodec':
@@ -325,7 +331,12 @@ class Options(wx.Dialog):
         return False
     
     
-    ## TODO: Doxygen
+    ## Sets the list of video codecs available from FFmpeg
+    #  
+    #  \param codec_list
+    #    \b \e tuple|list : String list of codec names
+    #  \return
+    #    \b \e bool : True if list was set successfully
     def SetVideoCodecs(self, codec_list):
         for C in self.pnl_video.GetChildren():
             if isinstance(C, wx.Choice) and C.GetName() == u'vcodec':
@@ -336,7 +347,7 @@ class Options(wx.Dialog):
         return False
     
     
-    ## TODO: Doxygen
+    ## Enables/Disables video & audio settings
     def ToggleOptions(self, event=None):
         v_enabled = self.chk_video.GetValue()
         a_enabled = self.chk_audio.GetValue()
@@ -348,7 +359,14 @@ class Options(wx.Dialog):
             C.Enable(a_enabled)
     
     
-    ## TODO: Doxygen
+    ## Writes the options values to the options file
+    #  
+    #  If the options list is empty, uses the standard option list (self.config)
+    #  
+    #  \param opts_list
+    #    \b \e tuple|list : List of strings in key=value format
+    #  \return
+    #    \b \e bool : True if successfully wrote to options file
     def WriteConfig(self, opts_list=[]):
         if not os.path.isdir(PATH_confdir):
             os.makedirs(PATH_confdir)
@@ -369,7 +387,10 @@ class Options(wx.Dialog):
         return False
     
     
-    ## TODO: Doxygen
+    ## Retrieves default field values & calls WriteConfig()
+    #  
+    #  \return
+    #    \b \e bool : True if successfully wrote to options file
     def WriteDefaultConfig(self):
         # The children types that we are getting 'default' value from
         usable_types = (
