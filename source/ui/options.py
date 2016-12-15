@@ -211,8 +211,10 @@ class Options(wx.Dialog):
     
     ## TODO: Doxygen
     def OnShow(self, event=None):
+        field_list = list(self.GetChildren()) + list(self.pnl_video.GetChildren()) + list(self.pnl_audio.GetChildren())
+        
         if self.IsShown():
-            for C in self.GetChildren():
+            for C in field_list:
                 c_name = C.GetName()
                 
                 if c_name in self.config:
@@ -232,7 +234,7 @@ class Options(wx.Dialog):
         
         else:
             # Set & write config when window is hidden
-            for C in self.GetChildren():
+            for C in field_list:
                 c_name = C.GetName()
                 
                 if isinstance(C, wx.TextCtrl):
@@ -294,12 +296,6 @@ class Options(wx.Dialog):
                 os.remove(FILE_lock)
             
             return False
-        
-        # DEBUG START
-        print(u'DEBUGGING:')
-        for C in self.config:
-            print(u'\nKey: {}\nValue: {}\nType: {}'.format(C, self.config[C], type(self.config[C])))
-        # DEBUG END
         
         return True
     
@@ -365,7 +361,7 @@ class Options(wx.Dialog):
             )
         
         opts_list = []
-        for C in self.GetChildren():
+        for C in list(self.GetChildren()) + list(self.pnl_video.GetChildren()) + list(self.pnl_video.GetChildren()):
             if isinstance(C, usable_types):
                 opts_list.append(u'{}={}'.format(C.GetName(), C.default))
         
