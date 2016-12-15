@@ -78,8 +78,8 @@ if not os.path.isfile(FILE_config):
     if not os.path.isdir(PATH_confdir):
         os.mkdir(PATH_confdir)
     
-    config_data = u'video=1\n\
-audio=1\n\
+    config_data = u'video=True\n\
+audio=True\n\
 filename=out\n\
 dest={}\n\
 container=0\n\
