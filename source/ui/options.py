@@ -20,8 +20,8 @@ from globals.paths  import PATH_home
 
 ## TODO: Doxygen
 class Options(wx.Dialog):
-    def __init__(self, parent, ID, title):
-        wx.Dialog.__init__(self, parent, ID, title, size=(300, 450))
+    def __init__(self, parent, ID, title, style=wx.DEFAULT_DIALOG_STYLE):
+        wx.Dialog.__init__(self, parent, ID, title, size=(300, 450), style=style|wx.RESIZE_BORDER)
         
         self.Show(False)
         
