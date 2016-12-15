@@ -10,6 +10,7 @@
 
 import os, sys
 
+from globals       import ident as ID
 from globals.files import ReadFile
 from globals.paths import PATH_root
 
@@ -22,6 +23,29 @@ FILE_settings = u'{}/settings'.format(PATH_root)
 if not os.path.isfile(FILE_settings):
     print(u'Error: App settings file does not exists: {}'.format(FILE_settings))
     sys.exit(1)
+
+
+## Retrieves installed status of application
+#  
+#  0:           Running from source
+#  ID.PORTABLE: Running portably
+#  ID.SYSTEM:   Installed to system
+def GetInstalledStatus():
+    status_file = ReadFile(u'STATUS')
+    
+    if not status_file:
+        return 0
+    
+    # First line determines installed status
+    status = status_file[0].upper()
+    
+    if status.startswith(u'SYSTEM'):
+        return ID.SYSTEM
+    
+    if status.startswith(u'PORTABLE'):
+        return ID.PORTABLE
+    
+    return 0
 
 
 ## Reads the settings file
