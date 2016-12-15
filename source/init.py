@@ -569,7 +569,9 @@ class Options(wx.Dialog):
             if os.path.exists(FILE_lock):
                 os.remove(FILE_lock)
             
-            sys.exit(1)
+            return False
+        
+        return True
     
     
     def SelectDest(self, event):
