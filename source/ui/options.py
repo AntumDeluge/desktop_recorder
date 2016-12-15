@@ -38,6 +38,7 @@ class Options(wx.Dialog):
         self.framerates = (u'15', u'23.98', u'24', u'24.975', u'25', u'29.97', u'30', u'50', u'60')
         
         self.config = {}
+        self.ParseOptions()
         
         self.icon_main = wx.Icon(ICON_main, wx.BITMAP_TYPE_PNG)
         

@@ -156,7 +156,6 @@ class Icon(wx.TaskBarIcon):
         wx.TaskBarIcon.__init__(self)
         
         self.options = Options(None, -1, u'Desktop Recorder Options')
-        self.options.ParseOptions()
         
         self.icon_main = wx.Icon(ICON_main, wx.BITMAP_TYPE_PNG)
         self.icon_rec = wx.Icon(ICON_rec, wx.BITMAP_TYPE_PNG)
