@@ -39,6 +39,7 @@ def GetAppInfo(key_search):
                     return value
 
 
+APP_name = GetAppInfo(u'NAME')
 APP_version_string = GetAppInfo(u'VERSION')
 
 APP_version = []
