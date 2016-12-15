@@ -22,6 +22,7 @@ if not EXE_name:
 VERSION = GetAppInfo(u'VERSION')
 
 
+legacy = False
 deleted = False
 deletefile = None
 for A in args:
@@ -40,6 +41,11 @@ for A in args:
             os.remove(deletefile)
         
         deleted = True
+        
+        continue
+    
+    if A == u'legacy':
+        legacy = True
 
 if deleted:
     sys.exit(0)
@@ -104,18 +110,33 @@ bitrate=2'.format(PATH_home)
 FILE_lock = u'{}/lock'.format(PATH_confdir)
 locked = os.path.exists(FILE_lock)
 
-
+wx_compat = (u'3.0', u'2.8')
 import wxversion
 
-try:
-    wxversion.select((u'3.0', u'2.8'))
 
-except wxversion.VersionError:
-    print(u'You do not have a compatible version of wxPython installed.\nVersion 3.0 or 2.8 is required')
-    sys.exit(1)
+if legacy:
+    try:
+        wxversion.select((u'2.8',))
+    
+    except wxversion.VersionError:
+        print(u'Warning:\n  Requested "legacy", but no compatible legacy wx version found.\n  Using default settings ...\n')
+
+# Remove from memory
+del legacy
+
+if not wxversion._selected:
+    try:
+        wxversion.select(wx_compat)
+    
+    except wxversion.VersionError:
+        print(u'Error:\n  You do not have a compatible version of wxPython installed.\n  One of the following versions is required: {}\n'.format(u', '.join(wx_compat)))
+        sys.exit(1)
 
 import wx
 
+
+# Remove from memory
+del wx_compat
 
 # Main wx.App instance
 APP_wx = wx.App()
