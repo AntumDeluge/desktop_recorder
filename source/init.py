@@ -88,10 +88,11 @@ if not wxversion._selected:
 
 import wx
 
-from globals.files  import FILE_lock
-from globals.lock   import AppIsLocked
-from globals.lock   import LockApp
-from globals.lock   import UnlockApp
+from globals.files      import FILE_lock
+from globals.lock       import AppIsLocked
+from globals.lock       import LockApp
+from globals.lock       import UnlockApp
+from globals.settings   import APP_name
 
 
 # Remove from memory
@@ -102,7 +103,11 @@ APP_wx = wx.App()
 
 # --- Lock script so only one instance can be run
 if AppIsLocked():
-    wx.MessageDialog(None, u'An instance of Desktop Recorder is already running.\n\nIf this is an error, remove the lock file with the following command:\n\nrm "{}"'.format(FILE_lock), u'Cannot Start', wx.OK|wx.ICON_ERROR).ShowModal()
+    err_msg1 = u'An instance of {} is already running.'.format(APP_name)
+    err_msg2 = u'If this is an error, remove the lock file with the following command:'
+    err_msg3 = u'rm "{}"'.format(FILE_lock)
+    
+    wx.MessageDialog(None, u'{}\n\n{}\n\n{}'.format(err_msg1, err_msg2, err_msg3), u'Cannot Start', wx.OK|wx.ICON_ERROR).ShowModal()
     APP_wx.MainLoop()
     
     sys.exit(1)
