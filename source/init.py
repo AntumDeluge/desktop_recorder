@@ -165,6 +165,8 @@ class Icon(wx.TaskBarIcon):
     def __init__(self):
         wx.TaskBarIcon.__init__(self)
         
+        self.options = Options(None, -1, u'Desktop Recorder Options')
+        
         self.icon_main = wx.Icon(icon_main, wx.BITMAP_TYPE_PNG)
         self.icon_rec = wx.Icon(icon_rec, wx.BITMAP_TYPE_PNG)
         self.icon_pause = wx.Icon(icon_pause, wx.BITMAP_TYPE_PNG)
@@ -583,7 +585,6 @@ class App(wx.App):
         
         # --- Icons
         self.icon = Icon()
-        self.icon.options = Options(None, -1, u'Desktop Recorder Options')
         self.icon.app = self
         
         return None
