@@ -103,11 +103,17 @@ APP_wx = wx.App()
 
 # --- Lock script so only one instance can be run
 if AppIsLocked():
-    err_msg1 = u'An instance of {} is already running.'.format(APP_name)
-    err_msg2 = u'If this is an error, remove the lock file with the following command:'
-    err_msg3 = u'rm "{}"'.format(FILE_lock)
+    # Failsafe in case executable script name has not been set
+    if not EXE_name:
+        EXE_name = u'desktop-recorder'
     
-    wx.MessageDialog(None, u'{}\n\n{}\n\n{}'.format(err_msg1, err_msg2, err_msg3), u'Cannot Start', wx.OK|wx.ICON_ERROR).ShowModal()
+    err_li1 = u'An instance of {} is already running.'.format(APP_name)
+    err_li2 = u'If this is an error, remove the lock file with the following command:'
+    err_li3 = u'rm "{}"'.format(FILE_lock)
+    err_li4 = u'Or, launch {} with the "rmlocal-lock" command:'.format(APP_name)
+    err_li5 = u'{} rmlocal-lock'.format(EXE_name)
+    
+    wx.MessageDialog(None, u'{}\n\n{}\n\t{}\n\n{}\n\t{}'.format(err_li1, err_li2, err_li3, err_li4, err_li5), u'Cannot Start', wx.OK|wx.ICON_ERROR).ShowModal()
     APP_wx.MainLoop()
     
     sys.exit(1)
