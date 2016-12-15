@@ -211,8 +211,7 @@ class Icon(wx.TaskBarIcon):
     
     
     def Exit(self, event):
-        config_data=u'[CONFIG]\n\
-video={}\n\
+        config_data=u'video={}\n\
 audio={}\n\
 filename={}\n\
 dest={}\n\
