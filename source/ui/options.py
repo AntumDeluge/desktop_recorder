@@ -149,9 +149,46 @@ class Options(wx.Dialog):
         
         # *** Event handlers *** #
         
+        wx.EVT_SHOW(self, self.OnShow)
+        
         folder_button.Bind(wx.EVT_BUTTON, self.SelectDest)
     
     
+    ## TODO: Doxygen
+    def OnShow(self, event=None):
+        if self.IsShown():
+            for C in self.panel.GetChildren():
+                c_name = C.GetName()
+                
+                if c_name in self.config:
+                    value = self.config[c_name]
+                    
+                    if isinstance(C, (wx.TextCtrl, wx.CheckBox)):
+                        C.SetValue(value)
+                        continue
+                    
+                    if isinstance(C, wx.Choice):
+                        C.SetStringSelection(value)
+        
+        else:
+            # Reset fields
+            for C in self.panel.GetChildren():
+                if isinstance(C, wx.TextCtrl):
+                    C.Clear()
+                    continue
+                
+                if isinstance(C, wx.CheckBox):
+                    C.SetValue(False)
+                    continue
+                
+                if isinstance(C, wx.Choice):
+                    C.SetSelection(0)
+        
+        if event:
+            event.Skip()
+    
+    
+    ## TODO: Doxygen
     def ParseOptions(self):
         try:
             FILE_BUFFER = open(FILE_config, u'r')
@@ -177,6 +214,7 @@ class Options(wx.Dialog):
         return True
     
     
+    ## TODO: Doxygen
     def SelectDest(self, event):
         dest = wx.DirDialog(self, defaultPath=os.getcwd(), style=wx.DD_DEFAULT_STYLE|wx.DD_DIR_MUST_EXIST|wx.DD_CHANGE_DIR)
         if dest.ShowModal() == wx.ID_OK:
