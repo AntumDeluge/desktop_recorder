@@ -15,3 +15,6 @@ OPT = wx.NewId()
 PAUSE = wx.NewId()
 REC = wx.NewId()
 STOP = wx.NewId()
+
+AUDIO = wx.NewId()
+VIDEO = wx.NewId()
