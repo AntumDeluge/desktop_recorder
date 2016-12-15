@@ -211,23 +211,6 @@ class Icon(wx.TaskBarIcon):
     
     
     def Exit(self, event):
-        config_data=u'video={}\n\
-audio={}\n\
-filename={}\n\
-dest={}\n\
-container={}\n\
-vcodec={}\n\
-quality={}\n\
-framerate={}\n\
-acodec={}\n\
-channels={}\n\
-samplerate={}\n\
-bitrate={}'.format(int(self.options.video.GetValue()), int(self.options.audio.GetValue()), self.options.filename.GetValue(), self.options.folder.GetValue(), self.options.vcontainer.GetSelection(), self.options.vcodec.GetSelection(), self.options.qual.GetValue(), self.options.frate.GetSelection(), self.options.acodec.GetSelection(), self.options.chan.GetSelection(), self.options.samplerate.GetSelection(), self.options.bitrate.GetSelection())
-        
-        FILE_BUFFER = open(FILE_config, u'w')
-        FILE_BUFFER.write(config_data)
-        FILE_BUFFER.close()
-        
         if os.path.exists(FILE_lock):
             os.remove(FILE_lock)
         
