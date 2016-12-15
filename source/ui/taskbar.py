@@ -11,10 +11,8 @@ import os, shutil, signal, subprocess, wx
 from globals            import ident as ID
 from globals.ffmpeg     import CMD_ffmpeg
 from globals.files      import FILE_lock
-from globals.icons      import ICON_main
-from globals.icons      import ICON_pause
-from globals.icons      import ICON_rec
-from globals.icons      import ICON_stop
+from globals.icons      import GetIcon
+from globals.icons      import GetImage
 from globals.settings   import APP_version_string
 from ui.options         import Options
 
@@ -26,17 +24,17 @@ class Icon(wx.TaskBarIcon):
         
         self.options = Options(None, -1, u'Desktop Recorder Options')
         
-        self.icon_main = wx.Icon(ICON_main, wx.BITMAP_TYPE_PNG)
-        self.icon_rec = wx.Icon(ICON_rec, wx.BITMAP_TYPE_PNG)
-        self.icon_pause = wx.Icon(ICON_pause, wx.BITMAP_TYPE_PNG)
-        self.icon_stop = wx.Icon(ICON_stop, wx.BITMAP_TYPE_PNG)
-        self.menu_icons = [wx.Image(ICON_main, wx.BITMAP_TYPE_PNG), wx.Image(ICON_rec, wx.BITMAP_TYPE_PNG),
-            wx.Image(ICON_pause, wx.BITMAP_TYPE_PNG), wx.Image(ICON_stop, wx.BITMAP_TYPE_PNG)]
+        self.menu_icons = [
+            GetImage(u'icon'),
+            GetImage(u'record'),
+            GetImage(u'pause'),
+            GetImage(u'stop'),
+            ]
         
         for ico in xrange(len(self.menu_icons)):
             self.menu_icons[ico].Rescale(16, 16, wx.IMAGE_QUALITY_HIGH)
         
-        self.SetIcon(self.icon_stop, u'Desktop Recorder')
+        self.SetIcon(GetIcon(u'stop'), u'Desktop Recorder')
         
         # --- Processes for ffmpeg
         self.P1 = None
@@ -97,7 +95,7 @@ class Icon(wx.TaskBarIcon):
     ## Displays an about dialog
     def ShowInfo(self, event):
         about = wx.AboutDialogInfo()
-        about.SetIcon(self.icon_main)
+        about.SetIcon(GetIcon(u'icon'))
         about.SetName(u'Desktop Recorder')
         about.SetVersion(APP_version_string)
         about.SetCopyright(u'(c) 2012 Jordan Irwin')
@@ -157,7 +155,7 @@ WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
         self.menu.Enable(ID.PAUSE, False)
         self.menu.Enable(ID.STOP, False)
         self.menu.Enable(ID.EXIT, True)
-        self.SetIcon(self.icon_stop)
+        self.SetIcon(GetIcon(u'stop'))
         self.options.panel.Enable()
     
     
@@ -248,7 +246,7 @@ WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
         self.menu.Enable(ID.PAUSE, True)
         self.menu.Enable(ID.STOP, True)
         self.menu.Enable(ID.EXIT, False)
-        self.SetIcon(self.icon_rec)
+        self.SetIcon(GetIcon(u'record'))
     
     
     ## Pauses recording
@@ -262,7 +260,7 @@ WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
         self.IsPaused = True
         self.menu.Enable(ID.REC, True)
         self.menu.Enable(ID.PAUSE, False)
-        self.SetIcon(self.icon_pause)
+        self.SetIcon(GetIcon(u'pause'))
     
     
     ## Shows/Hides the options window

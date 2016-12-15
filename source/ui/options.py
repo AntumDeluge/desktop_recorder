@@ -14,7 +14,7 @@ from globals.ffmpeg import no_x264
 from globals.ffmpeg import no_xvid
 from globals.files  import FILE_lock
 from globals.files  import FILE_options
-from globals.icons  import ICON_main
+from globals.icons  import GetIcon
 from globals.paths  import PATH_confdir
 from globals.paths  import PATH_home
 
@@ -26,7 +26,7 @@ class Options(wx.Dialog):
         
         self.Show(False)
         
-        self.SetIcon(wx.Icon(ICON_main, wx.BITMAP_TYPE_PNG))
+        self.SetIcon(GetIcon(u'icon'))
         
         # TODO: Use ffmpeg to find available containers
         vcontainers = (u'avi', u'mkv', u'flv', u'ogg')
