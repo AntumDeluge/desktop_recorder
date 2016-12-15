@@ -19,7 +19,7 @@ FILE_settings = u'{}/settings'.format(PATH_root)
 
 def GetAppInfo(key_search):
     if not os.path.isfile(FILE_settings):
-        print(u'Warning: App settings file does not exists: {}'.format(FILE_settings))
+        print(u'Error: App settings file does not exists: {}'.format(FILE_settings))
         return None
     
     FILE_BUFFER = open(FILE_settings)
@@ -49,15 +49,16 @@ APP_version_rel = None
 APP_version_dev = None
 
 # Setting up integer app version
-if u'.' in APP_version_string:
-    for V in APP_version_string.split(u'.'):
-        if V.isnumeric():
-            APP_version.append(int(V))
-            continue
-        
-        APP_version.append(V)
-
-elif APP_version_string.isnumeric():
-    APP_version.append(int(APP_version_string))
-
-APP_version = tuple(APP_version)
+if APP_version_string:
+    if u'.' in APP_version_string:
+        for V in APP_version_string.split(u'.'):
+            if V.isnumeric():
+                APP_version.append(int(V))
+                continue
+            
+            APP_version.append(V)
+    
+    elif APP_version_string.isnumeric():
+        APP_version.append(int(APP_version_string))
+    
+    APP_version = tuple(APP_version)
