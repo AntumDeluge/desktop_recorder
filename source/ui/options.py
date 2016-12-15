@@ -195,13 +195,23 @@ class Options(wx.Dialog):
             options = FILE_BUFFER.read().split(u'\n')
             FILE_BUFFER.close()
             
-            for o in options:
-                o = o.split(u'=')
-                try:
-                    self.config[o[0]] = int(o[1])
-                
-                except ValueError:
-                    self.config[o[0]] = o[1]
+            for LI in options:
+                if u'=' in LI:
+                    split_index = LI.index(u'=')
+                    
+                    key = LI[:split_index]
+                    value = LI[split_index+1:]
+                    
+                    # Boolean types
+                    if value.lower() in (u'true', u'false'):
+                        self.config[key] = value.lower() == u'true'
+                        continue
+                    
+                    if value.isnumeric():
+                        self.config[key] = int(value)
+                        continue
+                    
+                    self.config[key] = value
         
         except IndexError:
             wx.MessageDialog(None, u'Possible corrupted configuration file.\n\nTry deleting it: rm ~/.config/desktop_recorder/config', u'Error', wx.OK|wx.ICON_ERROR).ShowModal()
@@ -210,6 +220,12 @@ class Options(wx.Dialog):
                 os.remove(FILE_lock)
             
             return False
+        
+        # DEBUG START
+        print(u'DEBUGGING:')
+        for C in self.config:
+            print(u'\nKey: {}\nValue: {}\nType: {}'.format(C, self.config[C], type(self.config[C])))
+        # DEBUG END
         
         return True
     
