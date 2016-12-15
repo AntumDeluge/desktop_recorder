@@ -17,6 +17,7 @@ from globals.paths  import PATH_confdir
 from globals.paths  import PATH_home
 
 
+## TODO: Doxygen
 class Options(wx.Dialog):
     def __init__(self, parent, ID, title):
         wx.Dialog.__init__(self, parent, ID, title, size=(300, 450))
@@ -45,38 +46,53 @@ class Options(wx.Dialog):
         
         self.config = {}
         
+        if wx.MAJOR_VERSION > 2:
+            PANEL_BORDER = wx.BORDER_THEME
+        
+        else:
+            PANEL_BORDER = wx.BORDER_MASK
+        
+        # *** Video *** #
+        
         chk_video = wx.CheckBox(self, label=u'Include Video', name=u'video')
         chk_video.default = True
         
-        sel_vcodec = wx.Choice(self, choices=vcodecs, name=u'vcodec')
+        pnl_video = wx.Panel(self, style=PANEL_BORDER)
+        
+        sel_vcodec = wx.Choice(pnl_video, choices=vcodecs, name=u'vcodec')
         sel_vcodec.default = u'libtheora'
         
-        ti_quality = wx.TextCtrl(self, name=u'quality')
+        ti_quality = wx.TextCtrl(pnl_video, name=u'quality')
         ti_quality.default = u'-1'
         
-        sel_framerate = wx.Choice(self, choices=framerates, name=u'framerate')
+        sel_framerate = wx.Choice(pnl_video, choices=framerates, name=u'framerate')
         sel_framerate.default = u'30'
         
-        txt_vcontainer = wx.StaticText(self, label=u'Container')
-        sel_vcontainer = wx.Choice(self, choices=vcontainers, name=u'container')
+        sel_vcontainer = wx.Choice(pnl_video, choices=vcontainers, name=u'container')
         sel_vcontainer.default = u'avi'
+        
+        # *** Audio *** #
         
         chk_audio = wx.CheckBox(self, label=u'Include Audio', name=u'audio')
         chk_audio.default = True
         
-        sel_acodec = wx.Choice(self, choices=acodecs, name=u'acodec')
+        pnl_audio = wx.Panel(self, style=PANEL_BORDER)
+        
+        sel_acodec = wx.Choice(pnl_audio, choices=acodecs, name=u'acodec')
         sel_acodec.default = u'libmp3lame'
         
-        spin_channels = wx.SpinCtrl(self, name=u'channels')
+        spin_channels = wx.SpinCtrl(pnl_audio, name=u'channels')
         spin_channels.default = 1
         
-        sel_samplerate = wx.Choice(self, choices=samplerates, name=u'samplerate')
+        sel_samplerate = wx.Choice(pnl_audio, choices=samplerates, name=u'samplerate')
         sel_samplerate.default = u'44100'
         
-        sel_bitrate = wx.Choice(self, choices=bitrates, name=u'bitrate')
+        sel_bitrate = wx.Choice(pnl_audio, choices=bitrates, name=u'bitrate')
         sel_bitrate.default = u'128k'
         
-        txt_filename = wx.StaticText(self, label=u'Filename')
+        # *** Output *** #
+        
+        #txt_filename = wx.StaticText(self, label=u'Filename')
         ti_filename = wx.TextCtrl(self, name=u'filename')
         ti_filename.default = u'out'
         
@@ -86,76 +102,70 @@ class Options(wx.Dialog):
         
         # *** Layout *** #
         
-        vcodec_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        vcodec_sizer.Add(wx.StaticText(self, label=u'Video Codec'), 0, wx.ALIGN_CENTER)
-        vcodec_sizer.Add(sel_vcodec, 0)
+        lyt_video = wx.GridBagSizer()
         
-        qual_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        qual_sizer.Add(wx.StaticText(self, label=u'Quality'), 0, wx.ALIGN_CENTER)
-        qual_sizer.Add(ti_quality, 1, wx.EXPAND)
+        # Row 1
+        lyt_video.Add(wx.StaticText(pnl_video, label=u'Video Codec'), (0, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.TOP, border=5)
+        lyt_video.Add(sel_vcodec, (0, 1), (1, 2), wx.TOP, 5)
         
-        frate_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        frate_sizer.Add(wx.StaticText(self, label=u'Framerate'), 0, wx.ALIGN_CENTER)
-        frate_sizer.Add(sel_framerate, 0)
-        frate_sizer.Add(wx.StaticText(self, label=u'FPS'), 0, wx.ALIGN_CENTER)
+        # Row 2
+        lyt_video.Add(wx.StaticText(pnl_video, label=u'Quality'), (1, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT, border=5)
+        lyt_video.Add(ti_quality, (1, 1), (1, 2))
         
-        vcont_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        vcont_sizer.Add(txt_vcontainer, 0, wx.ALIGN_CENTER)
-        vcont_sizer.Add(sel_vcontainer, 1, wx.EXPAND)
+        # Row 3
+        lyt_video.Add(wx.StaticText(pnl_video, label=u'Framerate'), (2, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT, border=5)
+        lyt_video.Add(sel_framerate, (2, 1))
+        lyt_video.Add(wx.StaticText(pnl_video, label=u'FPS'), (2, 2), flag=wx.ALIGN_CENTER_VERTICAL)
         
-        vidbox = wx.StaticBox(self, label=u'Video')
-        vidbox_sizer = wx.StaticBoxSizer(vidbox, wx.VERTICAL)
-        vidbox_sizer.Add(chk_video, 0)
-        vidbox_sizer.Add(vcodec_sizer, 0)
-        vidbox_sizer.Add(qual_sizer, 0, wx.EXPAND)
-        vidbox_sizer.Add(frate_sizer, 0)
-        vidbox_sizer.Add(vcont_sizer, 0)
+        # Row 4
+        lyt_video.Add(wx.StaticText(pnl_video, label=u'Container'), (3, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.BOTTOM, border=5)
+        lyt_video.Add(sel_vcontainer, (3, 1), (1, 2), wx.BOTTOM, 5)
         
-        acodec_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        acodec_sizer.Add(wx.StaticText(self, label=u'Audio Codec'), 0, wx.ALIGN_CENTER)
-        acodec_sizer.Add(sel_acodec, 0)
+        pnl_video.SetAutoLayout(True)
+        pnl_video.SetSizer(lyt_video)
+        pnl_video.Layout()
         
-        chan_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        chan_sizer.Add(wx.StaticText(self, label=u'Channels'), 0, wx.ALIGN_CENTER)
-        chan_sizer.Add(spin_channels, 0)
+        lyt_audio = wx.GridBagSizer()
         
-        samp_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        samp_sizer.Add(wx.StaticText(self, label=u'Samplerate'), 0, wx.ALIGN_CENTER)
-        samp_sizer.Add(sel_samplerate, 0)
-        samp_sizer.Add(wx.StaticText(self, label=u'Hz'), 0, wx.ALIGN_CENTER)
+        # Row 1
+        lyt_audio.Add(wx.StaticText(pnl_audio, label=u'Audio Codec'), (0, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.TOP, border=5)
+        lyt_audio.Add(sel_acodec, (0, 1), (1, 2), wx.TOP, 5)
         
-        br_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        br_sizer.Add(wx.StaticText(self, label=u'Bitrate'), 0, wx.ALIGN_CENTER)
-        br_sizer.Add(sel_bitrate, 0)
+        # Row 2
+        lyt_audio.Add(wx.StaticText(pnl_audio, label=u'Channels'), (1, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT, border=5)
+        lyt_audio.Add(spin_channels, (1, 1), (1, 2))
         
-        audbox = wx.StaticBox(self, label=u'Audio')
-        audbox_sizer = wx.StaticBoxSizer(audbox, wx.VERTICAL)
-        audbox_sizer.Add(chk_audio, 0)
-        audbox_sizer.Add(acodec_sizer, 0)
-        audbox_sizer.Add(chan_sizer, 0)
-        audbox_sizer.Add(samp_sizer, 0)
-        audbox_sizer.Add(br_sizer, 0)
+        # Row 3
+        lyt_audio.Add(wx.StaticText(pnl_audio, label=u'Samplerate'), (2, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT, border=5)
+        lyt_audio.Add(sel_samplerate, (2, 1))
+        lyt_audio.Add(wx.StaticText(pnl_audio, label=u'Hz'), (2, 2), flag=wx.ALIGN_CENTER_VERTICAL)
         
-        fname_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        fname_sizer.Add(txt_filename, 0, wx.ALIGN_CENTER)
-        fname_sizer.Add(ti_filename, 1, wx.EXPAND)
+        # Row 4
+        lyt_audio.Add(wx.StaticText(pnl_audio, label=u'Bitrate'), (3, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.BOTTOM, border=5)
+        lyt_audio.Add(sel_bitrate, (3, 1), (1, 2), wx.BOTTOM, 5)
         
-        fold_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        fold_sizer.Add(btn_target, 0, wx.ALIGN_CENTER)
-        fold_sizer.Add(self.ti_target, 1, wx.EXPAND)
+        pnl_audio.SetAutoLayout(True)
+        pnl_audio.SetSizer(lyt_audio)
+        pnl_audio.Layout()
         
-        misc_box = wx.StaticBox(self, label=u'Misc')
-        misc_sizer = wx.StaticBoxSizer(misc_box, wx.VERTICAL)
-        misc_sizer.Add(fname_sizer, 0, wx.EXPAND)
-        misc_sizer.Add(fold_sizer, 0, wx.EXPAND)
+        lyt_misc = wx.FlexGridSizer(2, vgap=5)
+        lyt_misc.AddGrowableCol(1)
         
-        main_sizer = wx.BoxSizer(wx.VERTICAL)
-        main_sizer.Add(vidbox_sizer, 0, wx.EXPAND)
-        main_sizer.Add(audbox_sizer, 0, wx.EXPAND)
-        main_sizer.Add(misc_sizer, 0, wx.EXPAND)
+        lyt_misc.Add(wx.StaticText(self, label=u'Filename'), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT, border=3)
+        lyt_misc.Add(ti_filename, flag=wx.EXPAND)
+        lyt_misc.Add(btn_target, flag=wx.EXPAND)
+        lyt_misc.Add(self.ti_target, flag=wx.EXPAND)
+        
+        lyt_main = wx.BoxSizer(wx.VERTICAL)
+        
+        lyt_main.Add(chk_video, flag=wx.TOP|wx.LEFT, border=7)
+        lyt_main.Add(pnl_video, flag=wx.EXPAND|wx.LEFT|wx.RIGHT, border=7)
+        lyt_main.Add(chk_audio, flag=wx.TOP|wx.LEFT, border=7)
+        lyt_main.Add(pnl_audio, flag=wx.EXPAND|wx.LEFT|wx.RIGHT, border=7)
+        lyt_main.Add(lyt_misc, flag=wx.EXPAND|wx.TOP|wx.LEFT|wx.RIGHT, border=5)
         
         self.SetAutoLayout(True)
-        self.SetSizer(main_sizer)
+        self.SetSizer(lyt_main)
         self.Layout()
         
         # *** Event handlers *** #
