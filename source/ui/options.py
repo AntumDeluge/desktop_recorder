@@ -42,22 +42,22 @@ class Options(wx.Dialog):
         
         self.icon_main = wx.Icon(ICON_main, wx.BITMAP_TYPE_PNG)
         
-        self.panel = wx.Panel(self, -1)
+        self.panel = wx.Panel(self)
         
         self.SetIcon(self.icon_main)
         
-        self.video = wx.CheckBox(self.panel, -1, u'Include Video')
+        self.video = wx.CheckBox(self.panel, label=u'Include Video')
         
         self.vcodec = wx.Choice(self.panel, choices=self.vcodecs)
         
-        self.qual = wx.TextCtrl(self.panel, -1)
+        self.qual = wx.TextCtrl(self.panel)
         
         self.frate = wx.Choice(self.panel, choices=self.framerates)
         
-        vcontain_txt = wx.StaticText(self.panel, -1, u'Container')
+        vcontain_txt = wx.StaticText(self.panel, label=u'Container')
         self.vcontainer = wx.Choice(self.panel, choices=self.vcontainers)
         
-        self.audio = wx.CheckBox(self.panel, -1, u'Include Audio')
+        self.audio = wx.CheckBox(self.panel, label=u'Include Audio')
         
         self.acodec = wx.Choice(self.panel, choices=self.acodecs)
         
@@ -67,32 +67,32 @@ class Options(wx.Dialog):
         
         self.bitrate = wx.Choice(self.panel, choices=self.bitrates)
         
-        filename_txt = wx.StaticText(self.panel, -1, u'Filename')
-        self.filename = wx.TextCtrl(self.panel, -1)
+        filename_txt = wx.StaticText(self.panel, label=u'Filename')
+        self.filename = wx.TextCtrl(self.panel)
         
-        folder_button = wx.Button(self.panel, -1, u'Folder')
-        self.folder = wx.TextCtrl(self.panel, -1)
+        folder_button = wx.Button(self.panel, label=u'Folder')
+        self.folder = wx.TextCtrl(self.panel)
         
         # *** Layout *** #
         
         vcodec_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        vcodec_sizer.Add(wx.StaticText(self.panel, -1, u'Video Codec'), 0, wx.ALIGN_CENTER)
+        vcodec_sizer.Add(wx.StaticText(self.panel, label=u'Video Codec'), 0, wx.ALIGN_CENTER)
         vcodec_sizer.Add(self.vcodec, 0)
         
         qual_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        qual_sizer.Add(wx.StaticText(self.panel, -1, u'Quality'), 0, wx.ALIGN_CENTER)
+        qual_sizer.Add(wx.StaticText(self.panel, label=u'Quality'), 0, wx.ALIGN_CENTER)
         qual_sizer.Add(self.qual, 1, wx.EXPAND)
         
         frate_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        frate_sizer.Add(wx.StaticText(self.panel, -1, u'Framerate'), 0, wx.ALIGN_CENTER)
+        frate_sizer.Add(wx.StaticText(self.panel, label=u'Framerate'), 0, wx.ALIGN_CENTER)
         frate_sizer.Add(self.frate, 0)
-        frate_sizer.Add(wx.StaticText(self.panel, -1, u'FPS'), 0, wx.ALIGN_CENTER)
+        frate_sizer.Add(wx.StaticText(self.panel, label=u'FPS'), 0, wx.ALIGN_CENTER)
         
         vcont_sizer = wx.BoxSizer(wx.HORIZONTAL)
         vcont_sizer.Add(vcontain_txt, 0, wx.ALIGN_CENTER)
         vcont_sizer.Add(self.vcontainer, 1, wx.EXPAND)
         
-        vidbox = wx.StaticBox(self.panel, -1, u'Video')
+        vidbox = wx.StaticBox(self.panel, label=u'Video')
         vidbox_sizer = wx.StaticBoxSizer(vidbox, wx.VERTICAL)
         vidbox_sizer.Add(self.video, 0)
         vidbox_sizer.Add(vcodec_sizer, 0)
@@ -101,23 +101,23 @@ class Options(wx.Dialog):
         vidbox_sizer.Add(vcont_sizer, 0)
         
         acodec_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        acodec_sizer.Add(wx.StaticText(self.panel, -1, u'Audio Codec'), 0, wx.ALIGN_CENTER)
+        acodec_sizer.Add(wx.StaticText(self.panel, label=u'Audio Codec'), 0, wx.ALIGN_CENTER)
         acodec_sizer.Add(self.acodec, 0)
         
         chan_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        chan_sizer.Add(wx.StaticText(self.panel, -1, u'Channels'), 0, wx.ALIGN_CENTER)
+        chan_sizer.Add(wx.StaticText(self.panel, label=u'Channels'), 0, wx.ALIGN_CENTER)
         chan_sizer.Add(self.chan, 0)
         
         samp_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        samp_sizer.Add(wx.StaticText(self.panel, -1, u'Samplerate'), 0, wx.ALIGN_CENTER)
+        samp_sizer.Add(wx.StaticText(self.panel, label=u'Samplerate'), 0, wx.ALIGN_CENTER)
         samp_sizer.Add(self.samplerate, 0)
-        samp_sizer.Add(wx.StaticText(self.panel, -1, u'Hz'), 0, wx.ALIGN_CENTER)
+        samp_sizer.Add(wx.StaticText(self.panel, label=u'Hz'), 0, wx.ALIGN_CENTER)
         
         br_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        br_sizer.Add(wx.StaticText(self.panel, -1, u'Bitrate'), 0, wx.ALIGN_CENTER)
+        br_sizer.Add(wx.StaticText(self.panel, label=u'Bitrate'), 0, wx.ALIGN_CENTER)
         br_sizer.Add(self.bitrate, 0)
         
-        audbox = wx.StaticBox(self.panel, -1, u'Audio')
+        audbox = wx.StaticBox(self.panel, label=u'Audio')
         audbox_sizer = wx.StaticBoxSizer(audbox, wx.VERTICAL)
         audbox_sizer.Add(self.audio, 0)
         audbox_sizer.Add(acodec_sizer, 0)
@@ -133,7 +133,7 @@ class Options(wx.Dialog):
         fold_sizer.Add(folder_button, 0, wx.ALIGN_CENTER)
         fold_sizer.Add(self.folder, 1, wx.EXPAND)
         
-        misc_box = wx.StaticBox(self.panel, -1, u'Misc')
+        misc_box = wx.StaticBox(self.panel, label=u'Misc')
         misc_sizer = wx.StaticBoxSizer(misc_box, wx.VERTICAL)
         misc_sizer.Add(fname_sizer, 0, wx.EXPAND)
         misc_sizer.Add(fold_sizer, 0, wx.EXPAND)
