@@ -21,6 +21,7 @@ import errno, os, shutil, signal, subprocess, wx
 from subprocess import PIPE
 
 from globals.commandline    import args
+from globals.paths          import PATH_confdir
 from globals.settings       import EXE_name
 from globals.settings       import GetAppInfo
 
@@ -29,6 +30,35 @@ if not EXE_name:
     EXE_name = os.path.basename(__file__)
 
 VERSION = GetAppInfo(u'VERSION')
+
+
+deleted = False
+deletefile = None
+for A in args:
+    if A.startswith(u'rmlocal-'):
+        deletefile = u'{}/{}'.format(PATH_confdir, A.split(u'-')[1])
+        
+        if not os.path.exists(deletefile):
+            print(u'Error: Cannot delete non-existent file: {}'.format(deletefile))
+            sys.exit(errno.ENOENT)
+        
+        if os.path.isdir(deletefile):
+            shutil.rmtree(deletefile)
+        
+        else:
+            # This should throw an exception if the path is a directory & somehow wasn't removed by shutil
+            os.remove(deletefile)
+        
+        deleted = True
+
+if deleted:
+    # DEBUG LINE
+    print(u'Exiting after delete ...')
+    
+    sys.exit(0)
+
+# Remove from memory
+del deleted, deletefile
 
 
 if u'-v' in args or u'--version' in args:
@@ -57,7 +87,6 @@ if no_x264:
 
 
 from globals.paths import FILE_config
-from globals.paths import PATH_confdir
 from globals.paths import PATH_home
 from globals.paths import PATH_icons
 
