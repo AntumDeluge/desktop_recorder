@@ -10,11 +10,11 @@ import os, shutil, signal, subprocess, wx
 
 from globals            import ident as ID
 from globals.ffmpeg     import CMD_ffmpeg
+from globals.files      import FILE_lock
 from globals.icons      import ICON_main
 from globals.icons      import ICON_pause
 from globals.icons      import ICON_rec
 from globals.icons      import ICON_stop
-from globals.paths      import FILE_lock
 from globals.settings   import APP_version_string
 from ui.options         import Options
 

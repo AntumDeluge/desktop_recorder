@@ -12,9 +12,9 @@ from globals        import ident as ID
 from globals.ffmpeg import GetCodecs
 from globals.ffmpeg import no_x264
 from globals.ffmpeg import no_xvid
+from globals.files  import FILE_config
+from globals.files  import FILE_lock
 from globals.icons  import ICON_main
-from globals.paths  import FILE_config
-from globals.paths  import FILE_lock
 from globals.paths  import PATH_confdir
 from globals.paths  import PATH_home
 

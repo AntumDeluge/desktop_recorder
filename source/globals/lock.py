@@ -8,7 +8,7 @@
 
 import os
 
-from globals.paths import FILE_lock
+from globals.files import FILE_lock
 
 
 ## Checks if app is locked
