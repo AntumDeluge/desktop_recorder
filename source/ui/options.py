@@ -50,7 +50,7 @@ class Options(wx.Dialog):
         
         vcodecs = tuple(vcodecs)
         
-        self.config = {}
+        self.options = {}
         
         if wx.MAJOR_VERSION > 2:
             PANEL_BORDER = wx.BORDER_THEME
@@ -208,7 +208,7 @@ class Options(wx.Dialog):
         # *** Actions *** #
         
         if not os.path.isfile(FILE_options):
-            self.WriteDefaultConfig()
+            self.WriteDefaultOptions()
         
         self.ParseOptions()
         
@@ -224,8 +224,8 @@ class Options(wx.Dialog):
             for C in field_list:
                 c_name = C.GetName()
                 
-                if c_name in self.config:
-                    value = self.config[c_name]
+                if c_name in self.options:
+                    value = self.options[c_name]
                     
                     if isinstance(C, (wx.TextCtrl, wx.CheckBox, wx.SpinCtrl)):
                         C.SetValue(value)
@@ -240,31 +240,31 @@ class Options(wx.Dialog):
                         C.SetStringSelection(value)
         
         else:
-            # Set & write config when window is hidden
+            # Set & write options when window is hidden
             for C in field_list:
                 c_name = C.GetName()
                 
                 if isinstance(C, wx.TextCtrl):
-                    self.config[c_name] = C.GetValue()
+                    self.options[c_name] = C.GetValue()
                     
                     # Reset field
                     C.Clear()
                     continue
                 
                 if isinstance(C, (wx.CheckBox, wx.SpinCtrl)):
-                    self.config[c_name] = C.GetValue()
+                    self.options[c_name] = C.GetValue()
                     
                     # Reset field
                     C.SetValue(C.default)
                     continue
                 
                 if isinstance(C, wx.Choice):
-                    self.config[c_name] = C.GetStringSelection()
+                    self.options[c_name] = C.GetStringSelection()
                     
                     # Reset field
                     C.SetSelection(0)
             
-            self.WriteConfig()
+            self.WriteOptions()
         
         if event:
             event.Skip()
@@ -286,18 +286,18 @@ class Options(wx.Dialog):
                     
                     # Boolean types
                     if value.lower() in (u'true', u'false'):
-                        self.config[key] = value.lower() == u'true'
+                        self.options[key] = value.lower() == u'true'
                         continue
                     
                     # Integer types
                     if value.isnumeric():
-                        self.config[key] = int(value)
+                        self.options[key] = int(value)
                         continue
                     
-                    self.config[key] = value
+                    self.options[key] = value
         
         except IndexError:
-            wx.MessageDialog(None, u'Possible corrupted configuration file.\n\nTry deleting it: rm "{}"'.format(FILE_options), u'Error', wx.OK|wx.ICON_ERROR).ShowModal()
+            wx.MessageDialog(None, u'Possible corrupted options file.\n\nTry deleting it: rm "{}"'.format(FILE_options), u'Error', wx.OK|wx.ICON_ERROR).ShowModal()
             
             # ???: Not sure why this is called here (should use UnlockApp())
             if os.path.exists(FILE_lock):
@@ -361,22 +361,22 @@ class Options(wx.Dialog):
     
     ## Writes the options values to the options file
     #  
-    #  If the options list is empty, uses the standard option list (self.config)
+    #  If the options list is empty, uses the standard option list (self.options)
     #  
     #  \param opts_list
     #    \b \e tuple|list : List of strings in key=value format
     #  \return
     #    \b \e bool : True if successfully wrote to options file
-    def WriteConfig(self, opts_list=[]):
+    def WriteOptions(self, opts_list=[]):
         if not os.path.isdir(PATH_confdir):
             os.makedirs(PATH_confdir)
         
         if not opts_list:
-            for OPT in self.config:
-                opts_list.append(u'{}={}'.format(OPT, self.config[OPT]))
+            for OPT in self.options:
+                opts_list.append(u'{}={}'.format(OPT, self.options[OPT]))
         
         if opts_list:
-            print(u'Writing to config ...')
+            print(u'\nWriting to {} ...'.format(FILE_options))
             
             FILE_BUFFER = open(FILE_options, u'w')
             FILE_BUFFER.write(u'\n'.join(opts_list))
@@ -387,11 +387,11 @@ class Options(wx.Dialog):
         return False
     
     
-    ## Retrieves default field values & calls WriteConfig()
+    ## Retrieves default field values & calls WriteOptions()
     #  
     #  \return
     #    \b \e bool : True if successfully wrote to options file
-    def WriteDefaultConfig(self):
+    def WriteDefaultOptions(self):
         # The children types that we are getting 'default' value from
         usable_types = (
             wx.CheckBox,
@@ -405,4 +405,4 @@ class Options(wx.Dialog):
             if isinstance(C, usable_types):
                 opts_list.append(u'{}={}'.format(C.GetName(), C.default))
         
-        return self.WriteConfig(opts_list)
+        return self.WriteOptions(opts_list)
