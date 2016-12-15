@@ -93,7 +93,7 @@ if not os.path.isfile(FILE_config):
     if not os.path.isdir(PATH_confdir):
         os.mkdir(PATH_confdir)
     
-    data = u'video=1\n\
+    config_data = u'video=1\n\
 audio=1\n\
 filename=out\n\
 dest={}\n\
@@ -107,7 +107,7 @@ samplerate=1\n\
 bitrate=2'.format(PATH_home)
     
     FILE_BUFFER = open(FILE_config, u'w')
-    FILE_BUFFER.write(data)
+    FILE_BUFFER.write(config_data)
     FILE_BUFFER.close()
 
 
@@ -202,7 +202,7 @@ class Icon(wx.TaskBarIcon):
         self.PopupMenu(self.menu)
     
     def Exit(self, event):
-        data=u'[CONFIG]\n\
+        config_data=u'[CONFIG]\n\
 video={}\n\
 audio={}\n\
 filename={}\n\
@@ -217,7 +217,7 @@ samplerate={}\n\
 bitrate={}'.format(int(self.options.video.GetValue()), int(self.options.audio.GetValue()), self.options.filename.GetValue(), self.options.folder.GetValue(), self.options.vcontainer.GetSelection(), self.options.vcodec.GetSelection(), self.options.qual.GetValue(), self.options.frate.GetSelection(), self.options.acodec.GetSelection(), self.options.chan.GetSelection(), self.options.samplerate.GetSelection(), self.options.bitrate.GetSelection())
         
         FILE_BUFFER = open(u'{}/config'.format(PATH_confdir), u'w')
-        FILE_BUFFER.write(data)
+        FILE_BUFFER.write(config_data)
         FILE_BUFFER.close()
         
         self.app.ExitMainLoop()
