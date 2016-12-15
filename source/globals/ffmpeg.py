@@ -20,7 +20,10 @@ from subprocess import STDOUT
 #  \return
 #    \b \e unicode|str : Absolute path to executable or None if not found
 def GetExecutable(cmd):
-    output, returncode  = subprocess.Popen([u'which', cmd,], stdout=PIPE, stderr=STDOUT).communicate()
+    output, returncode = subprocess.Popen((u'which', cmd,), stdout=PIPE, stderr=STDOUT).communicate()
+    
+    # FIXME: subprocess is adding newline at end of output
+    output = output.rstrip(u'\n')
     
     if returncode:
         return None
