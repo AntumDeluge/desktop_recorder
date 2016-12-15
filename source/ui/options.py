@@ -14,6 +14,7 @@ from globals.icons  import ICON_main
 from globals.paths  import FILE_config
 from globals.paths  import FILE_lock
 from globals.paths  import PATH_confdir
+from globals.paths  import PATH_home
 
 
 class Options(wx.Dialog):
@@ -39,7 +40,6 @@ class Options(wx.Dialog):
         self.framerates = (u'15', u'23.98', u'24', u'24.975', u'25', u'29.97', u'30', u'50', u'60')
         
         self.config = {}
-        self.ParseOptions()
         
         self.icon_main = wx.Icon(ICON_main, wx.BITMAP_TYPE_PNG)
         
@@ -51,31 +51,40 @@ class Options(wx.Dialog):
         self.video.default = True
         
         self.vcodec = wx.Choice(self.panel, choices=self.vcodecs, name=u'vcodec')
+        self.vcodec.default = u'libtheora'
         
         self.qual = wx.TextCtrl(self.panel, name=u'quality')
+        self.qual.default = u'-1'
         
         self.frate = wx.Choice(self.panel, choices=self.framerates, name=u'framerate')
+        self.frate.default = u'30'
         
         vcontain_txt = wx.StaticText(self.panel, label=u'Container')
         self.vcontainer = wx.Choice(self.panel, choices=self.vcontainers, name=u'container')
+        self.vcontainer.default = u'avi'
         
         self.audio = wx.CheckBox(self.panel, label=u'Include Audio', name=u'audio')
         self.audio.default = True
         
         self.acodec = wx.Choice(self.panel, choices=self.acodecs, name=u'acodec')
+        self.acodec.default = u'libmp3lame'
         
         self.chan = wx.SpinCtrl(self.panel, name=u'channels')
         self.chan.default = 1
         
         self.samplerate = wx.Choice(self.panel, choices=self.samplerates, name=u'samplerate')
+        self.samplerate.default = u'44100'
         
         self.bitrate = wx.Choice(self.panel, choices=self.bitrates, name=u'bitrate')
+        self.bitrate.default = u'128k'
         
         filename_txt = wx.StaticText(self.panel, label=u'Filename')
         self.filename = wx.TextCtrl(self.panel, name=u'filename')
+        self.filename.default = u'out'
         
         folder_button = wx.Button(self.panel, label=u'Folder')
         self.folder = wx.TextCtrl(self.panel, name=u'dest')
+        self.folder.default = u'{}/Videos'.format(PATH_home)
         
         # *** Layout *** #
         
@@ -156,6 +165,13 @@ class Options(wx.Dialog):
         wx.EVT_SHOW(self, self.OnShow)
         
         folder_button.Bind(wx.EVT_BUTTON, self.SelectDest)
+        
+        # *** Actions *** #
+        
+        if not os.path.isfile(FILE_config):
+            self.WriteDefaultConfig()
+        
+        self.ParseOptions()
     
     
     ## TODO: Doxygen
@@ -261,13 +277,13 @@ class Options(wx.Dialog):
     
     
     ## TODO: Doxygen
-    def WriteConfig(self):
+    def WriteConfig(self, opts_list=[]):
         if not os.path.isdir(PATH_confdir):
             os.makedirs(PATH_confdir)
         
-        opts_list = []
-        for OPT in self.config:
-            opts_list.append(u'{}={}'.format(OPT, self.config[OPT]))
+        if not opts_list:
+            for OPT in self.config:
+                opts_list.append(u'{}={}'.format(OPT, self.config[OPT]))
         
         if opts_list:
             print(u'Writing to config ...')
@@ -279,3 +295,21 @@ class Options(wx.Dialog):
             return True
         
         return False
+    
+    
+    ## TODO: Doxygen
+    def WriteDefaultConfig(self):
+        # The children types that we are getting 'default' value from
+        usable_types = (
+            wx.CheckBox,
+            wx.Choice,
+            wx.SpinCtrl,
+            wx.TextCtrl,
+            )
+        
+        opts_list = []
+        for C in self.panel.GetChildren():
+            if isinstance(C, usable_types):
+                opts_list.append(u'{}={}'.format(C.GetName(), C.default))
+        
+        return self.WriteConfig(opts_list)

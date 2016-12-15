@@ -68,32 +68,7 @@ if not CMD_ffmpeg:
 print(u'Found ffmpeg executable: {}'.format(CMD_ffmpeg))
 
 
-from globals.paths  import FILE_config
 from globals.paths  import FILE_lock
-from globals.paths  import PATH_home
-
-
-# --- Create config file
-if not os.path.isfile(FILE_config):
-    if not os.path.isdir(PATH_confdir):
-        os.mkdir(PATH_confdir)
-    
-    config_data = u'video=True\n\
-audio=True\n\
-filename=out\n\
-dest={}/Videos\n\
-container=avi\n\
-vcodec=libtheora\n\
-quality=-1\n\
-framerate=30\n\
-acodec=libmp3lame\n\
-channels=1\n\
-samplerate=44100\n\
-bitrate=128k'.format(PATH_home)
-    
-    FILE_BUFFER = open(FILE_config, u'w')
-    FILE_BUFFER.write(config_data)
-    FILE_BUFFER.close()
 
 
 locked = os.path.exists(FILE_lock)
