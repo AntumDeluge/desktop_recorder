@@ -82,14 +82,14 @@ if not os.path.isfile(FILE_config):
 audio=True\n\
 filename=out\n\
 dest={}/Videos\n\
-container=0\n\
-vcodec=0\n\
+container=avi\n\
+vcodec=libtheora\n\
 quality=-1\n\
-framerate=6\n\
-acodec=0\n\
-channels=0\n\
-samplerate=1\n\
-bitrate=2'.format(PATH_home)
+framerate=30\n\
+acodec=libmp3lame\n\
+channels=1\n\
+samplerate=44100\n\
+bitrate=128k'.format(PATH_home)
     
     FILE_BUFFER = open(FILE_config, u'w')
     FILE_BUFFER.write(config_data)

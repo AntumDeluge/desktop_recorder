@@ -170,7 +170,7 @@ class Options(wx.Dialog):
                     
                     # TODO: Use string value instead of index integer???
                     if isinstance(C, wx.Choice):
-                        C.SetSelection(value)
+                        C.SetStringSelection(value)
         
         else:
             # Set & write config when window is hidden
@@ -192,8 +192,7 @@ class Options(wx.Dialog):
                     continue
                 
                 if isinstance(C, wx.Choice):
-                    # TODO: Use string value instead of index integer???
-                    self.config[c_name] = C.GetSelection()
+                    self.config[c_name] = C.GetStringSelection()
                     
                     # Reset field
                     C.SetSelection(0)
@@ -221,10 +220,6 @@ class Options(wx.Dialog):
                     # Boolean types
                     if value.lower() in (u'true', u'false'):
                         self.config[key] = value.lower() == u'true'
-                        continue
-                    
-                    if value.isnumeric():
-                        self.config[key] = int(value)
                         continue
                     
                     self.config[key] = value
