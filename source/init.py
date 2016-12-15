@@ -236,7 +236,7 @@ channels={}\n\
 samplerate={}\n\
 bitrate={}'.format(int(self.options.video.GetValue()), int(self.options.audio.GetValue()), self.options.filename.GetValue(), self.options.folder.GetValue(), self.options.vcontainer.GetSelection(), self.options.vcodec.GetSelection(), self.options.qual.GetValue(), self.options.frate.GetSelection(), self.options.acodec.GetSelection(), self.options.chan.GetSelection(), self.options.samplerate.GetSelection(), self.options.bitrate.GetSelection())
         
-        FILE_BUFFER = open(u'{}/config'.format(PATH_confdir), u'w')
+        FILE_BUFFER = open(FILE_config, u'w')
         FILE_BUFFER.write(config_data)
         FILE_BUFFER.close()
         
@@ -547,7 +547,7 @@ class Options(wx.Dialog):
     
     def ParseOptions(self):
         try:
-            FILE_BUFFER = open(u'{}/config'.format(PATH_confdir), u'r')
+            FILE_BUFFER = open(FILE_config, u'r')
             options = FILE_BUFFER.read().split(u'\n')[1:]
             FILE_BUFFER.close()
             
