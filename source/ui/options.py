@@ -13,6 +13,7 @@ from globals.ffmpeg import no_xvid
 from globals.icons  import ICON_main
 from globals.paths  import FILE_config
 from globals.paths  import FILE_lock
+from globals.paths  import PATH_confdir
 
 
 class Options(wx.Dialog):
@@ -172,18 +173,32 @@ class Options(wx.Dialog):
                         C.SetSelection(value)
         
         else:
-            # Reset fields
+            # Set & write config when window is hidden
             for C in self.panel.GetChildren():
+                c_name = C.GetName()
+                
                 if isinstance(C, wx.TextCtrl):
+                    self.config[c_name] = C.GetValue()
+                    
+                    # Reset field
                     C.Clear()
                     continue
                 
                 if isinstance(C, wx.CheckBox):
+                    self.config[c_name] = C.GetValue()
+                    
+                    # Reset field
                     C.SetValue(False)
                     continue
                 
                 if isinstance(C, wx.Choice):
+                    # TODO: Use string value instead of index integer???
+                    self.config[c_name] = C.GetSelection()
+                    
+                    # Reset field
                     C.SetSelection(0)
+            
+            self.WriteConfig()
         
         if event:
             event.Skip()
@@ -236,3 +251,24 @@ class Options(wx.Dialog):
         dest = wx.DirDialog(self, defaultPath=os.getcwd(), style=wx.DD_DEFAULT_STYLE|wx.DD_DIR_MUST_EXIST|wx.DD_CHANGE_DIR)
         if dest.ShowModal() == wx.ID_OK:
             self.folder.SetValue(dest.GetPath())
+    
+    
+    ## TODO: Doxygen
+    def WriteConfig(self):
+        if not os.path.isdir(PATH_confdir):
+            os.makedirs(PATH_confdir)
+        
+        opts_list = []
+        for OPT in self.config:
+            opts_list.append(u'{}={}'.format(OPT, self.config[OPT]))
+        
+        if opts_list:
+            print(u'Writing to config ...')
+            
+            FILE_BUFFER = open(FILE_config, u'w')
+            FILE_BUFFER.write(u'\n'.join(opts_list))
+            FILE_BUFFER.close()
+            
+            return True
+        
+        return False
