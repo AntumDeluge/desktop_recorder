@@ -9,5 +9,5 @@
 from globals.paths import PATH_confdir
 
 
-FILE_config = u'{}/config'.format(PATH_confdir)
 FILE_lock = u'{}/lock'.format(PATH_confdir)
+FILE_options = u'{}/options'.format(PATH_confdir)

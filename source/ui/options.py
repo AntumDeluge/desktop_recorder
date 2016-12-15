@@ -12,8 +12,8 @@ from globals        import ident as ID
 from globals.ffmpeg import GetCodecs
 from globals.ffmpeg import no_x264
 from globals.ffmpeg import no_xvid
-from globals.files  import FILE_config
 from globals.files  import FILE_lock
+from globals.files  import FILE_options
 from globals.icons  import ICON_main
 from globals.paths  import PATH_confdir
 from globals.paths  import PATH_home
@@ -207,7 +207,7 @@ class Options(wx.Dialog):
         
         # *** Actions *** #
         
-        if not os.path.isfile(FILE_config):
+        if not os.path.isfile(FILE_options):
             self.WriteDefaultConfig()
         
         self.ParseOptions()
@@ -273,7 +273,7 @@ class Options(wx.Dialog):
     ## Reads the options file & sets value for each field
     def ParseOptions(self):
         try:
-            FILE_BUFFER = open(FILE_config, u'r')
+            FILE_BUFFER = open(FILE_options, u'r')
             options = FILE_BUFFER.read().split(u'\n')
             FILE_BUFFER.close()
             
@@ -297,7 +297,7 @@ class Options(wx.Dialog):
                     self.config[key] = value
         
         except IndexError:
-            wx.MessageDialog(None, u'Possible corrupted configuration file.\n\nTry deleting it: rm "{}"'.format(FILE_config), u'Error', wx.OK|wx.ICON_ERROR).ShowModal()
+            wx.MessageDialog(None, u'Possible corrupted configuration file.\n\nTry deleting it: rm "{}"'.format(FILE_options), u'Error', wx.OK|wx.ICON_ERROR).ShowModal()
             
             # ???: Not sure why this is called here (should use UnlockApp())
             if os.path.exists(FILE_lock):
@@ -378,7 +378,7 @@ class Options(wx.Dialog):
         if opts_list:
             print(u'Writing to config ...')
             
-            FILE_BUFFER = open(FILE_config, u'w')
+            FILE_BUFFER = open(FILE_options, u'w')
             FILE_BUFFER.write(u'\n'.join(opts_list))
             FILE_BUFFER.close()
             
