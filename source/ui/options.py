@@ -217,6 +217,14 @@ class Options(wx.Dialog):
         self.ToggleOptions()
     
     
+    ## Ensure that options are saved when app exits
+    #  
+    #  FIXME: wx 2.8 emits EVT_SHOW when app closes,
+    #  so self.WriteOptions is called twice.
+    def __del__(self):
+        self.WriteOptions()
+    
+    
     ## Actions to take when the Options window if shown/hidden
     def OnShow(self, event=None):
         field_list = list(self.GetChildren()) + list(self.pnl_video.GetChildren()) + list(self.pnl_audio.GetChildren())
