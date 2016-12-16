@@ -7,6 +7,7 @@
 
 
 import os, wx
+from wx.combo import OwnerDrawnComboBox
 
 from custom.choice  import Choice
 from globals        import ident as ID
@@ -105,7 +106,7 @@ class Options(wx.Dialog):
         sel_samplerate = Choice(self.pnl_audio, choices=samplerates, name=u'samplerate')
         sel_samplerate.default = u'44100'
         
-        sel_bitrate = Choice(self.pnl_audio, choices=bitrates, name=u'bitrate')
+        sel_bitrate = OwnerDrawnComboBox(self.pnl_audio, choices=bitrates, name=u'bitrate')
         sel_bitrate.default = u'128k'
         
         # *** Output *** #
@@ -160,7 +161,7 @@ class Options(wx.Dialog):
         
         # Row 4
         lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Bitrate'), (3, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.BOTTOM, border=5)
-        lyt_audio.Add(sel_bitrate, (3, 1), (1, 2), wx.BOTTOM, 5)
+        lyt_audio.Add(sel_bitrate, (3, 1), (1, 2), wx.EXPAND|wx.BOTTOM, 5)
         
         self.pnl_audio.SetAutoLayout(True)
         self.pnl_audio.SetSizer(lyt_audio)
@@ -207,6 +208,8 @@ class Options(wx.Dialog):
         
         # Disables fields if check boxes unchecked
         self.ToggleOptions()
+        
+        self.SetMinSize(self.GetSize())
     
     
     ## Ensure that options are saved when app exits
