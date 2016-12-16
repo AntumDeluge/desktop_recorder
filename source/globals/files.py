@@ -6,11 +6,13 @@
 # See: LICENSE.txt
 
 
-import os
+import codecs, os
 
 from globals.paths import PATH_confdir
 from globals.paths import PATH_root
 
+
+ENCODING=u'utf-8'
 
 FILE_lock = u'{}/lock'.format(PATH_confdir)
 FILE_options = u'{}/options'.format(PATH_confdir)
@@ -40,7 +42,9 @@ def WriteFile(filename, contents):
     if isinstance(contents, (tuple, list,)):
         contents = u'\n'.join(contents)
     
-    FILE_BUFFER = open(filename, u'w')
+    print(u'DEBUG: Writing to file: {}'.format(filename))
+    
+    FILE_BUFFER = codecs.open(filename, u'w', encoding=ENCODING)
     
     if contents != None:
         FILE_BUFFER.write(contents)
@@ -73,7 +77,7 @@ def WriteEmptyFile(filename):
 #    \b \e string : Path to file to be read
 #  \param lines
 #    \b \e bool : If True, returned vale will be a line separated tuple
-def ReadFile(filename, lines=True):
+def ReadFile(filename, split=True):
     # Look for file in app root directory if 'filename' is not a path
     if u'/' not in filename:
         filename = u'{}/{}'.format(PATH_root, filename)
@@ -85,11 +89,12 @@ def ReadFile(filename, lines=True):
     
     print(u'DEBUG: Reading file: {}'.format(filename))
     
-    FILE_BUFFER = open(filename, u'r')
-    contents = FILE_BUFFER.read().strip(u' \t\n')
+    FILE_BUFFER = codecs.open(filename, u'r', encoding=ENCODING)
+    # contents is joined into a string so whitespace & empty lines can be stripped
+    contents = u'\n'.join(FILE_BUFFER).strip(u' \t\n')
     FILE_BUFFER.close()
     
-    if lines:
+    if split:
         contents = contents.split(u'\n')
     
     return contents
