@@ -213,12 +213,12 @@ class Options(wx.Dialog):
         lyt_page1 = wx.BoxSizer(wx.VERTICAL)
         
         lyt_page1.Add(self.chk_video)
-        lyt_page1.Add(self.pnl_video)
+        lyt_page1.Add(self.pnl_video, 1, wx.EXPAND)
         
         lyt_page2 = wx.BoxSizer(wx.VERTICAL)
         
         lyt_page2.Add(self.chk_audio)
-        lyt_page2.Add(self.pnl_audio)
+        lyt_page2.Add(self.pnl_audio, 1, wx.EXPAND)
         
         for page, sizer in ((page1, lyt_page1,), (page2, lyt_page2,)):
             page.SetAutoLayout(True)
