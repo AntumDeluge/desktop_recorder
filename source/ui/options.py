@@ -13,6 +13,7 @@ from custom.choice  import Choice
 from globals        import ident as ID
 from globals.ffmpeg import GetContainers
 from globals.ffmpeg import GetEncoders
+from globals.ffmpeg import GetInputDevices
 from globals.files  import FILE_lock
 from globals.files  import FILE_options
 from globals.icons  import GetIcon
@@ -28,6 +29,10 @@ class Options(wx.Dialog):
         self.Show(False)
         
         self.SetIcon(GetIcon(u'logo'))
+        
+        input_devices = GetInputDevices()
+        vdevices = input_devices[u'video']
+        adevices = input_devices[u'audio']
         
         containers = GetContainers()
         
@@ -48,12 +53,19 @@ class Options(wx.Dialog):
         else:
             PANEL_BORDER = wx.BORDER_MASK
         
+        tabs = wx.Notebook(self)
+        page1 = wx.Panel(tabs)
+        page2 = wx.Panel(tabs)
+        
+        tabs.AddPage(page1, u'Video')
+        tabs.AddPage(page2, u'Audio')
+        
         # *** Video *** #
         
-        self.chk_video = wx.CheckBox(self, ID.VIDEO, u'Include Video', name=u'video')
+        self.chk_video = wx.CheckBox(page1, ID.VIDEO, u'Include Video', name=u'video')
         self.chk_video.default = True
         
-        self.pnl_video = wx.Panel(self, style=PANEL_BORDER)
+        self.pnl_video = wx.Panel(page1, style=PANEL_BORDER)
         
         sel_vcodec = Choice(self.pnl_video, choices=sorted(vcodecs), name=u'vcodec')
         
@@ -80,10 +92,10 @@ class Options(wx.Dialog):
         
         # *** Audio *** #
         
-        self.chk_audio = wx.CheckBox(self, ID.AUDIO, u'Include Audio', name=u'audio')
+        self.chk_audio = wx.CheckBox(page2, ID.AUDIO, u'Include Audio', name=u'audio')
         self.chk_audio.default = True
         
-        self.pnl_audio = wx.Panel(self, style=PANEL_BORDER)
+        self.pnl_audio = wx.Panel(page2, style=PANEL_BORDER)
         
         sel_acodec = Choice(self.pnl_audio, choices=sorted(acodecs), name=u'acodec')
         
@@ -110,7 +122,6 @@ class Options(wx.Dialog):
         
         # *** Output *** #
         
-        #txt_filename = wx.StaticText(self, label=u'Filename')
         ti_filename = wx.TextCtrl(self, name=u'filename')
         ti_filename.default = u'out'
         
@@ -169,6 +180,21 @@ class Options(wx.Dialog):
         self.pnl_audio.SetSizer(lyt_audio)
         self.pnl_audio.Layout()
         
+        lyt_page1 = wx.BoxSizer(wx.VERTICAL)
+        
+        lyt_page1.Add(self.chk_video)
+        lyt_page1.Add(self.pnl_video)
+        
+        lyt_page2 = wx.BoxSizer(wx.VERTICAL)
+        
+        lyt_page2.Add(self.chk_audio)
+        lyt_page2.Add(self.pnl_audio)
+        
+        for page, sizer in ((page1, lyt_page1,), (page2, lyt_page2,)):
+            page.SetAutoLayout(True)
+            page.SetSizer(sizer)
+            page.Layout()
+        
         lyt_misc = wx.GridBagSizer()
         lyt_misc.SetCols(3)
         lyt_misc.AddGrowableCol(1)
@@ -182,11 +208,13 @@ class Options(wx.Dialog):
         
         lyt_main = wx.BoxSizer(wx.VERTICAL)
         
-        lyt_main.Add(self.chk_video, flag=wx.TOP|wx.LEFT, border=7)
-        lyt_main.Add(self.pnl_video, flag=wx.EXPAND|wx.LEFT|wx.RIGHT, border=7)
-        lyt_main.Add(self.chk_audio, flag=wx.TOP|wx.LEFT, border=7)
-        lyt_main.Add(self.pnl_audio, flag=wx.EXPAND|wx.LEFT|wx.RIGHT, border=7)
-        lyt_main.Add(lyt_misc, flag=wx.EXPAND|wx.TOP|wx.LEFT|wx.RIGHT, border=5)
+        #lyt_main.Add(self.chk_video, flag=wx.TOP|wx.LEFT, border=7)
+        #lyt_main.Add(self.pnl_video, flag=wx.EXPAND|wx.LEFT|wx.RIGHT, border=7)
+        #lyt_main.Add(self.chk_audio, flag=wx.TOP|wx.LEFT, border=7)
+        #lyt_main.Add(self.pnl_audio, flag=wx.EXPAND|wx.LEFT|wx.RIGHT, border=7)
+        lyt_main.Add(tabs, 1, wx.EXPAND)
+        lyt_main.Add(lyt_misc, flag=wx.EXPAND|wx.ALL, border=5)
+        lyt_main.AddSpacer(5)
         
         self.SetAutoLayout(True)
         self.SetSizer(lyt_main)
