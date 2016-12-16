@@ -90,6 +90,12 @@ if not wxversion._selected:
 
 import wx
 
+from globals import ident as ID
+
+# Set EXIT & ABOUT IDs to wx values so icons show in context menu
+ID.ABOUT = wx.ID_ABOUT
+ID.EXIT = wx.ID_EXIT
+
 from globals.files      import FILE_lock
 from globals.lock       import AppIsLocked
 from globals.lock       import LockApp
