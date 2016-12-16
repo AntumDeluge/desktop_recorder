@@ -50,7 +50,7 @@ if no_x264:
 
 
 ## Retrieves a list of input devices
-def GetFFmpegList(switch, t_filter=None, t_index=0):
+def GetFFmpegList(switch, t_filter=None, t_index=None):
     if not CMD_ffmpeg:
         print(u'Error: Cannot find ffmpeg executable')
         
@@ -77,8 +77,13 @@ def GetFFmpegList(switch, t_filter=None, t_index=0):
             LI[1] = LI[1].split(u',')[0]
         
         if t_filter:
-            if LI[t_index] == t_filter:
-                output_list.append(LI[1])
+            if t_index == None:
+                if t_filter in LI[0]:
+                    output_list.append(LI[1])
+            
+            else:
+                if LI[t_index] == t_filter:
+                    output_list.append(LI[1])
             
             continue
         
@@ -89,9 +94,23 @@ def GetFFmpegList(switch, t_filter=None, t_index=0):
 
 ## Get a list of containers available for file output
 def GetContainers():
-    containers = GetFFmpegList(u'formats', u'E')
+    mpeg_formats = (
+        u'mpeg',
+        u'mpeg1video',
+        u'mpeg2video',
+        u'mpegts',
+        u'mpegtsraw',
+        u'mpegvideo',
+        )
+    containers = list(GetFFmpegList(u'formats', u'E'))
     
-    return containers
+    if u'mpg' not in containers:
+        for MPG in mpeg_formats:
+            if MPG in containers:
+                containers.append(u'mpg')
+                break
+    
+    return tuple(sorted(containers))
 
 
 ## Retrieves a list of usable encoders from FFmpeg
@@ -119,14 +138,3 @@ def GetInputDevices():
     devices = GetFFmpegList(u'devices', u'D')
     
     return devices
-
-
-def GetInputDevicesOld():
-    devices = GetFFmpegList(u'devices')
-    
-    device_list = []
-    for D in devices:
-        if u'D' in D[0]:
-            device_list.append(D[1])
-    
-    return tuple(sorted(device_list))
