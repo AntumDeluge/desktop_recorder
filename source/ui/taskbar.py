@@ -24,7 +24,7 @@ class Icon(wx.TaskBarIcon):
         wx.TaskBarIcon.__init__(self)
         
         # FIXME: Icon looks ugly in wx 2.8
-        self.SetIcon(GetIcon(u'stop'), u'Desktop Recorder')
+        self.SetIcon(u'stop', u'Desktop Recorder')
         
         self.options = Options(None, -1, u'Desktop Recorder Options')
         
@@ -198,6 +198,25 @@ class Icon(wx.TaskBarIcon):
         self.menu.Enable(ID.STOP, True)
         self.menu.Enable(ID.EXIT, False)
         self.SetIcon(GetIcon(u'record'))
+    
+    
+    ## Overrides inherited method to try & fix appearance of icon in older wx version
+    #  
+    #  \param icon
+    #    \b \e string or wx.Icon : Icon to be displayed in task bar
+    #  \param tooltip
+    #    \b \e string : Tooltip to display when cursor hovers over taskbar icon
+    #  \return
+    #    \b \e bool : True if icon set
+    def SetIcon(self, icon, tooltip=wx.EmptyString):
+        if isinstance(icon, (unicode, str)):
+            if wx.MAJOR_VERSION > 2:
+                icon = GetIcon(icon)
+            
+            else:
+                icon = GetIcon(icon, 24, 24)
+        
+        return wx.TaskBarIcon.SetIcon(self, icon, tooltip)
     
     
     ## Displays an about dialog
