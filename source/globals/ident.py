@@ -6,19 +6,31 @@
 # See: LICENSE.txt
 
 
-import wx
+# NOTE: Do not import wx here unless init script is modified to call wxversion.select sooner
 
 
-ABOUT = wx.ID_ABOUT
-EXIT = wx.ID_EXIT
-OPT = wx.NewId()
-PAUSE = wx.NewId()
-REC = wx.NewId()
-STOP = wx.NewId()
+next_id = 2500
 
-AUDIO = wx.NewId()
-VIDEO = wx.NewId()
+def NewId():
+    global next_id
+    
+    new_id = next_id
+    next_id += 1
+    
+    return new_id
+    
+
+
+ABOUT = NewId()
+EXIT = NewId()
+OPT = NewId()
+PAUSE = NewId()
+REC = NewId()
+STOP = NewId()
+
+AUDIO = NewId()
+VIDEO = NewId()
 
 # Installed status
-SYSTEM = wx.NewId()
-PORTABLE = wx.NewId()
+SYSTEM = NewId()
+PORTABLE = NewId()
