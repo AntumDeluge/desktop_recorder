@@ -8,6 +8,7 @@
 
 import os, wx
 
+from custom.choice  import Choice
 from globals        import ident as ID
 from globals.ffmpeg import GetCodecs
 from globals.ffmpeg import no_x264
@@ -65,7 +66,7 @@ class Options(wx.Dialog):
         
         self.pnl_video = wx.Panel(self, style=PANEL_BORDER)
         
-        sel_vcodec = wx.Choice(self.pnl_video, choices=sorted(vcodecs), name=u'vcodec')
+        sel_vcodec = Choice(self.pnl_video, choices=sorted(vcodecs), name=u'vcodec')
         
         # Override default video codec list
         if u'video' in codecs:
@@ -82,10 +83,10 @@ class Options(wx.Dialog):
         ti_quality = wx.TextCtrl(self.pnl_video, name=u'quality')
         ti_quality.default = u'-1'
         
-        sel_framerate = wx.Choice(self.pnl_video, choices=framerates, name=u'framerate')
+        sel_framerate = Choice(self.pnl_video, choices=framerates, name=u'framerate')
         sel_framerate.default = u'30'
         
-        sel_vcontainer = wx.Choice(self.pnl_video, choices=vcontainers, name=u'container')
+        sel_vcontainer = Choice(self.pnl_video, choices=vcontainers, name=u'container')
         sel_vcontainer.default = u'avi'
         
         # *** Audio *** #
@@ -95,7 +96,7 @@ class Options(wx.Dialog):
         
         self.pnl_audio = wx.Panel(self, style=PANEL_BORDER)
         
-        sel_acodec = wx.Choice(self.pnl_audio, choices=sorted(acodecs), name=u'acodec')
+        sel_acodec = Choice(self.pnl_audio, choices=sorted(acodecs), name=u'acodec')
         
         # Override default audio codec list
         if u'audio' in codecs:
@@ -112,10 +113,10 @@ class Options(wx.Dialog):
         spin_channels = wx.SpinCtrl(self.pnl_audio, name=u'channels')
         spin_channels.default = 1
         
-        sel_samplerate = wx.Choice(self.pnl_audio, choices=samplerates, name=u'samplerate')
+        sel_samplerate = Choice(self.pnl_audio, choices=samplerates, name=u'samplerate')
         sel_samplerate.default = u'44100'
         
-        sel_bitrate = wx.Choice(self.pnl_audio, choices=bitrates, name=u'bitrate')
+        sel_bitrate = Choice(self.pnl_audio, choices=bitrates, name=u'bitrate')
         sel_bitrate.default = u'128k'
         
         # *** Output *** #
