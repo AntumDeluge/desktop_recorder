@@ -91,7 +91,8 @@ def ReadFile(filename, split=True):
     
     FILE_BUFFER = codecs.open(filename, u'r', encoding=ENCODING)
     # contents is joined into a string so whitespace & empty lines can be stripped
-    contents = u'\n'.join(FILE_BUFFER).strip(u' \t\n')
+    # Don't join by newline when reading from codecs.open
+    contents = u''.join(FILE_BUFFER).strip(u' \t\n')
     FILE_BUFFER.close()
     
     if split:
