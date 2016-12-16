@@ -238,10 +238,6 @@ class Options(wx.Dialog):
         
         lyt_main = wx.BoxSizer(wx.VERTICAL)
         
-        #lyt_main.Add(self.chk_video, flag=wx.TOP|wx.LEFT, border=7)
-        #lyt_main.Add(self.pnl_video, flag=wx.EXPAND|wx.LEFT|wx.RIGHT, border=7)
-        #lyt_main.Add(self.chk_audio, flag=wx.TOP|wx.LEFT, border=7)
-        #lyt_main.Add(self.pnl_audio, flag=wx.EXPAND|wx.LEFT|wx.RIGHT, border=7)
         lyt_main.Add(tabs, 1, wx.EXPAND)
         lyt_main.Add(lyt_misc, flag=wx.EXPAND|wx.ALL, border=5)
         lyt_main.AddSpacer(5)
