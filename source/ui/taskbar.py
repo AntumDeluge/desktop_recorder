@@ -23,6 +23,8 @@ class Icon(wx.TaskBarIcon):
     def __init__(self):
         wx.TaskBarIcon.__init__(self)
         
+        self.SetIcon(GetIcon(u'stop'), u'Desktop Recorder')
+        
         self.options = Options(None, -1, u'Desktop Recorder Options')
         
         self.menu_icons = [
@@ -34,8 +36,6 @@ class Icon(wx.TaskBarIcon):
         
         for ico in xrange(len(self.menu_icons)):
             self.menu_icons[ico].Rescale(16, 16, wx.IMAGE_QUALITY_HIGH)
-        
-        self.SetIcon(GetIcon(u'stop'), u'Desktop Recorder')
         
         # --- Processes for ffmpeg
         self.P1 = None
