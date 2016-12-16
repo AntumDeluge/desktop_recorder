@@ -30,9 +30,9 @@ class Options(wx.Dialog):
         
         self.SetIcon(GetIcon(u'logo'))
         
-        input_devices = GetInputDevices()
-        vdevices = input_devices[u'video']
-        adevices = input_devices[u'audio']
+        devices = GetInputDevices()
+        vdevices, vdev_defs = devices[u'video']
+        adevices, adev_defs = devices[u'audio']
         
         containers = GetContainers()
         
@@ -67,6 +67,11 @@ class Options(wx.Dialog):
         
         self.pnl_video = wx.Panel(page1, style=PANEL_BORDER)
         
+        sel_vdevice = Choice(self.pnl_video, choices=vdevices, name=u'vdevice')
+        sel_vdevice.defs = vdev_defs
+        sel_vdevice.SetSelection(0)
+        sel_vdevice.SetToolTipString(sel_vdevice.defs[0])
+        
         sel_vcodec = Choice(self.pnl_video, choices=sorted(vcodecs), name=u'vcodec')
         
         # Override default video codec list
@@ -96,6 +101,11 @@ class Options(wx.Dialog):
         self.chk_audio.default = True
         
         self.pnl_audio = wx.Panel(page2, style=PANEL_BORDER)
+        
+        sel_adevice = Choice(self.pnl_audio, choices=adevices, name=u'adevice')
+        sel_adevice.defs = adev_defs
+        sel_adevice.SetSelection(0)
+        sel_adevice.SetToolTipString(sel_adevice.defs[0])
         
         sel_acodec = Choice(self.pnl_audio, choices=sorted(acodecs), name=u'acodec')
         
@@ -134,24 +144,35 @@ class Options(wx.Dialog):
         
         # *** Layout *** #
         
+        ALIGN_TEXT = wx.ALIGN_CENTER_VERTICAL|wx.LEFT
+        
         lyt_video = wx.GridBagSizer()
         
         # Row 1
-        lyt_video.Add(wx.StaticText(self.pnl_video, label=u'Video Codec'), (0, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.TOP, border=5)
-        lyt_video.Add(sel_vcodec, (0, 1), (1, 2), wx.TOP, 5)
+        row = 0
+        lyt_video.Add(wx.StaticText(self.pnl_video, label=u'Input'), (row, 0), flag=ALIGN_TEXT|wx.TOP, border=5)
+        lyt_video.Add(sel_vdevice, (row, 1), (1, 2), wx.TOP, 5)
         
         # Row 2
-        lyt_video.Add(wx.StaticText(self.pnl_video, label=u'Quality'), (1, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT, border=5)
-        lyt_video.Add(ti_quality, (1, 1), (1, 2))
+        row += 1
+        lyt_video.Add(wx.StaticText(self.pnl_video, label=u'Video Codec'), (row, 0), flag=ALIGN_TEXT, border=5)
+        lyt_video.Add(sel_vcodec, (row, 1), (1, 2))
         
         # Row 3
-        lyt_video.Add(wx.StaticText(self.pnl_video, label=u'Bitrate'), (2, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT, border=5)
-        lyt_video.Add(sel_vbitrate, (2, 1), (1, 2), wx.EXPAND)
+        row += 1
+        lyt_video.Add(wx.StaticText(self.pnl_video, label=u'Quality'), (row, 0), flag=ALIGN_TEXT, border=5)
+        lyt_video.Add(ti_quality, (row, 1), (1, 2))
         
         # Row 4
-        lyt_video.Add(wx.StaticText(self.pnl_video, label=u'Framerate'), (3, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT, border=5)
-        lyt_video.Add(sel_framerate, (3, 1), flag=wx.BOTTOM, border=5)
-        lyt_video.Add(wx.StaticText(self.pnl_video, label=u'FPS'), (3, 2), flag=wx.ALIGN_CENTER_VERTICAL)
+        row += 1
+        lyt_video.Add(wx.StaticText(self.pnl_video, label=u'Bitrate'), (row, 0), flag=ALIGN_TEXT, border=5)
+        lyt_video.Add(sel_vbitrate, (row, 1), (1, 2), wx.EXPAND)
+        
+        # Row 5
+        row += 1
+        lyt_video.Add(wx.StaticText(self.pnl_video, label=u'Framerate'), (row, 0), flag=ALIGN_TEXT, border=5)
+        lyt_video.Add(sel_framerate, (row, 1), flag=wx.BOTTOM, border=5)
+        lyt_video.Add(wx.StaticText(self.pnl_video, label=u'FPS'), (row, 2), flag=wx.ALIGN_CENTER_VERTICAL)
         
         self.pnl_video.SetAutoLayout(True)
         self.pnl_video.SetSizer(lyt_video)
@@ -160,21 +181,30 @@ class Options(wx.Dialog):
         lyt_audio = wx.GridBagSizer()
         
         # Row 1
-        lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Audio Codec'), (0, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.TOP, border=5)
-        lyt_audio.Add(sel_acodec, (0, 1), (1, 2), wx.TOP, 5)
+        row = 0
+        lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Input'), (row, 0), flag=ALIGN_TEXT|wx.TOP, border=5)
+        lyt_audio.Add(sel_adevice, (row, 1), (1, 2), wx.TOP, 5)
         
         # Row 2
-        lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Channels'), (1, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT, border=5)
-        lyt_audio.Add(spin_channels, (1, 1), (1, 2))
+        row += 1
+        lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Audio Codec'), (row, 0), flag=ALIGN_TEXT|wx.TOP, border=5)
+        lyt_audio.Add(sel_acodec, (row, 1), (1, 2))
         
         # Row 3
-        lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Samplerate'), (2, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT, border=5)
-        lyt_audio.Add(sel_samplerate, (2, 1))
-        lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Hz'), (2, 2), flag=wx.ALIGN_CENTER_VERTICAL)
+        row += 1
+        lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Channels'), (row, 0), flag=ALIGN_TEXT, border=5)
+        lyt_audio.Add(spin_channels, (row, 1), (1, 2))
         
         # Row 4
-        lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Bitrate'), (3, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.BOTTOM, border=5)
-        lyt_audio.Add(sel_bitrate, (3, 1), (1, 2), wx.EXPAND|wx.BOTTOM, 5)
+        row += 1
+        lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Samplerate'), (row, 0), flag=ALIGN_TEXT, border=5)
+        lyt_audio.Add(sel_samplerate, (row, 1))
+        lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Hz'), (row, 2), flag=wx.ALIGN_CENTER_VERTICAL)
+        
+        # Row 5
+        row += 1
+        lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Bitrate'), (row, 0), flag=ALIGN_TEXT|wx.BOTTOM, border=5)
+        lyt_audio.Add(sel_bitrate, (row, 1), (1, 2), wx.EXPAND|wx.BOTTOM, 5)
         
         self.pnl_audio.SetAutoLayout(True)
         self.pnl_audio.SetSizer(lyt_audio)
@@ -227,6 +257,9 @@ class Options(wx.Dialog):
         self.chk_video.Bind(wx.EVT_CHECKBOX, self.ToggleOptions)
         self.chk_audio.Bind(wx.EVT_CHECKBOX, self.ToggleOptions)
         
+        for C in (sel_vdevice, sel_adevice,):
+            C.Bind(wx.EVT_CHOICE, self.OnSetDevice)
+        
         btn_target.Bind(wx.EVT_BUTTON, self.SelectDest)
         
         # *** Actions *** #
@@ -264,6 +297,13 @@ class Options(wx.Dialog):
         return self.options[u'video'] or self.options[u'audio']
     
     
+    ## Sets tooltips for device fields
+    def OnSetDevice(self, event=None):
+        if event:
+            choice = event.GetEventObject()
+            choice.SetToolTipString(choice.defs[choice.GetSelection()])
+    
+    
     ## Actions to take when the Options window if shown/hidden
     #  
     #  FIXME: These fields should be set at all times, not just when shown
@@ -281,13 +321,18 @@ class Options(wx.Dialog):
                         C.SetValue(value)
                         continue
                     
-                    # TODO: Use string value instead of index integer???
                     if isinstance(C, wx.Choice):
                         # Some wx.Choice field values are stored as integers & need to be converted to string
                         if not isinstance(value, (unicode, str)):
                             value = unicode(value)
                         
                         C.SetStringSelection(value)
+                        
+                        try:
+                            C.SetToolTipString(C.defs[C.GetSelection()])
+                        
+                        except AttributeError:
+                            pass
         
         else:
             # Set & write options when window is hidden
