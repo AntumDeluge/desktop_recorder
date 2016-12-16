@@ -52,7 +52,7 @@ if no_x264:
 ## Retrieves a list of usable codecs from FFmpeg
 def GetCodecs():
     if CMD_ffmpeg:
-        output, returncode = subprocess.Popen((CMD_ffmpeg, u'-codecs',), stdout=PIPE, stderr=STDOUT).communicate()
+        output, returncode = subprocess.Popen((CMD_ffmpeg, u'-encoders',), stdout=PIPE, stderr=STDOUT).communicate()
         
         if returncode:
             print(u'Error: Could not get codec list')
@@ -63,18 +63,19 @@ def GetCodecs():
         vcodecs = []
         acodecs = []
         for LI in reversed(output):
-            if not LI[8:].strip():
+            # Reached end of encoder list
+            if LI.strip() == u'------':
                 break
             
-            codec_name = LI[8:].split(u' ')[0]
-            codec_type = LI[3]
+            codec = LI.split(u' ')[1:3]
+            codec_type = codec[0][0]
+            codec = codec[1]
             
             if codec_type == u'V':
-                vcodecs.append(codec_name)
-                continue
+                vcodecs.append(codec)
             
-            if codec_type == u'A':
-                acodecs.append(codec_name)
+            elif codec_type == u'A':
+                acodecs.append(codec)
         
         codecs = {}
         
