@@ -72,12 +72,11 @@ class Options(wx.Dialog):
         ti_quality = wx.TextCtrl(self.pnl_video, name=u'quality')
         ti_quality.default = u'-1'
         
+        sel_vbitrate = OwnerDrawnComboBox(self.pnl_video, name=u'vbitrate')
+        sel_vbitrate.default = u''
+        
         sel_framerate = Choice(self.pnl_video, choices=framerates, name=u'framerate')
         sel_framerate.default = u'30'
-        
-        # TODO: Move outside of video options
-        self.sel_container = Choice(self.pnl_video, choices=containers, name=u'container')
-        self.sel_container.default = u'avi'
         
         # *** Audio *** #
         
@@ -114,7 +113,9 @@ class Options(wx.Dialog):
         #txt_filename = wx.StaticText(self, label=u'Filename')
         ti_filename = wx.TextCtrl(self, name=u'filename')
         ti_filename.default = u'out'
-        self.txt_extension = wx.StaticText(self)
+        
+        self.sel_container = Choice(self, choices=containers, name=u'container')
+        self.sel_container.default = u'avi'
         
         btn_target = wx.Button(self, label=u'Folder')
         self.ti_target = wx.TextCtrl(self, name=u'dest')
@@ -133,13 +134,13 @@ class Options(wx.Dialog):
         lyt_video.Add(ti_quality, (1, 1), (1, 2))
         
         # Row 3
-        lyt_video.Add(wx.StaticText(self.pnl_video, label=u'Framerate'), (2, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT, border=5)
-        lyt_video.Add(sel_framerate, (2, 1))
-        lyt_video.Add(wx.StaticText(self.pnl_video, label=u'FPS'), (2, 2), flag=wx.ALIGN_CENTER_VERTICAL)
+        lyt_video.Add(wx.StaticText(self.pnl_video, label=u'Bitrate'), (2, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT, border=5)
+        lyt_video.Add(sel_vbitrate, (2, 1), (1, 2), wx.EXPAND)
         
         # Row 4
-        lyt_video.Add(wx.StaticText(self.pnl_video, label=u'Container'), (3, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.BOTTOM, border=5)
-        lyt_video.Add(self.sel_container, (3, 1), (1, 2), wx.BOTTOM, 5)
+        lyt_video.Add(wx.StaticText(self.pnl_video, label=u'Framerate'), (3, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT, border=5)
+        lyt_video.Add(sel_framerate, (3, 1), flag=wx.BOTTOM, border=5)
+        lyt_video.Add(wx.StaticText(self.pnl_video, label=u'FPS'), (3, 2), flag=wx.ALIGN_CENTER_VERTICAL)
         
         self.pnl_video.SetAutoLayout(True)
         self.pnl_video.SetSizer(lyt_video)
@@ -168,15 +169,16 @@ class Options(wx.Dialog):
         self.pnl_audio.SetSizer(lyt_audio)
         self.pnl_audio.Layout()
         
-        lyt_misc = wx.GridBagSizer(vgap=5)
+        lyt_misc = wx.GridBagSizer()
         lyt_misc.SetCols(3)
         lyt_misc.AddGrowableCol(1)
         
-        lyt_misc.Add(wx.StaticText(self, label=u'Filename'), (0, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT, border=3)
-        lyt_misc.Add(ti_filename, (0, 1), flag=wx.EXPAND)
-        lyt_misc.Add(self.txt_extension, (0, 2), flag=wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, border=2)
-        lyt_misc.Add(btn_target, (1, 0), flag=wx.EXPAND)
-        lyt_misc.Add(self.ti_target, (1, 1), (1, 2), flag=wx.EXPAND)
+        lyt_misc.Add(wx.StaticText(self, label=u'Filename'), (0, 0), flag=wx.ALIGN_BOTTOM|wx.LEFT, border=3)
+        lyt_misc.Add(ti_filename, (1, 0), (1, 2), wx.EXPAND)
+        lyt_misc.Add(wx.StaticText(self, label=u'.'), (1, 2), flag=wx.ALIGN_CENTER_VERTICAL)
+        lyt_misc.Add(self.sel_container, (1, 3))
+        lyt_misc.Add(btn_target, (2, 0), flag=wx.TOP, border=5)
+        lyt_misc.Add(self.ti_target, (2, 1), (1, 4), wx.EXPAND|wx.TOP, 5)
         
         lyt_main = wx.BoxSizer(wx.VERTICAL)
         
@@ -196,8 +198,6 @@ class Options(wx.Dialog):
         
         self.chk_video.Bind(wx.EVT_CHECKBOX, self.ToggleOptions)
         self.chk_audio.Bind(wx.EVT_CHECKBOX, self.ToggleOptions)
-        
-        self.sel_container.Bind(wx.EVT_CHOICE, self.OnSelectContainer)
         
         btn_target.Bind(wx.EVT_BUTTON, self.SelectDest)
         
@@ -236,15 +236,6 @@ class Options(wx.Dialog):
         return self.options[u'video'] or self.options[u'audio']
     
     
-    ## Sets the file extension for output when a container is selected
-    def OnSelectContainer(self, event=None):
-        if event:
-            selector = event.GetEventObject()
-            
-            if isinstance(selector, wx.Choice):
-                return self.SetFileExtension(selector.GetStringSelection())
-    
-    
     ## Actions to take when the Options window if shown/hidden
     #  
     #  FIXME: These fields should be set at all times, not just when shown
@@ -269,9 +260,6 @@ class Options(wx.Dialog):
                             value = unicode(value)
                         
                         C.SetStringSelection(value)
-            
-            if not self.txt_extension.GetLabel():
-                self.SetFileExtension(self.sel_container.GetStringSelection())
         
         else:
             # Set & write options when window is hidden
@@ -363,17 +351,6 @@ class Options(wx.Dialog):
                 return True
         
         return False
-    
-    
-    ## Sets file extension for output filename
-    #  
-    #  TODO: Finish
-    def SetFileExtension(self, extension):
-        ret_value = self.txt_extension.SetLabel(u'.{}'.format(extension))
-        
-        self.Layout()
-        
-        return ret_value
     
     
     ## Sets the list of video codecs available from FFmpeg
