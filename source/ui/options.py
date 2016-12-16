@@ -228,6 +228,17 @@ class Options(wx.Dialog):
         self.WriteOptions()
     
     
+    ## Checks if it is safe to begin recording
+    #  
+    #  At least one of video & audio must be enabled
+    def CanRecord(self):
+        # Use live dialog window if shown
+        if self.IsShown():
+            return self.chk_video.GetValue() or self.chk_audio.GetValue()
+        
+        return self.options[u'video'] or self.options[u'audio']
+    
+    
     ## Actions to take when the Options window if shown/hidden
     def OnShow(self, event=None):
         field_list = list(self.GetChildren()) + list(self.pnl_video.GetChildren()) + list(self.pnl_audio.GetChildren())

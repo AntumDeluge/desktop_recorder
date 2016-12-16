@@ -96,6 +96,12 @@ class Icon(wx.TaskBarIcon):
     
     ## Shows a context menu when left or right clicked
     def OnClick(self, event):
+        if not self.options.CanRecord():
+            self.menu.Enable(ID.REC, False)
+        
+        else:
+            self.menu.Enable(ID.REC, True)
+        
         self.PopupMenu(self.menu)
     
     
