@@ -160,20 +160,26 @@ def GetInputDevices():
     a_keywords = (u'audio', u'a/v', u'sound', u'sdl',)
     
     v_devices = []
+    v_defs = []
     a_devices = []
+    a_defs = []
     
-    for D in devices:
+    for D, DEF in sorted(devices):
         for V in v_keywords:
-            if V in D[1].lower():
+            if V in DEF.lower():
                 v_devices.append(D)
+                v_defs.append(DEF)
+                break
         
         for A in a_keywords:
-            if A in D[1].lower():
+            if A in DEF.lower():
                 a_devices.append(D)
+                a_defs.append(DEF)
+                break
     
     devices = {
-        u'video': tuple(sorted(v_devices)),
-        u'audio': tuple(sorted(a_devices)),
+        u'video': (tuple(v_devices), tuple(v_defs)),
+        u'audio': (tuple(a_devices), tuple(a_defs)),
         }
     
     return devices
