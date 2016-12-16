@@ -82,11 +82,6 @@ class Icon(wx.TaskBarIcon):
         wx.EVT_TASKBAR_RIGHT_DOWN(self, self.OnClick)
     
     
-    ## Shows a context menu when left or right clicked
-    def OnClick(self, event):
-        self.PopupMenu(self.menu)
-    
-    
     ## Actions to take when the app exits
     def Exit(self, event):
         if os.path.exists(FILE_lock):
@@ -96,53 +91,23 @@ class Icon(wx.TaskBarIcon):
         self.Destroy()
     
     
-    ## Displays an about dialog
-    def ShowInfo(self, event):
-        about = wx.AboutDialogInfo()
-        about.SetIcon(GetIcon(u'logo'))
-        about.SetName(u'Desktop Recorder')
-        about.SetVersion(APP_version_string)
-        about.SetCopyright(u'(c) 2012 Jordan Irwin')
-        about.SetLicense(GetLicenseText())
-        about.AddDeveloper(u'Jordan Irwin')
-        wx.AboutBox(about)
+    ## Shows a context menu when left or right clicked
+    def OnClick(self, event):
+        self.PopupMenu(self.menu)
     
     
-    ## Stops recording
-    def Stop(self, event):
-        if self.options.video.GetValue() and self.options.audio.GetValue():
-            os.kill(self.P1.pid, signal.SIGINT)
-            os.kill(self.P2.pid, signal.SIGINT)
-            self.P1.wait()
-            self.P2.wait()
-            self.P3 = subprocess.call([CMD_ffmpeg, u'-y', u'-i', self.tempvid, u'-i', self.tempaud, u'-vcodec', u'copy', u'-acodec', u'copy', self.output])
+    ## Pauses recording
+    def Pause(self, event):
+        if self.options.video.GetValue():
+            os.kill(self.P1.pid, signal.SIGSTOP)
         
-        elif self.options.video.GetValue():
-            os.kill(self.P1.pid, signal.SIGINT)
-            self.P1.wait()
-            shutil.move(self.tempvid, u'{}/{}.{}'.format(self.dest, self.filename, self.vidext))
+        if self.options.audio.GetValue():
+            os.kill(self.P2.pid, signal.SIGSTOP)
         
-        elif self.options.audio.GetValue():
-            os.kill(self.P2.pid, signal.SIGINT)
-            self.P2.wait()
-            shutil.move(self.tempaud, u'{}/{}.{}'.format(self.dest, self.filename, self.audext))
-        
-        # Protect against accidentally deleting temp files
-        if os.path.isfile(self.output):
-            if os.path.isfile(self.tempvid):
-                os.remove(self.tempvid)
-            
-            if os.path.isfile(self.tempaud):
-                os.remove(self.tempaud)
-        
-        self.IsPaused = False
-        self.menu.Enable(ID.OPT, True)
+        self.IsPaused = True
         self.menu.Enable(ID.REC, True)
         self.menu.Enable(ID.PAUSE, False)
-        self.menu.Enable(ID.STOP, False)
-        self.menu.Enable(ID.EXIT, True)
-        self.SetIcon(GetIcon(u'stop'))
-        self.options.panel.Enable()
+        self.SetIcon(GetIcon(u'pause'))
     
     
     ## Begins recording
@@ -235,18 +200,53 @@ class Icon(wx.TaskBarIcon):
         self.SetIcon(GetIcon(u'record'))
     
     
-    ## Pauses recording
-    def Pause(self, event):
-        if self.options.video.GetValue():
-            os.kill(self.P1.pid, signal.SIGSTOP)
+    ## Displays an about dialog
+    def ShowInfo(self, event):
+        about = wx.AboutDialogInfo()
+        about.SetIcon(GetIcon(u'logo'))
+        about.SetName(u'Desktop Recorder')
+        about.SetVersion(APP_version_string)
+        about.SetCopyright(u'(c) 2012 Jordan Irwin')
+        about.SetLicense(GetLicenseText())
+        about.AddDeveloper(u'Jordan Irwin')
+        wx.AboutBox(about)
+    
+    
+    ## Stops recording
+    def Stop(self, event):
+        if self.options.video.GetValue() and self.options.audio.GetValue():
+            os.kill(self.P1.pid, signal.SIGINT)
+            os.kill(self.P2.pid, signal.SIGINT)
+            self.P1.wait()
+            self.P2.wait()
+            self.P3 = subprocess.call([CMD_ffmpeg, u'-y', u'-i', self.tempvid, u'-i', self.tempaud, u'-vcodec', u'copy', u'-acodec', u'copy', self.output])
         
-        if self.options.audio.GetValue():
-            os.kill(self.P2.pid, signal.SIGSTOP)
+        elif self.options.video.GetValue():
+            os.kill(self.P1.pid, signal.SIGINT)
+            self.P1.wait()
+            shutil.move(self.tempvid, u'{}/{}.{}'.format(self.dest, self.filename, self.vidext))
         
-        self.IsPaused = True
+        elif self.options.audio.GetValue():
+            os.kill(self.P2.pid, signal.SIGINT)
+            self.P2.wait()
+            shutil.move(self.tempaud, u'{}/{}.{}'.format(self.dest, self.filename, self.audext))
+        
+        # Protect against accidentally deleting temp files
+        if os.path.isfile(self.output):
+            if os.path.isfile(self.tempvid):
+                os.remove(self.tempvid)
+            
+            if os.path.isfile(self.tempaud):
+                os.remove(self.tempaud)
+        
+        self.IsPaused = False
+        self.menu.Enable(ID.OPT, True)
         self.menu.Enable(ID.REC, True)
         self.menu.Enable(ID.PAUSE, False)
-        self.SetIcon(GetIcon(u'pause'))
+        self.menu.Enable(ID.STOP, False)
+        self.menu.Enable(ID.EXIT, True)
+        self.SetIcon(GetIcon(u'stop'))
+        self.options.panel.Enable()
     
     
     ## Shows/Hides the options window
