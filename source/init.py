@@ -9,7 +9,8 @@
 
 import errno, os, shutil, sys
 
-from globals.commandline    import args, GetOption
+from globals.commandline    import args
+from globals.commandline    import GetOption
 from globals.paths          import PATH_confdir
 from globals.settings       import APP_version_string
 from globals.settings       import EXE_name
@@ -99,35 +100,29 @@ from globals.settings   import APP_name
 # Remove from memory
 del wx_compat
 
-# Main wx.App instance
-APP_wx = wx.App()
-
-# --- Lock script so only one instance can be run
-if AppIsLocked():
-    # Failsafe in case executable script name has not been set
-    if not EXE_name:
-        EXE_name = u'desktop-recorder'
-    
-    err_li1 = u'An instance of {} is already running.'.format(APP_name)
-    err_li2 = u'If this is an error, remove the lock file with the following command:'
-    err_li3 = u'rm "{}"'.format(FILE_lock)
-    err_li4 = u'Or, launch {} with the "rmlocal-lock" command:'.format(APP_name)
-    err_li5 = u'{} rmlocal-lock'.format(EXE_name)
-    
-    wx.MessageDialog(None, u'{}\n\n{}\n\t{}\n\n{}\n\t{}'.format(err_li1, err_li2, err_li3, err_li4, err_li5), u'Cannot Start', wx.OK|wx.ICON_ERROR).ShowModal()
-    APP_wx.MainLoop()
-    
-    sys.exit(1)
-
-
-import traceback
-
-from ui.taskbar import Icon
-
-
 if __name__ == u'__main__':
     app = wx.App()
+    
+    # --- Lock script so only one instance can be run
+    if AppIsLocked():
+        # Failsafe in case executable script name has not been set
+        if not EXE_name:
+            EXE_name = u'desktop-recorder'
+        
+        err_li1 = u'An instance of {} is already running.'.format(APP_name)
+        err_li2 = u'If this is an error, remove the lock file with the following command:'
+        err_li3 = u'rm "{}"'.format(FILE_lock)
+        err_li4 = u'Or, launch {} with the "rmlocal-lock" command:'.format(APP_name)
+        err_li5 = u'{} rmlocal-lock'.format(EXE_name)
+        
+        wx.MessageDialog(None, u'{}\n\n{}\n\t{}\n\n{}\n\t{}'.format(err_li1, err_li2, err_li3, err_li4, err_li5), u'Cannot Start', wx.OK|wx.ICON_ERROR).ShowModal()
+        
+        sys.exit(1)
+    
     try:
+        from ui.taskbar import Icon
+        
+        
         # FIXME: Method using processes to lock app???
         LockApp()
         
@@ -135,6 +130,9 @@ if __name__ == u'__main__':
         app.MainLoop()
     
     except:
+        import traceback
+        
+        
         UnlockApp()
         
         err_msg = u'A fatal error has occured'
