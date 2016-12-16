@@ -213,6 +213,9 @@ class Options(wx.Dialog):
         
         self.ParseOptions()
         
+        self.chk_video.SetValue(self.options[u'video'])
+        self.chk_audio.SetValue(self.options[u'audio'])
+        
         # Disables fields if check boxes unchecked
         self.ToggleOptions()
     
