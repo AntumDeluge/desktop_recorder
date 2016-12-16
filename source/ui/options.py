@@ -10,6 +10,7 @@ import os, wx
 
 from custom.choice  import Choice
 from globals        import ident as ID
+from globals.ffmpeg import GetContainers
 from globals.ffmpeg import GetEncoders
 from globals.files  import FILE_lock
 from globals.files  import FILE_options
@@ -27,10 +28,7 @@ class Options(wx.Dialog):
         
         self.SetIcon(GetIcon(u'logo'))
         
-        # TODO: Use ffmpeg to find available containers
-        vcontainers = (u'avi', u'mkv', u'flv', u'ogg')
-        acontainers = (u'mp3', u'wav', u'ogg')
-        containers = vcontainers + acontainers [:-1]
+        containers = GetContainers()
         
         # These basic lists are used if SetVideoCodecs & SetAudioCodecs fail (ordered in priority)
         vcodecs = (u'libx264', u'mpeg4', u'libxvid', u'libtheora', u'flv', u'ffvhuff', u'huffyuv')
@@ -76,7 +74,8 @@ class Options(wx.Dialog):
         sel_framerate = Choice(self.pnl_video, choices=framerates, name=u'framerate')
         sel_framerate.default = u'30'
         
-        sel_vcontainer = Choice(self.pnl_video, choices=vcontainers, name=u'container')
+        # TODO: Move outside of video options
+        sel_vcontainer = Choice(self.pnl_video, choices=containers, name=u'container')
         sel_vcontainer.default = u'avi'
         
         # *** Audio *** #
