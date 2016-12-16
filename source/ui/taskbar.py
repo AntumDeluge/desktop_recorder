@@ -13,6 +13,7 @@ from globals.ffmpeg     import CMD_ffmpeg
 from globals.files      import FILE_lock
 from globals.icons      import GetIcon
 from globals.icons      import GetImage
+from globals.license    import GetLicenseText
 from globals.settings   import APP_version_string
 from ui.options         import Options
 
@@ -99,25 +100,7 @@ class Icon(wx.TaskBarIcon):
         about.SetName(u'Desktop Recorder')
         about.SetVersion(APP_version_string)
         about.SetCopyright(u'(c) 2012 Jordan Irwin')
-        about.SetLicense(u'Copyright (c) 2012, Jordan Irwin\n\
-All rights reserved.\n\
-\n\
-Redistribution and use in source and binary forms, with or without modification, are permitted provided\n\
-that the following conditions are met:\n\
-\n\
-    - Redistributions of source code must retain the above copyright notice, this list of conditions and\n\
-      the following disclaimer.\n\
-    - Redistributions in binary form must reproduce the above copyright notice, this list of conditions\n\
-      and the following disclaimer in the documentation and/or other materials provided with the distribution.\n\
-\n\
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS\n\
-OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY\n\
-AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR\n\
-CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL\n\
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF\n\
-USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,\n\
-WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY\n\
-WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.')
+        about.SetLicense(GetLicenseText())
         about.AddDeveloper(u'Jordan Irwin')
         wx.AboutBox(about)
     
