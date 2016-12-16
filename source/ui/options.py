@@ -11,8 +11,6 @@ import os, wx
 from custom.choice  import Choice
 from globals        import ident as ID
 from globals.ffmpeg import GetEncoders
-from globals.ffmpeg import no_x264
-from globals.ffmpeg import no_xvid
 from globals.files  import FILE_lock
 from globals.files  import FILE_options
 from globals.icons  import GetIcon
@@ -35,21 +33,13 @@ class Options(wx.Dialog):
         containers = vcontainers + acontainers [:-1]
         
         # These basic lists are used if SetVideoCodecs & SetAudioCodecs fail (ordered in priority)
-        vcodecs = [u'libtheora', u'huffyuv', u'flv']
-        acodecs = (u'libmp3lame', u'libvorbis', u'pcm_s16le', u'pcm_s32le', u'flac')
+        vcodecs = (u'libx264', u'mpeg4', u'libxvid', u'libtheora', u'flv', u'ffvhuff', u'huffyuv')
+        acodecs = (u'libfdk_aac', u'aac', u'libmp3lame', u'libvorbis', u'pcm_s16le', u'libtwolame', u'flac')
         codecs = GetEncoders()
         
         samplerates = (u'22050', u'44100', u'48000')
         bitrates = (u'64k', u'96k', u'128k', u'196k', u'224k', u'320k')
         framerates = (u'15', u'23.98', u'24', u'24.975', u'25', u'29.97', u'30', u'50', u'60')
-        
-        if not no_x264:
-            vcodecs.insert(0, u'libx264')
-        
-        if not no_xvid:
-            vcodecs.insert(0, u'libxvid')
-        
-        vcodecs = tuple(vcodecs)
         
         self.options = {}
         
