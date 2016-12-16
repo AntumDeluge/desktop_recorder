@@ -80,6 +80,9 @@ class Icon(wx.TaskBarIcon):
         
         wx.EVT_TASKBAR_LEFT_DOWN(self, self.OnClick)
         wx.EVT_TASKBAR_RIGHT_DOWN(self, self.OnClick)
+        
+        # This does not seem to work with wxGtk
+        wx.EVT_TASKBAR_LEFT_DCLICK(self, self.ToggleOptions)
     
     
     ## Actions to take when the app exits
