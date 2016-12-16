@@ -76,8 +76,8 @@ class Options(wx.Dialog):
         sel_framerate.default = u'30'
         
         # TODO: Move outside of video options
-        sel_vcontainer = Choice(self.pnl_video, choices=containers, name=u'container')
-        sel_vcontainer.default = u'avi'
+        self.sel_container = Choice(self.pnl_video, choices=containers, name=u'container')
+        self.sel_container.default = u'avi'
         
         # *** Audio *** #
         
@@ -114,6 +114,7 @@ class Options(wx.Dialog):
         #txt_filename = wx.StaticText(self, label=u'Filename')
         ti_filename = wx.TextCtrl(self, name=u'filename')
         ti_filename.default = u'out'
+        self.txt_extension = wx.StaticText(self)
         
         btn_target = wx.Button(self, label=u'Folder')
         self.ti_target = wx.TextCtrl(self, name=u'dest')
@@ -138,7 +139,7 @@ class Options(wx.Dialog):
         
         # Row 4
         lyt_video.Add(wx.StaticText(self.pnl_video, label=u'Container'), (3, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.BOTTOM, border=5)
-        lyt_video.Add(sel_vcontainer, (3, 1), (1, 2), wx.BOTTOM, 5)
+        lyt_video.Add(self.sel_container, (3, 1), (1, 2), wx.BOTTOM, 5)
         
         self.pnl_video.SetAutoLayout(True)
         self.pnl_video.SetSizer(lyt_video)
@@ -167,13 +168,15 @@ class Options(wx.Dialog):
         self.pnl_audio.SetSizer(lyt_audio)
         self.pnl_audio.Layout()
         
-        lyt_misc = wx.FlexGridSizer(2, vgap=5)
+        lyt_misc = wx.GridBagSizer(vgap=5)
+        lyt_misc.SetCols(3)
         lyt_misc.AddGrowableCol(1)
         
-        lyt_misc.Add(wx.StaticText(self, label=u'Filename'), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT, border=3)
-        lyt_misc.Add(ti_filename, flag=wx.EXPAND)
-        lyt_misc.Add(btn_target, flag=wx.EXPAND)
-        lyt_misc.Add(self.ti_target, flag=wx.EXPAND)
+        lyt_misc.Add(wx.StaticText(self, label=u'Filename'), (0, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT, border=3)
+        lyt_misc.Add(ti_filename, (0, 1), flag=wx.EXPAND)
+        lyt_misc.Add(self.txt_extension, (0, 2), flag=wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, border=2)
+        lyt_misc.Add(btn_target, (1, 0), flag=wx.EXPAND)
+        lyt_misc.Add(self.ti_target, (1, 1), (1, 2), flag=wx.EXPAND)
         
         lyt_main = wx.BoxSizer(wx.VERTICAL)
         
@@ -193,6 +196,8 @@ class Options(wx.Dialog):
         
         self.chk_video.Bind(wx.EVT_CHECKBOX, self.ToggleOptions)
         self.chk_audio.Bind(wx.EVT_CHECKBOX, self.ToggleOptions)
+        
+        self.sel_container.Bind(wx.EVT_CHOICE, self.OnSelectContainer)
         
         btn_target.Bind(wx.EVT_BUTTON, self.SelectDest)
         
@@ -231,7 +236,18 @@ class Options(wx.Dialog):
         return self.options[u'video'] or self.options[u'audio']
     
     
+    ## Sets the file extension for output when a container is selected
+    def OnSelectContainer(self, event=None):
+        if event:
+            selector = event.GetEventObject()
+            
+            if isinstance(selector, wx.Choice):
+                return self.SetFileExtension(selector.GetStringSelection())
+    
+    
     ## Actions to take when the Options window if shown/hidden
+    #  
+    #  FIXME: These fields should be set at all times, not just when shown
     def OnShow(self, event=None):
         field_list = list(self.GetChildren()) + list(self.pnl_video.GetChildren()) + list(self.pnl_audio.GetChildren())
         
@@ -253,6 +269,9 @@ class Options(wx.Dialog):
                             value = unicode(value)
                         
                         C.SetStringSelection(value)
+            
+            if not self.txt_extension.GetLabel():
+                self.SetFileExtension(self.sel_container.GetStringSelection())
         
         else:
             # Set & write options when window is hidden
@@ -344,6 +363,17 @@ class Options(wx.Dialog):
                 return True
         
         return False
+    
+    
+    ## Sets file extension for output filename
+    #  
+    #  TODO: Finish
+    def SetFileExtension(self, extension):
+        ret_value = self.txt_extension.SetLabel(u'.{}'.format(extension))
+        
+        self.Layout()
+        
+        return ret_value
     
     
     ## Sets the list of video codecs available from FFmpeg
