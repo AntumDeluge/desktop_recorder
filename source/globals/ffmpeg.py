@@ -49,42 +49,84 @@ if no_x264:
     no_x264 = subprocess.call(u'{} -formats | grep -i "libx264"'.format(CMD_ffmpeg), stdout=PIPE, stderr=PIPE, shell=True)
 
 
-## Retrieves a list of usable codecs from FFmpeg
-def GetCodecs():
-    if CMD_ffmpeg:
-        output, returncode = subprocess.Popen((CMD_ffmpeg, u'-encoders',), stdout=PIPE, stderr=STDOUT).communicate()
+## Retrieves a list of input devices
+def GetFFmpegList(switch, t_filter=None, t_index=0):
+    if not CMD_ffmpeg:
+        print(u'Error: Cannot find ffmpeg executable')
         
-        if returncode:
-            print(u'Error: Could not get codec list')
-            return None
-        
-        output = output.strip(u' \t\n').split(u'\n')
-        
-        vcodecs = []
-        acodecs = []
-        for LI in reversed(output):
-            # Reached end of encoder list
-            if LI.strip() == u'------':
-                break
-            
-            codec = LI.split(u' ')[1:3]
-            codec_type = codec[0][0]
-            codec = codec[1]
-            
-            if codec_type == u'V':
-                vcodecs.append(codec)
-            
-            elif codec_type == u'A':
-                acodecs.append(codec)
-        
-        codecs = {}
-        
-        if vcodecs:
-            codecs[u'video'] = tuple(sorted(vcodecs))
-        
-        if acodecs:
-            codecs[u'audio'] = tuple(sorted(acodecs))
-        
-        return codecs
+        return
     
-    print(u'Error: Cannot find ffmpeg executable')
+    output, returncode = subprocess.Popen((CMD_ffmpeg, u'-{}'.format(switch),), stdout=PIPE, stderr=STDOUT).communicate()
+    
+    if returncode:
+        print(u'Error: Could not get list for option "-{}"'.format(switch))
+        return
+    
+    output = output.strip().split(u'\n')
+    
+    output_list = []
+    for LI in reversed(output):
+        LI = LI.strip()
+        
+        if LI[:2] == u'--':
+            break
+        
+        LI = LI.split()[:2]
+        
+        if u',' in LI[1]:
+            LI[1] = LI[1].split(u',')[0]
+        
+        if t_filter:
+            if LI[t_index] == t_filter:
+                output_list.append(LI[1])
+            
+            continue
+        
+        output_list.append(LI)
+    
+    return tuple(sorted(output_list))
+
+
+## Get a list of containers available for file output
+def GetContainers():
+    containers = GetFFmpegList(u'formats', u'E')
+    
+    return containers
+
+
+## Retrieves a list of usable encoders from FFmpeg
+def GetEncoders():
+    #codecs = GetFFmpegList(u'encoders', codec_type[0].upper())
+    codec_list = GetFFmpegList(u'encoders')
+    
+    v_codecs = []
+    a_codecs = []
+    for C in codec_list:
+        codec_type = C[0][0]
+        codec = C[1]
+        
+        if codec_type == u'V':
+            v_codecs.append(codec)
+        
+        elif codec_type == u'A':
+            a_codecs.append(codec)
+    
+    return {u'video': tuple(sorted(v_codecs)), u'audio': tuple(sorted(a_codecs))}
+
+
+## Get a list of available input devices
+def GetInputDevices():
+    devices = GetFFmpegList(u'devices', u'D')
+    
+    return devices
+
+
+def GetInputDevicesOld():
+    devices = GetFFmpegList(u'devices')
+    
+    device_list = []
+    for D in devices:
+        if u'D' in D[0]:
+            device_list.append(D[1])
+    
+    return tuple(sorted(device_list))
