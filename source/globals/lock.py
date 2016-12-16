@@ -9,6 +9,7 @@
 import os
 
 from globals.files import FILE_lock
+from globals.files import WriteEmptyFile
 
 
 ## Checks if app is locked
@@ -21,8 +22,8 @@ def LockApp():
     if AppIsLocked():
         return False
     
-    FILE_BUFFER = open(FILE_lock, u'w')
-    FILE_BUFFER.close()
+    if not WriteEmptyFile(FILE_lock):
+        return False
     
     return AppIsLocked()
 
