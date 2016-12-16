@@ -50,7 +50,7 @@ if no_x264:
 
 
 ## Retrieves a list of input devices
-def GetFFmpegList(switch, t_filter=None, t_index=None):
+def GetFFmpegList(switch, t_filter=None, t_index=None, description=False):
     if not CMD_ffmpeg:
         print(u'Error: Cannot find ffmpeg executable')
         
@@ -70,6 +70,25 @@ def GetFFmpegList(switch, t_filter=None, t_index=None):
         
         if LI[:2] == u'--':
             break
+        
+        if description:
+            LI = LI.split()
+            
+            s_types = LI[0]
+            s_name = LI[1]
+            s_desc = u' '.join(LI[2:])
+            
+            if u',' in s_name:
+                s_name = s_name.split(u',')[0]
+            
+            if t_filter and t_filter in s_types:
+                output_list.append((s_name, s_desc))
+                
+                continue
+            
+            output_list.append((s_name, s_desc,))
+            
+            continue
         
         LI = LI.split()[:2]
         
@@ -135,6 +154,26 @@ def GetEncoders():
 
 ## Get a list of available input devices
 def GetInputDevices():
-    devices = GetFFmpegList(u'devices', u'D')
+    devices = GetFFmpegList(u'devices', u'D', description=True)
+    
+    v_keywords = (u'video', u'a/v', u'dv', u'sdl', u'x11', u'screen',)
+    a_keywords = (u'audio', u'a/v', u'sound', u'sdl',)
+    
+    v_devices = []
+    a_devices = []
+    
+    for D in devices:
+        for V in v_keywords:
+            if V in D[1].lower():
+                v_devices.append(D)
+        
+        for A in a_keywords:
+            if A in D[1].lower():
+                a_devices.append(D)
+    
+    devices = {
+        u'video': tuple(sorted(v_devices)),
+        u'audio': tuple(sorted(a_devices)),
+        }
     
     return devices
