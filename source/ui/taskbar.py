@@ -23,6 +23,7 @@ class Icon(wx.TaskBarIcon):
     def __init__(self):
         wx.TaskBarIcon.__init__(self)
         
+        # FIXME: Icon looks ugly in wx 2.8
         self.SetIcon(GetIcon(u'stop'), u'Desktop Recorder')
         
         self.options = Options(None, -1, u'Desktop Recorder Options')
