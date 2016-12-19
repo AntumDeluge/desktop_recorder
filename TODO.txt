@@ -8,3 +8,8 @@
   - DrFF
   - FFDesktop
 - Add "simple" mode to show only common codecs
+- Find more ways to get screen(s) information
+  - Possible options
+    - xdpyinfo
+    - xrandr
+    - ffprobe
