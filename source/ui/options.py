@@ -15,10 +15,19 @@ from globals.ffmpeg import GetContainers
 from globals.ffmpeg import GetEncoders
 from globals.ffmpeg import GetInputDevices
 from globals.files  import FILE_lock
+from globals.files  import ReadFile
 from globals.files  import FILE_options
 from globals.icons  import GetIcon
 from globals.paths  import PATH_confdir
 from globals.paths  import PATH_home
+
+
+# These files are used for attempting retrieval of display names
+# if wx.Display.GetName fails.
+# ???: Should the log number be dynamic?
+search_files = {
+    u'/var/log/Xorg.0.log': u'Monitor name: ',
+    }
 
 
 ## Class for the options window
@@ -471,8 +480,35 @@ class Options(wx.Dialog):
         if len(self.dsp_names):
             self.dsp_names = []
         
+        sfile = None
+        sstring = None
+        for F in search_files:
+            if os.path.isfile(F):
+                sfile = ReadFile(F, False)
+                
+                if search_files[F] in sfile:
+                    sstring = search_files[F]
+                    sfile = sfile.split(u'\n')
+        
+        d_index = 0
         for D in display_list:
-            self.dsp_names.append(D.GetName())
+            d_name = D.GetName()
+            
+            if not d_name and sstring:
+                x_index = 0
+                for LI in sfile:
+                    if sstring in LI:
+                        if x_index == d_index:
+                            d_name = LI.split(sstring)[-1]
+                        
+                        x_index += 1
+                        
+                        if x_index > d_index:
+                            break
+            
+            self.dsp_names.append(d_name)
+            
+            d_index += 1
         
         self.SetDisplayName()
     
