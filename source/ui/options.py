@@ -95,6 +95,16 @@ class Options(wx.Dialog):
         sel_framerate = Choice(self.pnl_video, choices=framerates, name=u'framerate')
         sel_framerate.default = u'30'
         
+        # Can be used later for setting labe with wx.TextCtrl
+        self.dsp_names = []
+        
+        self.sel_display = Choice(self.pnl_video, name=u'display')
+        self.sel_display.default = 0
+        
+        # TODO: Use wx.EVT_CHOICE to set name value from self.dsp_names
+        self.dsp_label = wx.StaticText(self.pnl_video, label=u'Unnamed device')
+        self.dsp_label.default = self.dsp_label.GetLabel()
+        
         # *** Audio *** #
         
         self.chk_audio = wx.CheckBox(page2, ID.AUDIO, u'Include Audio', name=u'audio')
@@ -173,6 +183,12 @@ class Options(wx.Dialog):
         lyt_video.Add(wx.StaticText(self.pnl_video, label=u'Framerate'), (row, 0), flag=ALIGN_TEXT, border=5)
         lyt_video.Add(sel_framerate, (row, 1))
         lyt_video.Add(wx.StaticText(self.pnl_video, label=u'FPS'), (row, 2), flag=wx.ALIGN_CENTER_VERTICAL)
+        
+        # Row 6
+        row += 1
+        lyt_video.Add(wx.StaticText(self.pnl_video, label=u'Display'), (row, 0), flag=ALIGN_TEXT, border=5)
+        lyt_video.Add(self.sel_display, (row, 1))
+        lyt_video.Add(self.dsp_label, (row, 2), flag=ALIGN_TEXT, border=5)
         
         self.pnl_video.SetAutoLayout(True)
         self.pnl_video.SetSizer(lyt_video)
@@ -256,6 +272,8 @@ class Options(wx.Dialog):
         for C in (sel_vdevice, sel_adevice,):
             C.Bind(wx.EVT_CHOICE, self.OnSetDevice)
         
+        self.sel_display.Bind(wx.EVT_CHOICE, self.OnSetDisplay)
+        
         btn_target.Bind(wx.EVT_BUTTON, self.SelectDest)
         
         # *** Actions *** #
@@ -298,6 +316,12 @@ class Options(wx.Dialog):
         if event:
             choice = event.GetEventObject()
             choice.SetToolTipString(choice.defs[choice.GetSelection()])
+    
+    
+    ## Updates the device name label
+    def OnSetDisplay(self, event=None):
+        if event:
+            self.SetDisplayName()
     
     
     ## Actions to take when the Options window if shown/hidden
@@ -420,6 +444,36 @@ class Options(wx.Dialog):
                 return True
         
         return False
+    
+    
+    ## TODO: Doxygen
+    def SetDisplayName(self):
+        d_index = self.sel_display.GetSelection()
+        d_name = self.dsp_names[d_index]
+        
+        if not d_name:
+            d_name = u'({} {})'.format(self.dsp_label.default, d_index)
+        
+        self.dsp_label.SetLabel(d_name)
+    
+    
+    ## Sets the available displays to choose from
+    def SetDisplays(self, display_list):
+        if self.sel_display.GetCount():
+            self.sel_display.Clear()
+        
+        for X in range(len(display_list)):
+            self.sel_display.Append(unicode(X))
+        
+        self.sel_display.SetSelection(self.sel_display.default)
+        
+        if len(self.dsp_names):
+            self.dsp_names = []
+        
+        for D in display_list:
+            self.dsp_names.append(D.GetName())
+        
+        self.SetDisplayName()
     
     
     ## Sets the list of video codecs available from FFmpeg

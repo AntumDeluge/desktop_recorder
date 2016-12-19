@@ -52,6 +52,7 @@ class Icon(wx.TaskBarIcon):
         
         # Convert to tuple
         self.displays = tuple(self.displays)
+        self.options.SetDisplays(self.displays)
         
         self.menu_icons = [
             GetImage(u'logo'),
