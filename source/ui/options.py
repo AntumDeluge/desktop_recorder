@@ -150,7 +150,7 @@ class Options(wx.Dialog):
         
         # Row 1
         row = 0
-        lyt_video.Add(wx.StaticText(self.pnl_video, label=u'Input'), (row, 0), flag=ALIGN_TEXT|wx.TOP, border=5)
+        lyt_video.Add(wx.StaticText(self.pnl_video, label=u'Input Device'), (row, 0), flag=ALIGN_TEXT|wx.TOP, border=5)
         lyt_video.Add(sel_vdevice, (row, 1), (1, 2), wx.TOP, 5)
         
         # Row 2
@@ -182,7 +182,7 @@ class Options(wx.Dialog):
         
         # Row 1
         row = 0
-        lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Input'), (row, 0), flag=ALIGN_TEXT|wx.TOP, border=5)
+        lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Input Device'), (row, 0), flag=ALIGN_TEXT|wx.TOP, border=5)
         lyt_audio.Add(sel_adevice, (row, 1), (1, 2), wx.TOP, 5)
         
         # Row 2
