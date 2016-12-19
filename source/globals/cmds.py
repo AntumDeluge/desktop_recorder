@@ -19,6 +19,8 @@ from globals.debug  import pDebug
 def GetCMD(cmdname):
     output, returncode = Popen((u'which', cmdname,), stdout=PIPE, stderr=STDOUT).communicate()
     
+    # NOTE: Not sure why '\n' is appended from Popen command
+    output = output.strip(u'\n')
     if not returncode and os.access(output, os.X_OK):
         return output
     
