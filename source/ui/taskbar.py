@@ -28,6 +28,31 @@ class Icon(wx.TaskBarIcon):
         
         self.options = Options(None, -1, u'Desktop Recorder Options')
         
+        # All available displays
+        # NOTE: wx 3.0 : wx.Display.GetCurrentMode doesn't seem to be accurate for getting display size
+        # NOTE: wx 3.0 : wx.Display.IsPrimary seems to return the left-most screen as primary
+        self.displays = []
+        
+        # Maximum number of displays supported to prevent infinite looping
+        d_max = 20
+        d_index = 0
+        
+        # ???: Would it be better to set diplay 0 & call wx.Display.GetCount()?
+        while d_index < d_max:
+            try:
+                dsp = wx.Display(d_index)
+                
+                if dsp.IsOk():
+                    self.displays.append(dsp)
+                
+                d_index += 1
+            
+            except wx.PyAssertionError:
+                break
+        
+        # Convert to tuple
+        self.displays = tuple(self.displays)
+        
         self.menu_icons = [
             GetImage(u'logo'),
             GetImage(u'record'),
@@ -92,6 +117,19 @@ class Icon(wx.TaskBarIcon):
         
         self.options.Destroy()
         self.Destroy()
+    
+    
+    ## Gets the size of a display
+    #  
+    #  This is used because wx.Display.GetMode doesn't appear to be correct
+    #  
+    #  \param d_index
+    #    \b \e int|wx.Display : Display index or the display object itself
+    def GetDisplaySize(self, d_index):
+        if isinstance(d_index, wx.Display):
+            return d_index.GetGeometry()[2:]
+        
+        return (self.displays[d_index].GetGeometry()[2:])
     
     
     ## Shows a context menu when left or right clicked
