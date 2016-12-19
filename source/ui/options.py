@@ -86,11 +86,11 @@ class Options(wx.Dialog):
         
         sel_vcodec.SetStringSelection(sel_vcodec.default)
         
-        ti_quality = wx.TextCtrl(self.pnl_video, name=u'quality')
-        ti_quality.default = u'-1'
-        
         sel_vbitrate = OwnerDrawnComboBox(self.pnl_video, name=u'vbitrate')
         sel_vbitrate.default = u''
+        
+        ti_quality = wx.TextCtrl(self.pnl_video, name=u'quality')
+        ti_quality.default = u'-1'
         
         sel_framerate = Choice(self.pnl_video, choices=framerates, name=u'framerate')
         sel_framerate.default = u'30'
@@ -121,14 +121,14 @@ class Options(wx.Dialog):
         
         sel_acodec.SetStringSelection(sel_acodec.default)
         
+        sel_bitrate = OwnerDrawnComboBox(self.pnl_audio, choices=bitrates, name=u'bitrate')
+        sel_bitrate.default = u'128k'
+        
         spin_channels = wx.SpinCtrl(self.pnl_audio, name=u'channels')
         spin_channels.default = 1
         
         sel_samplerate = Choice(self.pnl_audio, choices=samplerates, name=u'samplerate')
         sel_samplerate.default = u'44100'
-        
-        sel_bitrate = OwnerDrawnComboBox(self.pnl_audio, choices=bitrates, name=u'bitrate')
-        sel_bitrate.default = u'128k'
         
         # *** Output *** #
         
@@ -146,7 +146,7 @@ class Options(wx.Dialog):
         
         ALIGN_TEXT = wx.ALIGN_CENTER_VERTICAL|wx.LEFT
         
-        lyt_video = wx.GridBagSizer()
+        lyt_video = wx.GridBagSizer(5, 2)
         
         # Row 1
         row = 0
@@ -160,25 +160,25 @@ class Options(wx.Dialog):
         
         # Row 3
         row += 1
-        lyt_video.Add(wx.StaticText(self.pnl_video, label=u'Quality'), (row, 0), flag=ALIGN_TEXT, border=5)
-        lyt_video.Add(ti_quality, (row, 1), (1, 2))
+        lyt_video.Add(wx.StaticText(self.pnl_video, label=u'Bitrate'), (row, 0), flag=ALIGN_TEXT, border=5)
+        lyt_video.Add(sel_vbitrate, (row, 1), (1, 2), wx.EXPAND)
         
         # Row 4
         row += 1
-        lyt_video.Add(wx.StaticText(self.pnl_video, label=u'Bitrate'), (row, 0), flag=ALIGN_TEXT, border=5)
-        lyt_video.Add(sel_vbitrate, (row, 1), (1, 2), wx.EXPAND)
+        lyt_video.Add(wx.StaticText(self.pnl_video, label=u'Quality'), (row, 0), flag=ALIGN_TEXT, border=5)
+        lyt_video.Add(ti_quality, (row, 1), (1, 2))
         
         # Row 5
         row += 1
         lyt_video.Add(wx.StaticText(self.pnl_video, label=u'Framerate'), (row, 0), flag=ALIGN_TEXT, border=5)
-        lyt_video.Add(sel_framerate, (row, 1), flag=wx.BOTTOM, border=5)
+        lyt_video.Add(sel_framerate, (row, 1))
         lyt_video.Add(wx.StaticText(self.pnl_video, label=u'FPS'), (row, 2), flag=wx.ALIGN_CENTER_VERTICAL)
         
         self.pnl_video.SetAutoLayout(True)
         self.pnl_video.SetSizer(lyt_video)
         self.pnl_video.Layout()
         
-        lyt_audio = wx.GridBagSizer()
+        lyt_audio = wx.GridBagSizer(5, 2)
         
         # Row 1
         row = 0
@@ -187,24 +187,24 @@ class Options(wx.Dialog):
         
         # Row 2
         row += 1
-        lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Audio Codec'), (row, 0), flag=ALIGN_TEXT|wx.TOP, border=5)
+        lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Audio Codec'), (row, 0), flag=ALIGN_TEXT, border=5)
         lyt_audio.Add(sel_acodec, (row, 1), (1, 2))
         
         # Row 3
         row += 1
-        lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Channels'), (row, 0), flag=ALIGN_TEXT, border=5)
-        lyt_audio.Add(spin_channels, (row, 1), (1, 2))
+        lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Bitrate'), (row, 0), flag=ALIGN_TEXT, border=5)
+        lyt_audio.Add(sel_bitrate, (row, 1), (1, 2), wx.EXPAND)
         
         # Row 4
         row += 1
-        lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Samplerate'), (row, 0), flag=ALIGN_TEXT, border=5)
-        lyt_audio.Add(sel_samplerate, (row, 1))
-        lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Hz'), (row, 2), flag=wx.ALIGN_CENTER_VERTICAL)
+        lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Channels'), (row, 0), flag=ALIGN_TEXT, border=5)
+        lyt_audio.Add(spin_channels, (row, 1), (1, 2))
         
         # Row 5
         row += 1
-        lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Bitrate'), (row, 0), flag=ALIGN_TEXT|wx.BOTTOM, border=5)
-        lyt_audio.Add(sel_bitrate, (row, 1), (1, 2), wx.EXPAND|wx.BOTTOM, 5)
+        lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Samplerate'), (row, 0), flag=ALIGN_TEXT, border=5)
+        lyt_audio.Add(sel_samplerate, (row, 1))
+        lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Hz'), (row, 2), flag=wx.ALIGN_CENTER_VERTICAL, border=5)
         
         self.pnl_audio.SetAutoLayout(True)
         self.pnl_audio.SetSizer(lyt_audio)
