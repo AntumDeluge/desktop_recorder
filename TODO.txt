@@ -1,0 +1,10 @@
+- Rename
+  - FFScrapture (FFmpeg Screen Capture)
+  - FFDC (FFmpeg Desktop Capture)
+  - FFDR (FFmpeg Desktop Recorder)
+  - DRFF
+  - Dr. FF
+  - Dr.FF
+  - DrFF
+  - FFDesktop
+- Add "simple" mode to show only common codecs
