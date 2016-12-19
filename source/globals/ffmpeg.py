@@ -12,31 +12,10 @@ import subprocess
 from subprocess import PIPE
 from subprocess import STDOUT
 
-from globals.system import PY_VER_MAJ
+from globals.cmds import GetCMD
 
 
-## Locates an executable
-#  
-#  \param cmd
-#    \b \e unicode|str : Name of the executable to search for
-#  \return
-#    \b \e unicode|str : Absolute path to executable or None if not found
-def GetExecutable(cmd):
-    output, returncode = subprocess.Popen((u'which', cmd,), stdout=PIPE, stderr=STDOUT).communicate()
-    
-    # FIXME: subprocess is adding newline at end of output
-    output = output.rstrip(u'\n')
-    
-    if returncode:
-        return None
-    
-    if PY_VER_MAJ < 3:
-        output = unicode(output)
-    
-    return output
-
-
-CMD_ffmpeg = GetExecutable(u'ffmpeg')
+CMD_ffmpeg = GetCMD(u'ffmpeg')
 
 
 # --- Check to see if ffmpeg supports xvid and x264
