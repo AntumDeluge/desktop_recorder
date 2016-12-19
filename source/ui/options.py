@@ -321,7 +321,8 @@ class Options(wx.Dialog):
     ## Updates the device name label
     def OnSetDisplay(self, event=None):
         if event:
-            self.SetDisplayName()
+            if event.GetEventObject().GetCount():
+                self.SetDisplayName()
     
     
     ## Actions to take when the Options window if shown/hidden
@@ -502,6 +503,9 @@ class Options(wx.Dialog):
         
         for C in self.pnl_audio.GetChildren():
             C.Enable(a_enabled)
+        
+        if self.sel_display.GetCount():
+            self.SetDisplayName()
     
     
     ## Writes the options values to the options file
