@@ -14,6 +14,7 @@ from subprocess     import Popen
 from subprocess     import STDOUT
 
 from globals.debug  import pDebug
+from globals.system import PY_VER_MAJ
 
 
 def GetCMD(cmdname):
@@ -21,6 +22,10 @@ def GetCMD(cmdname):
     
     # NOTE: Not sure why '\n' is appended from Popen command
     output = output.strip(u'\n')
+    
+    if PY_VER_MAJ < 3:
+        output = unicode(output)
+    
     if not returncode and os.access(output, os.X_OK):
         return output
     
