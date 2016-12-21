@@ -73,7 +73,7 @@ class Options(wx.Dialog):
         # Filled with list of Display instances when self.InitDisplays is called
         self.displays = []
         
-        self.sel_display = Choice(self.pnl_video, name=u'display')
+        self.sel_display = Choice(self.pnl_video, name=u'vinput')
         self.sel_display.default = 0
         
         self.dsp_label = wx.StaticText(self.pnl_video, label=u'Unnamed device')
@@ -113,6 +113,15 @@ class Options(wx.Dialog):
         self.chk_audio.default = True
         
         self.pnl_audio = wx.Panel(page2, style=PANEL_BORDER)
+        
+        # Filled with list of Display instances when self.InitDisplays is called
+        self.audio_inputs = []
+        
+        self.sel_audio = Choice(self.pnl_audio, name=u'ainput')
+        self.sel_audio.default = 0
+        
+        self.aud_label = wx.StaticText(self.pnl_audio, label=u'Unnamed device')
+        self.aud_label.default = self.dsp_label.GetLabel()
         
         sel_adevice = Choice(self.pnl_audio, choices=adevices, name=u'acapture')
         sel_adevice.defs = adev_defs
@@ -200,6 +209,9 @@ class Options(wx.Dialog):
         
         # Row 1
         row = 0
+        lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Audio Input'), (row, 0), flag=ALIGN_TEXT|wx.TOP, border=5)
+        lyt_audio.Add(self.sel_audio, (row, 1), flag=wx.TOP, border=5)
+        lyt_audio.Add(self.aud_label, (row, 2), flag=ALIGN_TEXT|wx.TOP, border=5)
         
         # Row 2
         row += 1
@@ -320,8 +332,15 @@ class Options(wx.Dialog):
         return self.options[u'video'] or self.options[u'audio']
     
     
+    ## Loads a list of available audio input devices into memory
+    def InitAudioInputDevices(self):
+        # Reset input devices
+        self.audio_inputs = []
+    
+    
     ## Loads a list of available display devices into memory
     def InitDisplays(self):
+        # Reset input devices
         self.displays = []
         
         displays = Execute(CMD_xrandr).split(u'\n')
@@ -353,7 +372,7 @@ class Options(wx.Dialog):
             for X in range(len(self.displays)):
                 self.sel_display.Append(unicode(X))
             
-            self.sel_display.SetSelection(self.options[u'display'])
+            self.sel_display.SetSelection(self.options[u'vinput'])
             self.SetDisplayName()
             
             return True
