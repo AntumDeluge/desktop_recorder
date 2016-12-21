@@ -32,4 +32,22 @@ def GetCMD(cmdname):
     pDebug(u'Failed to find command: {}'.format(cmdname))
 
 
+def Execute(cmd):
+    if isinstance(cmd, (unicode, str)):
+        cmd = cmd.split(u' ')
+    
+    output, returncode = Popen(cmd, stdout=PIPE, stderr=STDOUT).communicate()
+    
+    output = output.strip(u'\n')
+    
+    if PY_VER_MAJ < 3:
+        output = unicode(output)
+    
+    if not returncode:
+        return output
+    
+    print(u'Error executing command: {}'.format(u' '.join(cmd)))
+    return returncode
+
+
 CMD_xrandr = GetCMD(u'xrandr')
