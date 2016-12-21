@@ -79,10 +79,10 @@ class Options(wx.Dialog):
         self.dsp_label = wx.StaticText(self.pnl_video, label=u'Unnamed device')
         self.dsp_label.default = self.dsp_label.GetLabel()
         
-        sel_vdevice = Choice(self.pnl_video, choices=vdevices, name=u'vcapture')
-        sel_vdevice.defs = vdev_defs
-        sel_vdevice.SetSelection(0)
-        sel_vdevice.SetToolTipString(sel_vdevice.defs[0])
+        sel_v_cap = Choice(self.pnl_video, choices=vdevices, name=u'vcapture')
+        sel_v_cap.defs = vdev_defs
+        sel_v_cap.SetSelection(0)
+        sel_v_cap.SetToolTipString(sel_v_cap.defs[0])
         
         sel_vcodec = Choice(self.pnl_video, choices=sorted(vcodecs), name=u'vcodec')
         
@@ -123,10 +123,10 @@ class Options(wx.Dialog):
         self.aud_label = wx.StaticText(self.pnl_audio, label=u'Unnamed device')
         self.aud_label.default = self.dsp_label.GetLabel()
         
-        sel_adevice = Choice(self.pnl_audio, choices=adevices, name=u'acapture')
-        sel_adevice.defs = adev_defs
-        sel_adevice.SetSelection(0)
-        sel_adevice.SetToolTipString(sel_adevice.defs[0])
+        self.sel_a_cap = Choice(self.pnl_audio, choices=adevices, name=u'acapture')
+        self.sel_a_cap.defs = adev_defs
+        self.sel_a_cap.SetSelection(0)
+        self.sel_a_cap.SetToolTipString(self.sel_a_cap.defs[0])
         
         sel_acodec = Choice(self.pnl_audio, choices=sorted(acodecs), name=u'acodec')
         
@@ -178,7 +178,7 @@ class Options(wx.Dialog):
         # Row 2
         row += 1
         lyt_video.Add(wx.StaticText(self.pnl_video, label=u'Capture Device'), (row, 0), flag=ALIGN_TEXT|wx.TOP, border=5)
-        lyt_video.Add(sel_vdevice, (row, 1), (1, 2))
+        lyt_video.Add(sel_v_cap, (row, 1), (1, 2))
         
         # Row 3
         row += 1
@@ -216,7 +216,7 @@ class Options(wx.Dialog):
         # Row 2
         row += 1
         lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Capture Device'), (row, 0), flag=ALIGN_TEXT|wx.TOP, border=5)
-        lyt_audio.Add(sel_adevice, (row, 1), (1, 2), wx.TOP, 5)
+        lyt_audio.Add(self.sel_a_cap, (row, 1), (1, 2), wx.TOP, 5)
         
         # Row 3
         row += 1
@@ -286,7 +286,7 @@ class Options(wx.Dialog):
         self.chk_video.Bind(wx.EVT_CHECKBOX, self.ToggleOptions)
         self.chk_audio.Bind(wx.EVT_CHECKBOX, self.ToggleOptions)
         
-        for C in (sel_vdevice, sel_adevice,):
+        for C in (sel_v_cap, self.sel_a_cap,):
             C.Bind(wx.EVT_CHOICE, self.OnSelectDevice)
         
         self.sel_display.Bind(wx.EVT_CHOICE, self.OnSelectDisplay)
