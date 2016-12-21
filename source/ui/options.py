@@ -272,9 +272,9 @@ class Options(wx.Dialog):
         self.chk_audio.Bind(wx.EVT_CHECKBOX, self.ToggleOptions)
         
         for C in (sel_vdevice, sel_adevice,):
-            C.Bind(wx.EVT_CHOICE, self.OnSetDevice)
+            C.Bind(wx.EVT_CHOICE, self.OnSelectDevice)
         
-        self.sel_display.Bind(wx.EVT_CHOICE, self.OnSetDisplay)
+        self.sel_display.Bind(wx.EVT_CHOICE, self.OnSelectDisplay)
         
         btn_target.Bind(wx.EVT_BUTTON, self.SelectDest)
         
@@ -358,14 +358,14 @@ class Options(wx.Dialog):
     
     
     ## Sets tooltips for device fields
-    def OnSetDevice(self, event=None):
+    def OnSelectDevice(self, event=None):
         if event:
             choice = event.GetEventObject()
             choice.SetToolTipString(choice.defs[choice.GetSelection()])
     
     
     ## Updates the device name label
-    def OnSetDisplay(self, event=None):
+    def OnSelectDisplay(self, event=None):
         if event:
             if event.GetEventObject().GetCount():
                 self.SetDisplayName()
