@@ -30,3 +30,6 @@ def GetCMD(cmdname):
         return output
     
     pDebug(u'Failed to find command: {}'.format(cmdname))
+
+
+CMD_xrandr = GetCMD(u'xrandr')
