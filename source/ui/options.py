@@ -11,12 +11,15 @@ from wx.combo import OwnerDrawnComboBox
 
 from custom.choice  import Choice
 from globals        import ident as ID
+from globals.cmds   import CMD_xrandr
+from globals.cmds   import Execute
+from globals.device import DisplayDevice
 from globals.ffmpeg import GetContainers
 from globals.ffmpeg import GetEncoders
 from globals.ffmpeg import GetInputDevices
 from globals.files  import FILE_lock
-from globals.files  import ReadFile
 from globals.files  import FILE_options
+from globals.files  import ReadFile
 from globals.icons  import GetIcon
 from globals.paths  import PATH_confdir
 from globals.paths  import PATH_home
@@ -103,6 +106,9 @@ class Options(wx.Dialog):
         
         sel_framerate = Choice(self.pnl_video, choices=framerates, name=u'framerate')
         sel_framerate.default = u'30'
+        
+        # Filled with list of Display instances when self.LoadDisplays is called
+        self.displays = None
         
         # Can be used later for setting labe with wx.TextCtrl
         self.dsp_names = []
@@ -287,6 +293,8 @@ class Options(wx.Dialog):
         
         # *** Actions *** #
         
+        self.LoadDisplays()
+        
         if not os.path.isfile(FILE_options):
             self.WriteDefaultOptions()
         
@@ -318,6 +326,38 @@ class Options(wx.Dialog):
             return self.chk_video.GetValue() or self.chk_audio.GetValue()
         
         return self.options[u'video'] or self.options[u'audio']
+    
+    
+    ## Loads a list of available display devices into memory
+    #  
+    #  TODO: Move to Display class so no need for argument 'dimensions'
+    def LoadDisplays(self):
+        self.displays = []
+        
+        displays = Execute(CMD_xrandr).split(u'\n')
+        
+        for D in displays:
+            if u' connected ' in D:
+                D = D.split(u' connected ')[1].strip(u' \t')
+                
+                primary = False
+                if D.startswith(u'primary '):
+                    primary = True
+                    D = D.replace(u'primary ', u'').strip(u' \t')
+                
+                dimensions = D.split(u' ')[0]
+                dimensions = [dimensions.split(u'x')[0]] + dimensions.split(u'x')[1].split(u'+')
+                
+                for X in range(len(dimensions)):
+                    dimensions[X] = int(dimensions[X])
+                
+                dimensions = tuple(dimensions)
+                
+                # TODO: Add 'name' argument
+                self.displays.append(DisplayDevice(len(self.displays), dimensions, primary))
+        
+        for D in self.displays:
+            print(u'Display: {}; Size: {}; Position: {}; Primary: {}'.format(D.GetIndex(), D.GetSize(), D.GetPosition(), D.IsPrimary()))
     
     
     ## Sets tooltips for device fields
