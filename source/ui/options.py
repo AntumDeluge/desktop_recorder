@@ -104,7 +104,6 @@ class Options(wx.Dialog):
         self.sel_display = Choice(self.pnl_video, name=u'display')
         self.sel_display.default = 0
         
-        # TODO: Use wx.EVT_CHOICE to set name value from self.dsp_names
         self.dsp_label = wx.StaticText(self.pnl_video, label=u'Unnamed device')
         self.dsp_label.default = self.dsp_label.GetLabel()
         
