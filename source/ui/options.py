@@ -329,8 +329,6 @@ class Options(wx.Dialog):
     
     
     ## Loads a list of available display devices into memory
-    #  
-    #  TODO: Move to Display class so no need for argument 'dimensions'
     def LoadDisplays(self):
         self.displays = []
         
