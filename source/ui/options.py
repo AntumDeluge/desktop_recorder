@@ -291,6 +291,7 @@ class Options(wx.Dialog):
         self.chk_audio.SetValue(self.options[u'audio'])
         
         # Disables fields if check boxes unchecked
+        # Should be called after all fields' settings are initialized
         self.ToggleOptions()
         
         self.SetMinSize(self.GetSize())
@@ -344,7 +345,16 @@ class Options(wx.Dialog):
         for D in self.displays:
             print(u'Display: {}; Size: {}; Position: {}; Primary: {}'.format(D.GetIndex(), D.GetSize(), D.GetPosition(), D.IsPrimary()))
         
-        self.SetDisplays()
+        if self.displays:
+            for X in range(len(self.displays)):
+                self.sel_display.Append(unicode(X))
+            
+            self.sel_display.SetSelection(self.sel_display.default)
+            self.SetDisplayName()
+            
+            return True
+        
+        return False
     
     
     ## Sets tooltips for device fields
@@ -423,6 +433,9 @@ class Options(wx.Dialog):
     
     
     ## Reads the options file & sets value for each field
+    #  
+    #  Options fields are initially set by these values
+    #  ???: Are fields set every time window is shown/hidden?
     def ParseOptions(self):
         try:
             FILE_BUFFER = open(FILE_options, u'r')
@@ -487,19 +500,6 @@ class Options(wx.Dialog):
     def SetDisplayName(self):
         d_index = self.sel_display.GetSelection()
         self.dsp_label.SetLabel(self.displays[d_index].GetName())
-    
-    
-    ## Sets the available displays to choose from
-    def SetDisplays(self):
-        if self.displays:
-            for X in range(len(self.displays)):
-                self.sel_display.Append(unicode(X))
-            
-            self.dsp_label.SetLabel(self.displays[self.sel_display.default].GetName())
-            
-            return True
-        
-        return False
     
     
     ## Sets the list of video codecs available from FFmpeg
