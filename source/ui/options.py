@@ -332,12 +332,6 @@ class Options(wx.Dialog):
         return self.options[u'video'] or self.options[u'audio']
     
     
-    ## Loads a list of available audio input devices into memory
-    def InitAudioInputDevices(self):
-        # Reset input devices
-        self.audio_inputs = []
-    
-    
     ## Loads a list of available display devices into memory
     def InitDisplays(self):
         # Reset input devices
@@ -517,6 +511,12 @@ class Options(wx.Dialog):
                 return True
         
         return False
+    
+    
+    ## Loads a list of available audio input devices into memory
+    def SetAudioInputDevices(self):
+        # Reset input devices
+        self.audio_inputs = []
     
     
     ## TODO: Doxygen
