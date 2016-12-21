@@ -280,12 +280,13 @@ class Options(wx.Dialog):
         
         # *** Actions *** #
         
-        self.InitDisplays()
-        
         if not os.path.isfile(FILE_options):
             self.WriteDefaultOptions()
         
         self.ParseOptions()
+        
+        # Call after ParseOptions
+        self.InitDisplays()
         
         self.chk_video.SetValue(self.options[u'video'])
         self.chk_audio.SetValue(self.options[u'audio'])
@@ -349,7 +350,7 @@ class Options(wx.Dialog):
             for X in range(len(self.displays)):
                 self.sel_display.Append(unicode(X))
             
-            self.sel_display.SetSelection(self.sel_display.default)
+            self.sel_display.SetSelection(self.options[u'display'])
             self.SetDisplayName()
             
             return True
@@ -528,9 +529,6 @@ class Options(wx.Dialog):
         
         for C in self.pnl_audio.GetChildren():
             C.Enable(a_enabled)
-        
-        if self.sel_display.GetCount():
-            self.SetDisplayName()
     
     
     ## Writes the options values to the options file
