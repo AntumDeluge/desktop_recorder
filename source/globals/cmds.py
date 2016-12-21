@@ -50,4 +50,5 @@ def Execute(cmd):
     return returncode
 
 
+CMD_arecord = GetCMD(u'arecord')
 CMD_xrandr = GetCMD(u'xrandr')
