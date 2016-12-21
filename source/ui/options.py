@@ -11,8 +11,10 @@ from wx.combo import OwnerDrawnComboBox
 
 from custom.choice  import Choice
 from globals        import ident as ID
+from globals.cmds   import CMD_arecord
 from globals.cmds   import CMD_xrandr
 from globals.cmds   import Execute
+from globals.device import AudioDevice
 from globals.device import DisplayDevice
 from globals.ffmpeg import GetContainers
 from globals.ffmpeg import GetEncoders
@@ -120,7 +122,7 @@ class Options(wx.Dialog):
         self.sel_audio = Choice(self.pnl_audio, name=u'ainput')
         self.sel_audio.default = 0
         
-        self.aud_label = wx.StaticText(self.pnl_audio, label=u'Unnamed device')
+        self.aud_label = wx.StaticText(self.pnl_audio, label=u'No devices')
         self.aud_label.default = self.dsp_label.GetLabel()
         
         self.sel_a_cap = Choice(self.pnl_audio, choices=adevices, name=u'acapture')
@@ -286,9 +288,10 @@ class Options(wx.Dialog):
         self.chk_video.Bind(wx.EVT_CHECKBOX, self.ToggleOptions)
         self.chk_audio.Bind(wx.EVT_CHECKBOX, self.ToggleOptions)
         
-        for C in (sel_v_cap, self.sel_a_cap,):
-            C.Bind(wx.EVT_CHOICE, self.OnSelectDevice)
+        sel_v_cap.Bind(wx.EVT_CHOICE, self.OnSelectDevice)
+        self.sel_a_cap.Bind(wx.EVT_CHOICE, self.OnSelectAudioCapture)
         
+        # TODO: Rename these to 'inputs'
         self.sel_display.Bind(wx.EVT_CHOICE, self.OnSelectDisplay)
         
         btn_target.Bind(wx.EVT_BUTTON, self.SelectDest)
@@ -372,6 +375,20 @@ class Options(wx.Dialog):
             return True
         
         return False
+    
+    
+    ## Sets tooltips & updates audio input devices list
+    def OnSelectAudioCapture(self, event=None):
+        if event:
+            choice = event.GetEventObject()
+            choice.SetToolTipString(choice.defs[choice.GetSelection()])
+            
+            capture_device = choice.GetStringSelection()
+            
+            print(u'\nDEBUG: Selected capture device: {}'.format(capture_device))
+            
+            if capture_device == u'alsa':
+                print(u'Setting alsa input devices ...')
     
     
     ## Sets tooltips for device fields
@@ -517,6 +534,34 @@ class Options(wx.Dialog):
     def SetAudioInputDevices(self):
         # Reset input devices
         self.audio_inputs = []
+        
+        index = self.sel_a_cap.FindString(u'alsa')
+        if index != wx.NOT_FOUND:
+            # alsa requires arecord to find input devices
+            if not CMD_arecord:
+                self.sel_a_cap.Delete(index)
+            
+            else:
+                output = Execute((CMD_arecord, u'--list-devices',)).split(u'\n')
+                
+                print
+                for LI in output:
+                    if LI.startswith(u'card '):
+                        card = LI.split(u',')
+                        device = card[1].strip()
+                        device = device.split(u':')[0].replace(u'device', u'').strip()
+                        
+                        card = card[0].strip().split(u':')
+                        card_name = card[1].strip()
+                        card = card[0].replace(u'card', u'').strip()
+                        
+                        hw_id = u'hw:{},{}'.format(card, device)
+                        
+                        self.audio_inputs.append(AudioDevice(len(self.audio_inputs), card, card_name))
+                        
+                        self.sel_audio.Append(hw_id)
+                        
+                        print(u'\nDEBUG: Hardware ID: {}'.format(hw_id))
     
     
     ## TODO: Doxygen
