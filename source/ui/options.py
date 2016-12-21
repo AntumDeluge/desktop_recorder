@@ -98,7 +98,7 @@ class Options(wx.Dialog):
         sel_framerate = Choice(self.pnl_video, choices=framerates, name=u'framerate')
         sel_framerate.default = u'30'
         
-        # Filled with list of Display instances when self.LoadDisplays is called
+        # Filled with list of Display instances when self.InitDisplays is called
         self.displays = []
         
         self.sel_display = Choice(self.pnl_video, name=u'display')
@@ -280,7 +280,7 @@ class Options(wx.Dialog):
         
         # *** Actions *** #
         
-        self.LoadDisplays()
+        self.InitDisplays()
         
         if not os.path.isfile(FILE_options):
             self.WriteDefaultOptions()
@@ -316,7 +316,7 @@ class Options(wx.Dialog):
     
     
     ## Loads a list of available display devices into memory
-    def LoadDisplays(self):
+    def InitDisplays(self):
         self.displays = []
         
         displays = Execute(CMD_xrandr).split(u'\n')
