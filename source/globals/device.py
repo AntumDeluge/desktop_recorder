@@ -6,7 +6,17 @@
 # See: LICENSE.txt
 
 
-from getcmd import Execute
+import os
+
+from globals.files import ReadFile
+
+
+# These files are used for attempting retrieval of display names
+# if wx.Display.GetName fails.
+# ???: Should the log number be dynamic?
+v_parse_files = {
+    u'/var/log/Xorg.0.log': u'Monitor name: ',
+    }
 
 
 ## Class representing a physical input device
@@ -15,12 +25,45 @@ from getcmd import Execute
 class Device:
     def __init__(self, index, name=None):
         self.index = index
+        self.name = name
+    
+    
+    ## Scans specified files to try & set the device's name
+    def AutoSetName(self, search_list):
+        sfile = None
+        sstring = None
+        for F in search_list:
+            if os.path.isfile(F):
+                sfile = ReadFile(F, False)
+                
+                if search_list[F] in sfile:
+                    sstring = search_list[F]
+                    sfile = sfile.split(u'\n')
         
-        if not name:
-            self.name = u'(Unnamed device {})'.format(index)
+        # Default name
+        d_name = u'(Unnamed device {})'.format(self.index)
         
-        else:
-            self.name = name
+        if sstring:
+            li_index = 0
+            
+            for LI in sfile:
+                if sstring in LI:
+                    if li_index == self.index:
+                        d_name = LI.split(sstring)[-1]
+                    
+                    li_index += 1
+                    
+                    if li_index > self.index:
+                        break
+        
+        if d_name != self.name:
+            self.name = d_name
+            
+            return True
+        
+        # Name was not changed, either because no name was
+        # found or found name was the same as original.
+        return False
     
     
     ## Retrieves the index of the device
@@ -51,6 +94,9 @@ class DisplayDevice(Device):
         
         self.dimensions = dimensions
         self.primary = primary
+        
+        if not self.name:
+            self.AutoSetName(v_parse_files)
     
     
     ## Retrieves screen position

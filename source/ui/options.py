@@ -19,18 +19,9 @@ from globals.ffmpeg import GetEncoders
 from globals.ffmpeg import GetInputDevices
 from globals.files  import FILE_lock
 from globals.files  import FILE_options
-from globals.files  import ReadFile
 from globals.icons  import GetIcon
 from globals.paths  import PATH_confdir
 from globals.paths  import PATH_home
-
-
-# These files are used for attempting retrieval of display names
-# if wx.Display.GetName fails.
-# ???: Should the log number be dynamic?
-search_files = {
-    u'/var/log/Xorg.0.log': u'Monitor name: ',
-    }
 
 
 ## Class for the options window
