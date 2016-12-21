@@ -124,5 +124,12 @@ class DisplayDevice(Device):
 
 ## Class representing physical audio output device & attributes
 class AudioDevice(Device):
-    def __init__(self, index, name=None):
+    def __init__(self, index, hw_id, name=None):
         Device.__init__(self, index, name)
+        
+        self.hw_id = hw_id
+    
+    
+    ## Retrieves the hardware identifier string to pass to FFmpegs input option
+    def GetHardwareId(self):
+        return self.hw_id
