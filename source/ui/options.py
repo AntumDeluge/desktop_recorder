@@ -108,10 +108,7 @@ class Options(wx.Dialog):
         sel_framerate.default = u'30'
         
         # Filled with list of Display instances when self.LoadDisplays is called
-        self.displays = None
-        
-        # Can be used later for setting labe with wx.TextCtrl
-        self.dsp_names = []
+        self.displays = []
         
         self.sel_display = Choice(self.pnl_video, name=u'display')
         self.sel_display.default = 0
@@ -356,6 +353,8 @@ class Options(wx.Dialog):
         
         for D in self.displays:
             print(u'Display: {}; Size: {}; Position: {}; Primary: {}'.format(D.GetIndex(), D.GetSize(), D.GetPosition(), D.IsPrimary()))
+        
+        self.SetDisplays()
     
     
     ## Sets tooltips for device fields
@@ -497,58 +496,20 @@ class Options(wx.Dialog):
     ## TODO: Doxygen
     def SetDisplayName(self):
         d_index = self.sel_display.GetSelection()
-        d_name = self.dsp_names[d_index]
-        
-        if not d_name:
-            d_name = u'({} {})'.format(self.dsp_label.default, d_index)
-        
-        self.dsp_label.SetLabel(d_name)
+        self.dsp_label.SetLabel(self.displays[d_index].GetName())
     
     
     ## Sets the available displays to choose from
-    def SetDisplays(self, display_list):
-        if self.sel_display.GetCount():
-            self.sel_display.Clear()
-        
-        for X in range(len(display_list)):
-            self.sel_display.Append(unicode(X))
-        
-        self.sel_display.SetSelection(self.sel_display.default)
-        
-        if len(self.dsp_names):
-            self.dsp_names = []
-        
-        sfile = None
-        sstring = None
-        for F in search_files:
-            if os.path.isfile(F):
-                sfile = ReadFile(F, False)
-                
-                if search_files[F] in sfile:
-                    sstring = search_files[F]
-                    sfile = sfile.split(u'\n')
-        
-        d_index = 0
-        for D in display_list:
-            d_name = D.GetName()
+    def SetDisplays(self):
+        if self.displays:
+            for X in range(len(self.displays)):
+                self.sel_display.Append(unicode(X))
             
-            if not d_name and sstring:
-                x_index = 0
-                for LI in sfile:
-                    if sstring in LI:
-                        if x_index == d_index:
-                            d_name = LI.split(sstring)[-1]
-                        
-                        x_index += 1
-                        
-                        if x_index > d_index:
-                            break
+            self.dsp_label.SetLabel(self.displays[self.sel_display.default].GetName())
             
-            self.dsp_names.append(d_name)
-            
-            d_index += 1
+            return True
         
-        self.SetDisplayName()
+        return False
     
     
     ## Sets the list of video codecs available from FFmpeg
