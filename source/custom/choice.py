@@ -16,14 +16,54 @@ class Choice(wx.Choice):
         wx.Choice.__init__(self, parent, window_id, pos, size, choices, style, validator, name)
     
     
-    ## Set method compatible for older wx versions
-    def Set(self, *args, **kwargs):
+    ## Appends an item to the end of options
+    #  
+    #  \override wx.Choice.Append
+    def Append(self, item):
+        appended = wx.Choice.Append(self, item)
+        
+        if wx.MAJOR_VERSION <= 2:
+            if not self.IsEnabled() and self.GetCount():
+                self.Enable(True)
+        
+        return appended
+    
+    
+    ## Disabled control when empty for older wx versions
+    def Clear(self):
+        cleared = wx.Choice.Clear(self)
+        
+        if wx.MAJOR_VERSION <= 2:
+            if not self.GetCount():
+                self.Enable(False)
+            
+            else:
+                self.Enable(True)
+        
+        return cleared
+    
+    
+    def Enable(self, enable=True):
+        if wx.MAJOR_VERSION <= 2:
+            if self.GetName() == u'ainput':
+                print(u'\nDEBUG: ainput Enable method called; Enabling: {}'.format(enable))
+            
+            # HACK: Bypass wx 2.8 call to Enable(True) when app is constructed
+            if not self.GetCount():
+                enable = False
+        
+        return wx.Choice.Enable(self, enable)
+    
+    
+    ## Sets choices available wx.Choice instances
+    #  
+    #  \override wx.Choice.Set
+    #    Causes wx 2.8 to behave like 3, disables control if empty
+    def Set(self, choices):
         if wx.MAJOR_VERSION > 2:
-            return wx.Choice.Set(self, *args, **kwargs)
+            return wx.Choice.Set(self, choices)
         
-        choices = args[0]
-        
-        # Clear old options first
+        # Clear old options first (& disables field in wx 2.8)
         self.Clear()
         for C in choices:
             self.Append(C)
