@@ -45,9 +45,6 @@ class Choice(wx.Choice):
     
     def Enable(self, enable=True):
         if wx.MAJOR_VERSION <= 2:
-            if self.GetName() == u'ainput':
-                print(u'\nDEBUG: ainput Enable method called; Enabling: {}'.format(enable))
-            
             # HACK: Bypass wx 2.8 call to Enable(True) when app is constructed
             if not self.GetCount():
                 enable = False
