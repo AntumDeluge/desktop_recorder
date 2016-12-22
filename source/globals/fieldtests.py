@@ -37,15 +37,19 @@ def FieldDisabled(field):
 
 
 ## Tests multiple fields
-#  
+#
+#  \param field_list
+#    \b \e tuple|list : List of wx control to be checked
+#  \param enabled
+#    \b \e bool : Status to check for (True=enabled, False=disabled)
 #  \return
 #    \b \e bool : True if all fields are enabled
-def FieldsEnabled(field_list):
-    if isinstance(field_list, (tuple, list)):
-        return FieldEnabled(field_list)
+def FieldsEnabled(field_list, enabled=True):
+    if not isinstance(field_list, (tuple, list)):
+        return FieldEnabled(field_list, enabled)
     
     for F in field_list:
-        if not FieldEnabled(F):
+        if not FieldEnabled(F, enabled):
             return False
     
     return True
