@@ -7,9 +7,10 @@
 
 
 import os, wx
-from wx.combo import OwnerDrawnComboBox
 
+from custom.check   import CheckBox
 from custom.choice  import Choice
+from custom.combo   import ComboBox
 from globals        import ident as ID
 from globals.cmds   import CMD_arecord
 from globals.cmds   import CMD_xrandr
@@ -70,8 +71,7 @@ class Options(wx.Dialog):
         
         # *** Video *** #
         
-        self.chk_video = wx.CheckBox(page1, ID.VIDEO, u'Include Video', name=u'video')
-        self.chk_video.Default = True
+        self.chk_video = CheckBox(page1, ID.VIDEO, True, u'Include Video', name=u'video')
         
         self.pnl_video = wx.Panel(page1, style=PANEL_BORDER)
         
@@ -103,7 +103,7 @@ class Options(wx.Dialog):
         
         sel_vcodec.SetStringSelection(sel_vcodec.Default)
         
-        sel_vbitrate = OwnerDrawnComboBox(self.pnl_video, name=u'vbitrate')
+        sel_vbitrate = ComboBox(self.pnl_video, name=u'vbitrate')
         
         ti_quality = wx.TextCtrl(self.pnl_video, name=u'quality')
         ti_quality.Default = u'-1'
@@ -114,8 +114,7 @@ class Options(wx.Dialog):
         
         # *** Audio *** #
         
-        self.chk_audio = wx.CheckBox(page2, ID.AUDIO, u'Include Audio', name=u'audio')
-        self.chk_audio.Default = True
+        self.chk_audio = CheckBox(page2, ID.AUDIO, True, u'Include Audio', name=u'audio')
         
         self.pnl_audio = wx.Panel(page2, style=PANEL_BORDER)
         
@@ -147,7 +146,7 @@ class Options(wx.Dialog):
         
         sel_acodec.SetStringSelection(sel_acodec.Default)
         
-        sel_bitrate = OwnerDrawnComboBox(self.pnl_audio, choices=bitrates, name=u'bitrate')
+        sel_bitrate = ComboBox(self.pnl_audio, choices=bitrates, name=u'bitrate')
         sel_bitrate.Default = u'128k'
         
         spin_channels = wx.SpinCtrl(self.pnl_audio, name=u'channels')
@@ -581,7 +580,7 @@ class Options(wx.Dialog):
     #    \b \e bool : True if list was set successfully
     def SetAudioCodecs(self, codec_list):
         for C in self.pnl_audio.GetChildren():
-            if isinstance(C, wx.Choice) and C.GetName() == u'acodec':
+            if isinstance(C, Choice) and C.GetName() == u'acodec':
                 C.Set(codec_list)
                 
                 return True
@@ -603,7 +602,7 @@ class Options(wx.Dialog):
     #    \b \e bool : True if list was set successfully
     def SetVideoCodecs(self, codec_list):
         for C in self.pnl_video.GetChildren():
-            if isinstance(C, wx.Choice) and C.GetName() == u'vcodec':
+            if isinstance(C, Choice) and C.GetName() == u'vcodec':
                 C.Set(codec_list)
                 
                 return True
