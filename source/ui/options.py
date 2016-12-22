@@ -327,6 +327,12 @@ class Options(wx.Dialog):
         return self.chk_video.GetValue() or self.chk_audio.GetValue()
     
     
+    ## Retrieves a list of all available option fields
+    def GetOptionFields(self):
+        return tuple([self.chk_video, self.chk_audio,] + self.pnl_video.GetChildren() +
+                self.pnl_audio.GetChildren)
+    
+    
     ## Loads a list of available display devices into memory
     def InitDisplays(self):
         # Reset input devices
