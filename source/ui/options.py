@@ -11,6 +11,7 @@ import os, wx
 from custom.check       import CheckBox
 from custom.choice      import Choice
 from custom.combo       import ComboBox
+from custom.spin        import SpinCtrl
 from custom.textinput   import TextCtrl
 from globals            import ident as ID
 from globals.cmds       import CMD_arecord
@@ -150,7 +151,7 @@ class Options(wx.Dialog):
         sel_bitrate = ComboBox(self.pnl_audio, choices=bitrates, name=u'bitrate')
         sel_bitrate.Default = u'128k'
         
-        spin_channels = wx.SpinCtrl(self.pnl_audio, name=u'channels')
+        spin_channels = SpinCtrl(self.pnl_audio, name=u'channels')
         spin_channels.Default = 1
         
         sel_samplerate = Choice(self.pnl_audio, choices=samplerates, name=u'samplerate')
