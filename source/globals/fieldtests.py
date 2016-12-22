@@ -12,12 +12,14 @@ import wx
 ## Tests if a wx control/instance is enabled
 #  
 #  Function for compatibility between wx versions
-def FieldEnabled(field):
+#  \param enabled
+#    \b \e bool : Check if enabled or disabled
+def FieldEnabled(field, enabled=True):
     if wx.MAJOR_VERSION > 2:
-        return field.IsThisEnabled()
+        return field.IsThisEnabled() == enabled
     
     else:
-        return field.IsEnabled()
+        return field.IsEnabled() == enabled
 
 
 ## Tests multiple fields
