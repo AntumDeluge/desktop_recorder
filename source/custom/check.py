@@ -18,3 +18,10 @@ class CheckBox(wx.CheckBox):
         self.SetValue(value)
         
         self.Default = value
+    
+    
+    ## Reset CheckBox to default value
+    def Reset(self):
+        self.SetValue(self.Default)
+        
+        return self.Value == self.Default
