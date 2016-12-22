@@ -21,6 +21,7 @@ from globals.ffmpeg import GetEncoders
 from globals.ffmpeg import GetInputDevices
 from globals.files  import FILE_lock
 from globals.files  import FILE_options
+from globals.files  import ReadFile
 from globals.icons  import GetIcon
 from globals.paths  import PATH_confdir
 from globals.paths  import PATH_home
@@ -166,21 +167,37 @@ class Options(wx.Dialog):
         self.ti_target = wx.TextCtrl(self, name=u'dest')
         self.ti_target.default = u'{}/Videos'.format(PATH_home)
         
+        # *** Event handlers *** #
+        
+        self.chk_video.Bind(wx.EVT_CHECKBOX, self.ToggleOptions)
+        self.chk_audio.Bind(wx.EVT_CHECKBOX, self.ToggleOptions)
+        
+        sel_v_cap.Bind(wx.EVT_CHOICE, self.OnSelectDevice)
+        self.sel_a_cap.Bind(wx.EVT_CHOICE, self.OnSelectAudioCapture)
+        
+        # TODO: Rename these to 'inputs'
+        self.sel_display.Bind(wx.EVT_CHOICE, self.OnSelectDisplay)
+        
+        btn_target.Bind(wx.EVT_BUTTON, self.OnSelectTarget)
+        
+        wx.EVT_SHOW(self, self.OnShow)
+        
         # *** Layout *** #
         
         ALIGN_TEXT = wx.ALIGN_CENTER_VERTICAL|wx.LEFT
+        ATEXT_LEFT = wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT
         
         lyt_video = wx.GridBagSizer(5, 2)
         
         # Row 1
         row = 0
         lyt_video.Add(wx.StaticText(self.pnl_video, label=u'Display'), (row, 0), flag=ALIGN_TEXT|wx.TOP, border=5)
-        lyt_video.Add(self.sel_display, (row, 1), flag=wx.TOP, border=5)
-        lyt_video.Add(self.dsp_label, (row, 2), flag=ALIGN_TEXT|wx.TOP, border=5)
+        lyt_video.Add(self.sel_display, (row, 1), flag=wx.EXPAND|wx.TOP, border=5)
+        lyt_video.Add(self.dsp_label, (row, 2), flag=ATEXT_LEFT|wx.TOP, border=5)
         
         # Row 2
         row += 1
-        lyt_video.Add(wx.StaticText(self.pnl_video, label=u'Capture Device'), (row, 0), flag=ALIGN_TEXT|wx.TOP, border=5)
+        lyt_video.Add(wx.StaticText(self.pnl_video, label=u'Capture Device'), (row, 0), flag=ALIGN_TEXT, border=5)
         lyt_video.Add(sel_v_cap, (row, 1), (1, 2))
         
         # Row 3
@@ -214,12 +231,12 @@ class Options(wx.Dialog):
         row = 0
         lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Audio Input'), (row, 0), flag=ALIGN_TEXT|wx.TOP, border=5)
         lyt_audio.Add(self.sel_audio, (row, 1), flag=wx.TOP, border=5)
-        lyt_audio.Add(self.aud_label, (row, 2), flag=ALIGN_TEXT|wx.TOP, border=5)
+        lyt_audio.Add(self.aud_label, (row, 2), flag=ATEXT_LEFT|wx.TOP, border=5)
         
         # Row 2
         row += 1
-        lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Capture Device'), (row, 0), flag=ALIGN_TEXT|wx.TOP, border=5)
-        lyt_audio.Add(self.sel_a_cap, (row, 1), (1, 2), wx.TOP, 5)
+        lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Capture Device'), (row, 0), flag=ALIGN_TEXT, border=5)
+        lyt_audio.Add(self.sel_a_cap, (row, 1), (1, 2))
         
         # Row 3
         row += 1
@@ -281,21 +298,6 @@ class Options(wx.Dialog):
         self.SetAutoLayout(True)
         self.SetSizer(lyt_main)
         self.Layout()
-        
-        # *** Event handlers *** #
-        
-        wx.EVT_SHOW(self, self.OnShow)
-        
-        self.chk_video.Bind(wx.EVT_CHECKBOX, self.ToggleOptions)
-        self.chk_audio.Bind(wx.EVT_CHECKBOX, self.ToggleOptions)
-        
-        sel_v_cap.Bind(wx.EVT_CHOICE, self.OnSelectDevice)
-        self.sel_a_cap.Bind(wx.EVT_CHOICE, self.OnSelectAudioCapture)
-        
-        # TODO: Rename these to 'inputs'
-        self.sel_display.Bind(wx.EVT_CHOICE, self.OnSelectDisplay)
-        
-        btn_target.Bind(wx.EVT_BUTTON, self.SelectDest)
         
         # *** Actions *** #
         
@@ -368,8 +370,6 @@ class Options(wx.Dialog):
     
     ## Initialize field values
     def InitOptions(self):
-        print(u'\nDEBUG: Initializing option fields')
-        
         field_list = [self.chk_video, self.chk_audio] + list(self.pnl_video.GetChildren()) + list(self.pnl_audio.GetChildren())
         
         for C in field_list:
@@ -453,79 +453,50 @@ class Options(wx.Dialog):
                 self.SetDisplayName()
     
     
+    ## Opens a directory dialog to select output destination
+    def OnSelectTarget(self, event):
+        dest = wx.DirDialog(self, defaultPath=os.getcwd(), style=wx.DD_DEFAULT_STYLE|wx.DD_DIR_MUST_EXIST|wx.DD_CHANGE_DIR)
+        if dest.ShowModal() == wx.ID_OK:
+            self.ti_target.SetValue(dest.GetPath())
+    
+    
     ## Write settings to file when options window is hidden
     #  
     #  FIXME: Write settings to file when options window is hidden ...
     #         Do not change values
     def OnShow(self, event=None):
-        field_list = [self.chk_video, self.chk_audio] + list(self.pnl_video.GetChildren()) + list(self.pnl_audio.GetChildren())
-        
-        '''
-        if self.IsShown():
+        # Only write options when window is hidden
+        if not self.IsShown():
+            field_list = [self.chk_video, self.chk_audio] + list(self.pnl_video.GetChildren()) + list(self.pnl_audio.GetChildren())
+            
+            # Set & write options when window is hidden
             for C in field_list:
                 c_name = C.GetName()
                 
-                if c_name in self.options:
-                    value = self.options[c_name]
-                    
-                    if isinstance(C, (wx.TextCtrl, wx.CheckBox, wx.SpinCtrl)):
-                        C.SetValue(value)
-                        continue
-                    
-                    if isinstance(C, wx.Choice):
-                        # Some wx.Choice field values are stored as integers & need to be converted to string
-                        if not isinstance(value, (unicode, str)):
-                            value = unicode(value)
-                        
-                        C.SetStringSelection(value)
-                        
-                        try:
-                            C.SetToolTipString(C.defs[C.GetSelection()])
-                        
-                        except AttributeError:
-                            pass
-        
-        else:
-        '''
-        # Set & write options when window is hidden
-        for C in field_list:
-            c_name = C.GetName()
-            
-            if isinstance(C, wx.TextCtrl):
-                self.options[c_name] = C.GetValue()
+                if isinstance(C, wx.TextCtrl):
+                    self.options[c_name] = C.GetValue()
+                    continue
                 
-                # Reset field
-                C.Clear()
-                continue
-            
-            if isinstance(C, (wx.CheckBox, wx.SpinCtrl)):
-                self.options[c_name] = C.GetValue()
+                if isinstance(C, (wx.CheckBox, wx.SpinCtrl)):
+                    self.options[c_name] = C.GetValue()
+                    continue
                 
-                # Reset field
-                C.SetValue(C.default)
-                continue
+                if isinstance(C, wx.Choice):
+                    self.options[c_name] = C.GetStringSelection()
             
-            if isinstance(C, wx.Choice):
-                self.options[c_name] = C.GetStringSelection()
-                
-                # Reset field
-                C.SetSelection(0)
-        
-        self.WriteOptions()
+            self.WriteOptions()
         
         if event:
             event.Skip()
     
     
-    ## Reads the options file & sets value for each field
+    ## Reads the options file & stores values
     #  
     #  Options fields are initially set by these values
     #  ???: Are fields set every time window is shown/hidden?
     def ParseOptions(self):
         try:
-            FILE_BUFFER = open(FILE_options, u'r')
-            options = FILE_BUFFER.read().split(u'\n')
-            FILE_BUFFER.close()
+            options = ReadFile(FILE_options, split=True)
             
             for LI in options:
                 if u'=' in LI:
@@ -556,13 +527,6 @@ class Options(wx.Dialog):
             return False
         
         return True
-    
-    
-    ## Opens a directory dialog to select output destination
-    def SelectDest(self, event):
-        dest = wx.DirDialog(self, defaultPath=os.getcwd(), style=wx.DD_DEFAULT_STYLE|wx.DD_DIR_MUST_EXIST|wx.DD_CHANGE_DIR)
-        if dest.ShowModal() == wx.ID_OK:
-            self.ti_target.SetValue(dest.GetPath())
     
     
     ## Loads a list of available audio input devices into memory
