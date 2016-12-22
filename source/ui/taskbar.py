@@ -48,39 +48,38 @@ class Icon(wx.TaskBarIcon):
         self.IsPaused = False
         
         self.menu = wx.Menu()
-        self.menu_options = wx.MenuItem(self.menu, ID.OPT, u'Show/Hide Options')
         self.menu_rec = wx.MenuItem(self.menu, ID.REC, u'Record')
         self.menu_pause = wx.MenuItem(self.menu, ID.PAUSE, u'Pause')
         self.menu_stop = wx.MenuItem(self.menu, ID.STOP, u'Stop')
-        self.menu_exit = wx.MenuItem(self.menu, ID.EXIT, u'Quit')
+        self.menu_options = wx.MenuItem(self.menu, ID.OPT, u'Show/Hide Options')
         self.menu_about = wx.MenuItem(self.menu, ID.ABOUT, u'About')
+        self.menu_exit = wx.MenuItem(self.menu, ID.EXIT, u'Quit')
         
-        self.menu_options.SetBitmap(self.menu_icons[0].ConvertToBitmap())
         self.menu_rec.SetBitmap(self.menu_icons[1].ConvertToBitmap())
         self.menu_pause.SetBitmap(self.menu_icons[2].ConvertToBitmap())
         self.menu_stop.SetBitmap(self.menu_icons[3].ConvertToBitmap())
+        self.menu_options.SetBitmap(self.menu_icons[0].ConvertToBitmap())
         
-        self.menu.AppendItem(self.menu_options)
-        self.menu.AppendSeparator()
         self.menu.AppendItem(self.menu_rec)
         self.menu.AppendItem(self.menu_pause)
         self.menu.AppendItem(self.menu_stop)
         self.menu.AppendSeparator()
-        self.menu.AppendItem(self.menu_exit)
-        self.menu.AppendSeparator()
+        self.menu.AppendItem(self.menu_options)
         self.menu.AppendItem(self.menu_about)
+        self.menu.AppendSeparator()
+        self.menu.AppendItem(self.menu_exit)
         
         self.menu.Enable(ID.PAUSE, False)
         self.menu.Enable(ID.STOP, False)
         
         # *** Event handlers *** #
         
-        wx.EVT_MENU(self.menu, ID.OPT, self.ToggleOptions)
         wx.EVT_MENU(self.menu, ID.REC, self.Record)
         wx.EVT_MENU(self.menu, ID.PAUSE, self.Pause)
         wx.EVT_MENU(self.menu, ID.STOP, self.Stop)
-        wx.EVT_MENU(self.menu, ID.EXIT, self.Exit)
+        wx.EVT_MENU(self.menu, ID.OPT, self.ToggleOptions)
         wx.EVT_MENU(self.menu, ID.ABOUT, self.ShowInfo)
+        wx.EVT_MENU(self.menu, ID.EXIT, self.Exit)
         
         wx.EVT_TASKBAR_LEFT_DOWN(self, self.OnClick)
         wx.EVT_TASKBAR_RIGHT_DOWN(self, self.OnClick)
