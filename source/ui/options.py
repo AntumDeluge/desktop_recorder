@@ -329,11 +329,7 @@ class Options(wx.Dialog):
     #  
     #  At least one of video & audio must be enabled
     def CanRecord(self):
-        # Use live dialog window if shown
-        if self.IsShown():
-            return self.chk_video.GetValue() or self.chk_audio.GetValue()
-        
-        return self.options[u'video'] or self.options[u'audio']
+        return self.chk_video.GetValue() or self.chk_audio.GetValue()
     
     
     ## Loads a list of available display devices into memory
