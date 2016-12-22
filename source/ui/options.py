@@ -8,24 +8,25 @@
 
 import os, wx
 
-from custom.check   import CheckBox
-from custom.choice  import Choice
-from custom.combo   import ComboBox
-from globals        import ident as ID
-from globals.cmds   import CMD_arecord
-from globals.cmds   import CMD_xrandr
-from globals.cmds   import Execute
-from globals.device import AudioDevice
-from globals.device import DisplayDevice
-from globals.ffmpeg import GetContainers
-from globals.ffmpeg import GetEncoders
-from globals.ffmpeg import GetInputDevices
-from globals.files  import FILE_lock
-from globals.files  import FILE_options
-from globals.files  import ReadFile
-from globals.icons  import GetIcon
-from globals.paths  import PATH_confdir
-from globals.paths  import PATH_home
+from custom.check       import CheckBox
+from custom.choice      import Choice
+from custom.combo       import ComboBox
+from custom.textinput   import TextCtrl
+from globals            import ident as ID
+from globals.cmds       import CMD_arecord
+from globals.cmds       import CMD_xrandr
+from globals.cmds       import Execute
+from globals.device     import AudioDevice
+from globals.device     import DisplayDevice
+from globals.ffmpeg     import GetContainers
+from globals.ffmpeg     import GetEncoders
+from globals.ffmpeg     import GetInputDevices
+from globals.files      import FILE_lock
+from globals.files      import FILE_options
+from globals.files      import ReadFile
+from globals.icons      import GetIcon
+from globals.paths      import PATH_confdir
+from globals.paths      import PATH_home
 
 
 ## Class for the options window
@@ -105,7 +106,7 @@ class Options(wx.Dialog):
         
         sel_vbitrate = ComboBox(self.pnl_video, name=u'vbitrate')
         
-        ti_quality = wx.TextCtrl(self.pnl_video, name=u'quality')
+        ti_quality = TextCtrl(self.pnl_video, name=u'quality')
         ti_quality.Default = u'-1'
         
         sel_framerate = Choice(self.pnl_video, choices=framerates, name=u'framerate')
@@ -157,14 +158,14 @@ class Options(wx.Dialog):
         
         # *** Output *** #
         
-        ti_filename = wx.TextCtrl(self, name=u'filename')
+        ti_filename = TextCtrl(self, name=u'filename')
         ti_filename.Default = u'out'
         
         self.sel_container = Choice(self, choices=containers, name=u'container')
         self.sel_container.Default = u'avi'
         
         btn_target = wx.Button(self, label=u'Folder')
-        self.ti_target = wx.TextCtrl(self, name=u'dest')
+        self.ti_target = TextCtrl(self, name=u'dest')
         self.ti_target.Default = u'{}/Videos'.format(PATH_home)
         
         # *** Event handlers *** #
@@ -328,8 +329,13 @@ class Options(wx.Dialog):
     
     ## Retrieves a list of all available option fields
     def GetOptionFields(self):
-        return tuple([self.chk_video, self.chk_audio,] + list(self.pnl_video.GetChildren()) +
-                list(self.pnl_audio.GetChildren()))
+        options_fields = [self.chk_video, self.chk_audio,]
+        
+        for C in list(self.pnl_video.GetChildren()) + list(self.pnl_audio.GetChildren()):
+            if not isinstance(C, wx.StaticText):
+                options_fields.append(C)
+        
+        return options_fields
     
     
     ## Loads a list of available display devices into memory
