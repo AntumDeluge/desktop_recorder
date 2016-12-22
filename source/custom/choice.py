@@ -15,7 +15,8 @@ class Choice(wx.Choice):
             choices=[], style=0, validator=wx.DefaultValidator, name=wx.ChoiceNameStr):
         wx.Choice.__init__(self, parent, window_id, pos, size, choices, style, validator, name)
         
-        self.default = 0
+        self.DefaultIndex = 0
+        self.Priority = []
     
     
     ## Appends an item to the end of options
@@ -36,7 +37,7 @@ class Choice(wx.Choice):
         cleared = wx.Choice.Clear(self)
         
         if wx.MAJOR_VERSION <= 2:
-            if not self.GetCount():
+            if not self.Count:
                 self.Enable(False)
             
             else:
@@ -48,10 +49,27 @@ class Choice(wx.Choice):
     def Enable(self, enable=True):
         if wx.MAJOR_VERSION <= 2:
             # HACK: Bypass wx 2.8 call to Enable(True) when app is constructed
-            if not self.GetCount():
+            if not self.Count:
                 enable = False
         
         return wx.Choice.Enable(self, enable)
+    
+    
+    ## Resets the field with the priority list or default attribute
+    def Reset(self):
+        if not self.Count:
+            return False
+        
+        for O in self.Priority:
+            if O in self.Strings:
+                return self.SetStringSelection(O)
+        
+        if self.DefaultIndex <= self.Count:
+            return self.SetSelection(self.DefaultIndex)
+        
+        return False
+        
+        
     
     
     ## Sets choices available wx.Choice instances
@@ -71,17 +89,17 @@ class Choice(wx.Choice):
     ## Overrides default behavior to reset to default in case of error
     #  
     #  FIXME: How to get object instance in traceback???
-    def SetSelection(self, *args, **kwargs):
+    def SetSelection(self, index):
         try:
-            wx.Choice.SetSelection(self, *args, **kwargs)
+            wx.Choice.SetSelection(self, index)
             
-            return True
+            return self.Selection == index
         
         except:
             print(u'\nWARNING:\n    Error when attempting to call {}.SetSelection.\n    Setting default selection.\n    Error output below:\n'.format(__name__))
             print(traceback.format_exc())
             
-            if self.GetCount():
-                self.SetSelection(self.default)
+            if self.Count:
+                wx.Choice.SetSelection(self.DefaultIndex)
         
         return False
