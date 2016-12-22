@@ -18,3 +18,18 @@ def FieldEnabled(field):
     
     else:
         return field.IsEnabled()
+
+
+## Tests multiple fields
+#  
+#  \return
+#    \b \e bool : True if all fields are enabled
+def FieldsEnabled(field_list):
+    if isinstance(field_list, (tuple, list)):
+        return FieldEnabled(field_list)
+    
+    for F in field_list:
+        if not FieldEnabled(F):
+            return False
+    
+    return True
