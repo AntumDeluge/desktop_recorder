@@ -542,6 +542,12 @@ class Options(wx.Dialog):
         return True
     
     
+    ## Reset all option fields to default or priority values
+    def ResetDefaults(self):
+        for F in self.GetOptionFields():
+            F.Reset()
+    
+    
     ## Loads a list of available audio input devices into memory
     def SetAlsaInput(self):
         # Reset input devices
