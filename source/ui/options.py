@@ -385,10 +385,34 @@ class Options(wx.Dialog):
             
             capture_device = choice.GetStringSelection()
             
-            print(u'\nDEBUG: Selected capture device: {}'.format(capture_device))
+            retval = False
+            
+            # Save index to update for new audio input device list
+            saved_index = self.sel_audio.GetSelection()
+            
+            # Input device list needs to be refreshed
+            self.sel_audio.Clear()
             
             if capture_device == u'alsa':
-                print(u'Setting alsa input devices ...')
+                retval = self.SetAlsaInput()
+            
+            # wx.Choice doesn't automatically enable/disable itself in older wx versions
+            else:
+                legacy_enable = False
+            
+            if self.sel_audio.GetCount():
+                legacy_enable = True
+                
+                if saved_index == wx.NOT_FOUND:
+                    self.sel_audio.SetSelection(self.sel_audio.default)
+                
+                else:
+                    self.sel_audio.SetSelection(saved_index)
+            
+            if wx.MAJOR_VERSION >= 2:
+                self.sel_audio.Enable(legacy_enable)
+            
+            return retval
     
     
     ## Sets tooltips for device fields
@@ -514,26 +538,12 @@ class Options(wx.Dialog):
             self.ti_target.SetValue(dest.GetPath())
     
     
-    ## Sets the list of audio codecs available from FFmpeg
-    #  
-    #  \param codec_list
-    #    \b \e tuple|list : String list of codec names
-    #  \return
-    #    \b \e bool : True if list was set successfully
-    def SetAudioCodecs(self, codec_list):
-        for C in self.pnl_audio.GetChildren():
-            if isinstance(C, wx.Choice) and C.GetName() == u'acodec':
-                C.Set(codec_list)
-                
-                return True
-        
-        return False
-    
-    
     ## Loads a list of available audio input devices into memory
-    def SetAudioInputDevices(self):
+    def SetAlsaInput(self):
         # Reset input devices
         self.audio_inputs = []
+        
+        retval = False
         
         index = self.sel_a_cap.FindString(u'alsa')
         if index != wx.NOT_FOUND:
@@ -544,7 +554,6 @@ class Options(wx.Dialog):
             else:
                 output = Execute((CMD_arecord, u'--list-devices',)).split(u'\n')
                 
-                print
                 for LI in output:
                     if LI.startswith(u'card '):
                         card = LI.split(u',')
@@ -561,7 +570,25 @@ class Options(wx.Dialog):
                         
                         self.sel_audio.Append(hw_id)
                         
-                        print(u'\nDEBUG: Hardware ID: {}'.format(hw_id))
+                        retval = True
+        
+        return retval
+    
+    
+    ## Sets the list of audio codecs available from FFmpeg
+    #  
+    #  \param codec_list
+    #    \b \e tuple|list : String list of codec names
+    #  \return
+    #    \b \e bool : True if list was set successfully
+    def SetAudioCodecs(self, codec_list):
+        for C in self.pnl_audio.GetChildren():
+            if isinstance(C, wx.Choice) and C.GetName() == u'acodec':
+                C.Set(codec_list)
+                
+                return True
+        
+        return False
     
     
     ## TODO: Doxygen
