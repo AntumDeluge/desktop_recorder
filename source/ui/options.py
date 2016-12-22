@@ -33,6 +33,7 @@ class Options(wx.Dialog):
         wx.Dialog.__init__(self, parent, window_id, title, size=(300, 450), style=style|wx.RESIZE_BORDER)
         
         # Ensure that dialog is not initially displayed
+        # FIXME: Writes to options file
         self.Show(False)
         
         self.SetIcon(GetIcon(u'logo'))
@@ -70,7 +71,7 @@ class Options(wx.Dialog):
         # *** Video *** #
         
         self.chk_video = wx.CheckBox(page1, ID.VIDEO, u'Include Video', name=u'video')
-        self.chk_video.default = True
+        self.chk_video.Default = True
         
         self.pnl_video = wx.Panel(page1, style=PANEL_BORDER)
         
@@ -78,10 +79,10 @@ class Options(wx.Dialog):
         self.displays = []
         
         self.sel_display = Choice(self.pnl_video, name=u'vinput')
-        self.sel_display.default = 0
+        self.sel_display.Default = 0
         
         self.dsp_label = wx.StaticText(self.pnl_video, label=u'Unnamed device')
-        self.dsp_label.default = self.dsp_label.GetLabel()
+        self.dsp_label.Default = self.dsp_label.GetLabel()
         
         sel_v_cap = Choice(self.pnl_video, choices=vdevices, name=u'vcapture')
         sel_v_cap.defs = vdev_defs
@@ -94,27 +95,27 @@ class Options(wx.Dialog):
         if u'video' in codecs:
             self.SetVideoCodecs(codecs[u'video'])
         
-        sel_vcodec.default = sel_vcodec.GetStrings()[0]
+        sel_vcodec.Default = sel_vcodec.GetStrings()[0]
         for C in vcodecs:
             if C in sel_vcodec.GetStrings():
-                sel_vcodec.default = C
+                sel_vcodec.Default = C
                 break
         
-        sel_vcodec.SetStringSelection(sel_vcodec.default)
+        sel_vcodec.SetStringSelection(sel_vcodec.Default)
         
         sel_vbitrate = OwnerDrawnComboBox(self.pnl_video, name=u'vbitrate')
-        sel_vbitrate.default = u''
         
         ti_quality = wx.TextCtrl(self.pnl_video, name=u'quality')
-        ti_quality.default = u'-1'
+        ti_quality.Default = u'-1'
         
         sel_framerate = Choice(self.pnl_video, choices=framerates, name=u'framerate')
-        sel_framerate.default = u'30'
+        
+        sel_framerate.Priority = (u'30', u'29.976', u'25', u'24.976',)
         
         # *** Audio *** #
         
         self.chk_audio = wx.CheckBox(page2, ID.AUDIO, u'Include Audio', name=u'audio')
-        self.chk_audio.default = True
+        self.chk_audio.Default = True
         
         self.pnl_audio = wx.Panel(page2, style=PANEL_BORDER)
         
@@ -122,15 +123,15 @@ class Options(wx.Dialog):
         self.audio_inputs = []
         
         self.sel_audio = Choice(self.pnl_audio, name=u'ainput')
-        self.sel_audio.default = 0
         
         self.aud_label = wx.StaticText(self.pnl_audio, label=u'No devices')
-        self.aud_label.default = self.dsp_label.GetLabel()
+        self.aud_label.Default = self.dsp_label.GetLabel()
         
         self.sel_a_cap = Choice(self.pnl_audio, choices=adevices, name=u'acapture')
         self.sel_a_cap.defs = adev_defs
-        self.sel_a_cap.SetSelection(0)
         self.sel_a_cap.SetToolTipString(self.sel_a_cap.defs[0])
+        
+        self.sel_a_cap.Priority = (u'alsa',u'pulse',)
         
         sel_acodec = Choice(self.pnl_audio, choices=sorted(acodecs), name=u'acodec')
         
@@ -138,34 +139,34 @@ class Options(wx.Dialog):
         if u'audio' in codecs:
             self.SetAudioCodecs(codecs[u'audio'])
         
-        sel_acodec.default = sel_acodec.GetStrings()[0]
+        sel_acodec.Default = sel_acodec.GetStrings()[0]
         for C in acodecs:
             if C in sel_acodec.GetStrings():
-                sel_acodec.default = C
+                sel_acodec.Default = C
                 break
         
-        sel_acodec.SetStringSelection(sel_acodec.default)
+        sel_acodec.SetStringSelection(sel_acodec.Default)
         
         sel_bitrate = OwnerDrawnComboBox(self.pnl_audio, choices=bitrates, name=u'bitrate')
-        sel_bitrate.default = u'128k'
+        sel_bitrate.Default = u'128k'
         
         spin_channels = wx.SpinCtrl(self.pnl_audio, name=u'channels')
-        spin_channels.default = 1
+        spin_channels.Default = 1
         
         sel_samplerate = Choice(self.pnl_audio, choices=samplerates, name=u'samplerate')
-        sel_samplerate.default = u'44100'
+        sel_samplerate.Default = u'44100'
         
         # *** Output *** #
         
         ti_filename = wx.TextCtrl(self, name=u'filename')
-        ti_filename.default = u'out'
+        ti_filename.Default = u'out'
         
         self.sel_container = Choice(self, choices=containers, name=u'container')
-        self.sel_container.default = u'avi'
+        self.sel_container.Default = u'avi'
         
         btn_target = wx.Button(self, label=u'Folder')
         self.ti_target = wx.TextCtrl(self, name=u'dest')
-        self.ti_target.default = u'{}/Videos'.format(PATH_home)
+        self.ti_target.Default = u'{}/Videos'.format(PATH_home)
         
         # *** Event handlers *** #
         
@@ -429,7 +430,7 @@ class Options(wx.Dialog):
             
             if self.sel_audio.GetCount():
                 if saved_index == wx.NOT_FOUND:
-                    self.sel_audio.SetSelection(self.sel_audio.default)
+                    self.sel_audio.SetSelection(self.sel_audio.Default)
                 
                 else:
                     self.sel_audio.SetSelection(saved_index)
@@ -660,6 +661,6 @@ class Options(wx.Dialog):
         opts_list = []
         for C in list(self.GetChildren()) + list(self.pnl_video.GetChildren()) + list(self.pnl_video.GetChildren()):
             if isinstance(C, usable_types):
-                opts_list.append(u'{}={}'.format(C.GetName(), C.default))
+                opts_list.append(u'{}={}'.format(C.GetName(), C.Default))
         
         return self.WriteOptions(opts_list)
