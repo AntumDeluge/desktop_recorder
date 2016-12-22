@@ -31,6 +31,7 @@ class Options(wx.Dialog):
     def __init__(self, parent, window_id, title, style=wx.DEFAULT_DIALOG_STYLE):
         wx.Dialog.__init__(self, parent, window_id, title, size=(300, 450), style=style|wx.RESIZE_BORDER)
         
+        # Ensure that dialog is not initially displayed
         self.Show(False)
         
         self.SetIcon(GetIcon(u'logo'))
@@ -116,7 +117,7 @@ class Options(wx.Dialog):
         
         self.pnl_audio = wx.Panel(page2, style=PANEL_BORDER)
         
-        # Filled with list of Display instances when self.InitDisplays is called
+        # Filled with list of audio input device instances
         self.audio_inputs = []
         
         self.sel_audio = Choice(self.pnl_audio, name=u'ainput')
@@ -304,7 +305,7 @@ class Options(wx.Dialog):
         self.ParseOptions()
         
         # Call after ParseOptions
-        self.InitDisplays()
+        self.InitOptions()
         
         self.chk_video.SetValue(self.options[u'video'])
         self.chk_audio.SetValue(self.options[u'audio'])
@@ -377,10 +378,52 @@ class Options(wx.Dialog):
         return False
     
     
+    ## Initialize field values
+    def InitOptions(self):
+        print(u'\nDEBUG: Initializing option fields')
+        
+        field_list = [self.chk_video, self.chk_audio] + list(self.pnl_video.GetChildren()) + list(self.pnl_audio.GetChildren())
+        
+        for C in field_list:
+            c_name = C.GetName()
+            
+            # Compare field names against parsed options keys
+            if c_name in self.options:
+                value = self.options[c_name]
+                
+                if isinstance(C, (wx.TextCtrl, wx.CheckBox, wx.SpinCtrl)):
+                    C.SetValue(value)
+                    continue
+                
+                if isinstance(C, wx.Choice):
+                    # Some wx.Choice field values are stored as integers & need to be converted to string
+                    if not isinstance(value, (unicode, str)):
+                        value = unicode(value)
+                    
+                    C.SetStringSelection(value)
+                    
+                    try:
+                        C.SetToolTipString(C.defs[C.GetSelection()])
+                    
+                    except AttributeError:
+                        pass
+        
+        # *** Actions to take after all fields are updated *** #
+        
+        self.InitDisplays()
+        
+        self.OnSelectAudioCapture(self.sel_a_cap)
+    
+    
     ## Sets tooltips & updates audio input devices list
     def OnSelectAudioCapture(self, event=None):
         if event:
-            choice = event.GetEventObject()
+            if isinstance(event, wx.Choice):
+                choice = event
+            
+            else:
+                choice = event.GetEventObject()
+            
             choice.SetToolTipString(choice.defs[choice.GetSelection()])
             
             capture_device = choice.GetStringSelection()
@@ -396,23 +439,16 @@ class Options(wx.Dialog):
             if capture_device == u'alsa':
                 retval = self.SetAlsaInput()
             
-            # wx.Choice doesn't automatically enable/disable itself in older wx versions
-            else:
-                legacy_enable = False
-            
             if self.sel_audio.GetCount():
-                legacy_enable = True
-                
                 if saved_index == wx.NOT_FOUND:
                     self.sel_audio.SetSelection(self.sel_audio.default)
                 
                 else:
                     self.sel_audio.SetSelection(saved_index)
             
-            if wx.MAJOR_VERSION >= 2:
-                self.sel_audio.Enable(legacy_enable)
-            
             return retval
+        
+        return False
     
     
     ## Sets tooltips for device fields
@@ -429,12 +465,14 @@ class Options(wx.Dialog):
                 self.SetDisplayName()
     
     
-    ## Actions to take when the Options window if shown/hidden
+    ## Write settings to file when options window is hidden
     #  
-    #  FIXME: These fields should be set at all times, not just when shown
+    #  FIXME: Write settings to file when options window is hidden ...
+    #         Do not change values
     def OnShow(self, event=None):
-        field_list = list(self.GetChildren()) + list(self.pnl_video.GetChildren()) + list(self.pnl_audio.GetChildren())
+        field_list = [self.chk_video, self.chk_audio] + list(self.pnl_video.GetChildren()) + list(self.pnl_audio.GetChildren())
         
+        '''
         if self.IsShown():
             for C in field_list:
                 c_name = C.GetName()
@@ -460,31 +498,32 @@ class Options(wx.Dialog):
                             pass
         
         else:
-            # Set & write options when window is hidden
-            for C in field_list:
-                c_name = C.GetName()
-                
-                if isinstance(C, wx.TextCtrl):
-                    self.options[c_name] = C.GetValue()
-                    
-                    # Reset field
-                    C.Clear()
-                    continue
-                
-                if isinstance(C, (wx.CheckBox, wx.SpinCtrl)):
-                    self.options[c_name] = C.GetValue()
-                    
-                    # Reset field
-                    C.SetValue(C.default)
-                    continue
-                
-                if isinstance(C, wx.Choice):
-                    self.options[c_name] = C.GetStringSelection()
-                    
-                    # Reset field
-                    C.SetSelection(0)
+        '''
+        # Set & write options when window is hidden
+        for C in field_list:
+            c_name = C.GetName()
             
-            self.WriteOptions()
+            if isinstance(C, wx.TextCtrl):
+                self.options[c_name] = C.GetValue()
+                
+                # Reset field
+                C.Clear()
+                continue
+            
+            if isinstance(C, (wx.CheckBox, wx.SpinCtrl)):
+                self.options[c_name] = C.GetValue()
+                
+                # Reset field
+                C.SetValue(C.default)
+                continue
+            
+            if isinstance(C, wx.Choice):
+                self.options[c_name] = C.GetStringSelection()
+                
+                # Reset field
+                C.SetSelection(0)
+        
+        self.WriteOptions()
         
         if event:
             event.Skip()
