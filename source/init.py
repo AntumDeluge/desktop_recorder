@@ -28,7 +28,7 @@ for A in args:
         deletefile = u'{}/{}'.format(PATH_confdir, A.split(u'-')[1])
         
         if not os.path.exists(deletefile):
-            print(u'Error: Cannot delete non-existent file: {}'.format(deletefile))
+            print(u'Warning: Cannot delete non-existent file: {}'.format(deletefile))
             sys.exit(errno.ENOENT)
         
         if os.path.isdir(deletefile):
