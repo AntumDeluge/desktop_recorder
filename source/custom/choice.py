@@ -16,6 +16,7 @@ class Choice(wx.Choice):
         wx.Choice.__init__(self, parent, window_id, pos, size, choices, style, validator, name)
         
         self.DefaultIndex = 0
+        self.Default = self.DefaultIndex
         self.Priority = []
     
     
