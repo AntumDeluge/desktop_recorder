@@ -317,14 +317,6 @@ class Options(wx.Dialog):
         self.SetMinSize(self.GetSize())
     
     
-    ## Ensure that options are saved when app exits
-    #  
-    #  FIXME: wx 2.8 emits EVT_SHOW when app closes,
-    #  so self.WriteOptions is called twice.
-    def __del__(self):
-        self.WriteOptions()
-    
-    
     ## Checks if it is safe to begin recording
     #  
     #  At least one of video & audio must be enabled
