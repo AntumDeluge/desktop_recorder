@@ -5,3 +5,4 @@
 * The "Pause" option does not work yet.
 * If the program doesn't shutdown properly you will have to delete "~/.config/desktop_recorder/lock"
 
+### Project status: Unstable
