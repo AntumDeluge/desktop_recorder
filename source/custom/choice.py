@@ -6,7 +6,7 @@
 # See: LICENSE.txt
 
 
-import wx
+import traceback, wx
 
 
 ## A wx.Choice class that is compatible with older wx versions
@@ -14,6 +14,8 @@ class Choice(wx.Choice):
     def __init__(self, parent, window_id=wx.ID_ANY, pos=wx.DefaultPosition, size=wx.DefaultSize,
             choices=[], style=0, validator=wx.DefaultValidator, name=wx.ChoiceNameStr):
         wx.Choice.__init__(self, parent, window_id, pos, size, choices, style, validator, name)
+        
+        self.default = 0
     
     
     ## Appends an item to the end of options
@@ -64,3 +66,22 @@ class Choice(wx.Choice):
         self.Clear()
         for C in choices:
             self.Append(C)
+    
+    
+    ## Overrides default behavior to reset to default in case of error
+    #  
+    #  FIXME: How to get object instance in traceback???
+    def SetSelection(self, *args, **kwargs):
+        try:
+            wx.Choice.SetSelection(self, *args, **kwargs)
+            
+            return True
+        
+        except:
+            print(u'\nWARNING:\n    Error when attempting to call {}.SetSelection.\n    Setting default selection.\n    Error output below:\n'.format(__name__))
+            print(traceback.format_exc())
+            
+            if self.GetCount():
+                self.SetSelection(self.default)
+        
+        return False
