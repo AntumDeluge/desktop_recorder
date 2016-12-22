@@ -89,7 +89,7 @@ class Icon(wx.TaskBarIcon):
     
     
     ## Actions to take when the app exits
-    def Exit(self, event):
+    def Exit(self, event=None):
         if os.path.exists(FILE_lock):
             os.remove(FILE_lock)
         
@@ -111,7 +111,7 @@ class Icon(wx.TaskBarIcon):
     
     
     ## Shows a context menu when left or right clicked
-    def OnClick(self, event):
+    def OnClick(self, event=None):
         if not self.options.CanRecord():
             self.menu.Enable(ID.REC, False)
         
@@ -122,7 +122,7 @@ class Icon(wx.TaskBarIcon):
     
     
     ## Pauses recording
-    def Pause(self, event):
+    def Pause(self, event=None):
         if self.options.video.GetValue():
             os.kill(self.P1.pid, signal.SIGSTOP)
         
@@ -136,7 +136,7 @@ class Icon(wx.TaskBarIcon):
     
     
     ## Begins recording
-    def Record(self, event):
+    def Record(self, event=None):
         def DisableThem():
             self.menu.Enable(ID.REC, False)
             self.menu.Enable(ID.OPT, False)
@@ -245,7 +245,7 @@ class Icon(wx.TaskBarIcon):
     
     
     ## Displays an about dialog
-    def ShowInfo(self, event):
+    def ShowInfo(self, event=None):
         about = wx.AboutDialogInfo()
         about.SetIcon(GetIcon(u'logo'))
         about.SetName(u'Desktop Recorder')
@@ -257,7 +257,7 @@ class Icon(wx.TaskBarIcon):
     
     
     ## Stops recording
-    def Stop(self, event):
+    def Stop(self, event=None):
         if self.options.video.GetValue() and self.options.audio.GetValue():
             os.kill(self.P1.pid, signal.SIGINT)
             os.kill(self.P2.pid, signal.SIGINT)
@@ -294,7 +294,7 @@ class Icon(wx.TaskBarIcon):
     
     
     ## Shows/Hides the options window
-    def ToggleOptions(self, event):
+    def ToggleOptions(self, event=None):
         if self.options.IsShown():
             self.options.Hide()
         
