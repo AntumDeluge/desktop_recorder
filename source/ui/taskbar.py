@@ -8,12 +8,14 @@
 
 import os, shutil, signal, subprocess, wx
 
+from custom.menu        import Menu
 from globals            import ident as ID
 from globals.ffmpeg     import CMD_ffmpeg
 from globals.files      import FILE_lock
+from globals.icons      import GetBitmap
 from globals.icons      import GetIcon
-from globals.icons      import GetImage
 from globals.license    import GetLicenseText
+from globals.settings   import APP_name
 from globals.settings   import APP_version_string
 from ui.options         import Options
 
@@ -23,80 +25,71 @@ class Icon(wx.TaskBarIcon):
     def __init__(self):
         wx.TaskBarIcon.__init__(self)
         
-        # FIXME: Icon looks ugly in wx 2.8
-        self.SetIcon(u'stop', u'Desktop Recorder')
-        
         self.options = Options(None, -1, u'Desktop Recorder Options')
         
-        # Maximum number of displays supported to prevent infinite looping
-        d_max = 20
-        d_index = 0
+        self.icons = {
+            u'continue': GetBitmap(u'continue'),
+            u'logo': GetBitmap(u'logo', 16, 16),
+            u'pause': GetBitmap(u'pause'),
+            u'record': GetBitmap(u'record'),
+            u'stop': GetBitmap(u'stop'),
+            }
         
-        self.menu_icons = [
-            GetImage(u'logo'),
-            GetImage(u'record'),
-            GetImage(u'pause'),
-            GetImage(u'stop'),
-            ]
+        self.menu = Menu()
         
-        for ico in xrange(len(self.menu_icons)):
-            self.menu_icons[ico].Rescale(16, 16, wx.IMAGE_QUALITY_HIGH)
+        mi_rec = wx.MenuItem(self.menu, ID.REC, u'Record')
+        mi_pause = wx.MenuItem(self.menu, ID.PAUSE, u'Pause')
+        mi_stop = wx.MenuItem(self.menu, ID.STOP, u'Stop')
+        mi_options = wx.MenuItem(self.menu, ID.OPT, u'Show/Hide Options')
+        mi_about = wx.MenuItem(self.menu, ID.ABOUT, u'About')
+        mi_exit = wx.MenuItem(self.menu, ID.EXIT, u'Quit')
         
-        # --- Processes for ffmpeg
-        self.P1 = None
-        self.P2 = None
-        self.IsPaused = False
+        mi_rec.SetBitmap(self.icons[u'record'])
+        mi_pause.SetBitmap(self.icons[u'pause'])
+        mi_stop.SetBitmap(self.icons[u'stop'])
+        mi_options.SetBitmap(self.icons[u'logo'])
         
-        self.menu = wx.Menu()
-        self.menu_rec = wx.MenuItem(self.menu, ID.REC, u'Record')
-        self.menu_pause = wx.MenuItem(self.menu, ID.PAUSE, u'Pause')
-        self.menu_stop = wx.MenuItem(self.menu, ID.STOP, u'Stop')
-        self.menu_options = wx.MenuItem(self.menu, ID.OPT, u'Show/Hide Options')
-        self.menu_about = wx.MenuItem(self.menu, ID.ABOUT, u'About')
-        self.menu_exit = wx.MenuItem(self.menu, ID.EXIT, u'Quit')
-        
-        self.menu_rec.SetBitmap(self.menu_icons[1].ConvertToBitmap())
-        self.menu_pause.SetBitmap(self.menu_icons[2].ConvertToBitmap())
-        self.menu_stop.SetBitmap(self.menu_icons[3].ConvertToBitmap())
-        self.menu_options.SetBitmap(self.menu_icons[0].ConvertToBitmap())
-        
-        self.menu.AppendItem(self.menu_rec)
-        self.menu.AppendItem(self.menu_pause)
-        self.menu.AppendItem(self.menu_stop)
+        self.menu.AppendItem(mi_rec)
+        self.menu.AppendItem(mi_pause)
+        self.menu.AppendItem(mi_stop)
         self.menu.AppendSeparator()
-        self.menu.AppendItem(self.menu_options)
-        self.menu.AppendItem(self.menu_about)
+        self.menu.AppendItem(mi_options)
+        self.menu.AppendItem(mi_about)
         self.menu.AppendSeparator()
-        self.menu.AppendItem(self.menu_exit)
+        self.menu.AppendItem(mi_exit)
         
         self.menu.Enable(ID.PAUSE, False)
         self.menu.Enable(ID.STOP, False)
         
+        # *** Recording state *** #
+        
+        self.recording = False
+        self.paused = False
+        
+        # --- Processes for ffmpeg
+        self.P1 = None
+        self.P2 = None
+        
+        # *** Actions *** #
+        
+        self.current_icon = None
+        # FIXME: Icon looks ugly in wx 2.8
+        self.SetIcon(u'logo', u'Desktop Recorder')
+        
         # *** Event handlers *** #
         
-        wx.EVT_MENU(self.menu, ID.REC, self.Record)
-        wx.EVT_MENU(self.menu, ID.PAUSE, self.Pause)
-        wx.EVT_MENU(self.menu, ID.STOP, self.Stop)
+        wx.EVT_MENU(self.menu, ID.REC, self.OnRecord)
+        wx.EVT_MENU(self.menu, ID.PAUSE, self.OnPause)
+        wx.EVT_MENU(self.menu, ID.STOP, self.OnStop)
         wx.EVT_MENU(self.menu, ID.OPT, self.ToggleOptions)
         wx.EVT_MENU(self.menu, ID.ABOUT, self.ShowInfo)
-        wx.EVT_MENU(self.menu, ID.EXIT, self.Exit)
+        wx.EVT_MENU(self.menu, ID.EXIT, self.OnExit)
         
         wx.EVT_TASKBAR_LEFT_DOWN(self, self.OnClick)
         wx.EVT_TASKBAR_RIGHT_DOWN(self, self.OnClick)
         
         # This does not seem to work with wxGtk
         wx.EVT_TASKBAR_LEFT_DCLICK(self, self.ToggleOptions)
-    
-    
-    ## Actions to take when the app exits
-    def Exit(self, event=None):
-        self.options.WriteOptions()
-        
-        if os.path.exists(FILE_lock):
-            os.remove(FILE_lock)
-        
-        self.options.Destroy()
-        self.Destroy()
     
     
     ## Gets the size of a display
@@ -112,6 +105,16 @@ class Icon(wx.TaskBarIcon):
         return (self.displays[d_index].GetGeometry()[2:])
     
     
+    ## TODO: Dixygen
+    def IsPaused(self):
+        return self.paused
+    
+    
+    ## TODO: Doxygen
+    def IsRecording(self):
+        return self.recording
+    
+    
     ## Shows a context menu when left or right clicked
     def OnClick(self, event=None):
         if not self.options.CanRecord():
@@ -123,8 +126,22 @@ class Icon(wx.TaskBarIcon):
         self.PopupMenu(self.menu)
     
     
+    ## Actions to take when the app exits
+    def OnExit(self, event=None):
+        self.options.WriteOptions()
+        
+        if os.path.exists(FILE_lock):
+            os.remove(FILE_lock)
+        
+        self.options.Destroy()
+        self.Destroy()
+    
+    
     ## Pauses recording
-    def Pause(self, event=None):
+    def OnPause(self, event=None):
+        self.SetStatePause()
+        return
+        
         if self.options.video.GetValue():
             os.kill(self.P1.pid, signal.SIGSTOP)
         
@@ -134,11 +151,15 @@ class Icon(wx.TaskBarIcon):
         self.IsPaused = True
         self.menu.Enable(ID.REC, True)
         self.menu.Enable(ID.PAUSE, False)
-        self.SetIcon(GetIcon(u'pause'))
+        self.SetIcon(u'pause')
     
     
     ## Begins recording
-    def Record(self, event=None):
+    def OnRecord(self, event=None):
+        self.SetStateRecord()
+        return
+        
+        '''
         def DisableThem():
             self.menu.Enable(ID.REC, False)
             self.menu.Enable(ID.OPT, False)
@@ -224,33 +245,100 @@ class Icon(wx.TaskBarIcon):
         self.menu.Enable(ID.PAUSE, True)
         self.menu.Enable(ID.STOP, True)
         self.menu.Enable(ID.EXIT, False)
-        self.SetIcon(GetIcon(u'record'))
+        '''
+    
+    
+    ## TODO: Doxygen
+    def OnStop(self, event=None):
+        self.SetStateStop()
     
     
     ## Overrides inherited method to try & fix appearance of icon in older wx version
     #  
     #  \param icon
-    #    \b \e string or wx.Icon : Icon to be displayed in task bar
+    #    \b \e string : Icon to be displayed in task bar
     #  \param tooltip
     #    \b \e string : Tooltip to display when cursor hovers over taskbar icon
     #  \return
     #    \b \e bool : True if icon set
     def SetIcon(self, icon, tooltip=wx.EmptyString):
-        if isinstance(icon, (unicode, str)):
-            if wx.MAJOR_VERSION > 2:
-                icon = GetIcon(icon)
+        # Refreshes the icon
+        if icon != self.current_icon:
+            self.RemoveIcon()
+            wx.SafeYield()
             
-            else:
-                icon = GetIcon(icon, 24, 24)
+            self.current_icon = icon
+            icon = GetIcon(icon, 24, 24)
+            
+            return wx.TaskBarIcon.SetIcon(self, icon, tooltip)
         
-        return wx.TaskBarIcon.SetIcon(self, icon, tooltip)
+        return False
+    
+    
+    ## TODO: Doxygen
+    #  
+    #  TODO: Define
+    def SetStatePause(self):
+        self.paused = not self.paused
+        
+        if self.IsPaused():
+            icon = u'continue'
+        
+        else:
+            icon = u'pause'
+        
+        pause_index = self.menu.GetIdIndex(ID.PAUSE)
+        
+        # Remove menu item to update icon
+        mi_pause = self.menu.Remove(ID.PAUSE)
+        mi_pause.SetBitmap(self.icons[icon])
+        self.menu.InsertItem(pause_index, mi_pause)
+        
+        self.SetIcon(u'pause')
+    
+    
+    ## Initializes recording state
+    def SetStateRecord(self):
+        self.recording = True
+        
+        if self.options.IsShown():
+            self.options.Hide()
+        
+        # Ensure that no options can be changed during recording
+        self.options.Disable()
+        
+        for MI in (ID.REC, ID.OPT, ID.ABOUT, ID.EXIT,):
+            self.menu.Enable(MI, False)
+        
+        for MI in (ID.STOP, ID.PAUSE,):
+            self.menu.Enable(MI, True)
+        
+        self.SetIcon(u'record')
+    
+    
+    ## TODO: Doxygen
+    def SetStateStop(self):
+        self.recording = False
+        self.paused = False
+        
+        self.options.Enable()
+        
+        self.menu.FindItemById(ID.PAUSE).SetBitmap(self.icons[u'pause'])
+        
+        for MI in (ID.REC, ID.OPT, ID.ABOUT, ID.EXIT,):
+            self.menu.Enable(MI, True)
+        
+        for MI in (ID.STOP, ID.PAUSE,):
+            self.menu.Enable(MI, False)
+        
+        self.SetIcon(u'logo')
     
     
     ## Displays an about dialog
     def ShowInfo(self, event=None):
         about = wx.AboutDialogInfo()
         about.SetIcon(GetIcon(u'logo'))
-        about.SetName(u'Desktop Recorder')
+        about.SetName(APP_name)
         about.SetVersion(APP_version_string)
         about.SetCopyright(u'(c) 2012 Jordan Irwin')
         about.SetLicense(GetLicenseText())
@@ -291,7 +379,7 @@ class Icon(wx.TaskBarIcon):
         self.menu.Enable(ID.PAUSE, False)
         self.menu.Enable(ID.STOP, False)
         self.menu.Enable(ID.EXIT, True)
-        self.SetIcon(GetIcon(u'stop'))
+        self.SetIcon(u'stop')
         self.options.panel.Enable()
     
     
