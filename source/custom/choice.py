@@ -61,6 +61,9 @@ class Choice(wx.Choice):
             return False
         
         for O in self.Priority:
+            if type(O) == int:
+                O = unicode(O)
+            
             if O in self.Strings:
                 return self.SetStringSelection(O)
         
