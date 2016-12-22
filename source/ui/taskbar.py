@@ -90,6 +90,8 @@ class Icon(wx.TaskBarIcon):
     
     ## Actions to take when the app exits
     def Exit(self, event=None):
+        self.options.WriteOptions()
+        
         if os.path.exists(FILE_lock):
             os.remove(FILE_lock)
         
