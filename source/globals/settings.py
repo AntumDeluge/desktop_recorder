@@ -75,6 +75,12 @@ def GetSetting(key_search):
 
 APP_name = GetSetting(u'NAME')
 APP_version_string = GetSetting(u'VERSION')
+APP_version_status = GetSetting(u'STATUS')
+
+if APP_version_status:
+    APP_version_string = u'{} {}'.format(APP_version_string, APP_version_status)
+
+
 
 APP_version = []
 APP_version_maj = None
