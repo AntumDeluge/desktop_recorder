@@ -703,7 +703,7 @@ class Options(wx.Dialog):
             )
         
         opts_list = []
-        for C in list(self.GetChildren()) + list(self.pnl_video.GetChildren()) + list(self.pnl_video.GetChildren()):
+        for C in self.GetOptionFields():
             if isinstance(C, usable_types):
                 opts_list.append(u'{}={}'.format(C.GetName(), C.Default))
         
