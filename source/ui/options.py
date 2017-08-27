@@ -80,16 +80,16 @@ class Options(wx.Dialog):
         # Filled with list of Display instances when self.InitDisplays is called
         self.displays = []
         
-        self.sel_display = Choice(self.pnl_video, name=u'vinput')
-        self.sel_display.Default = 0
+        self.sel_vin = Choice(self.pnl_video, name=u'vinput')
+        self.sel_vin.Default = 0
         
         self.dsp_label = wx.StaticText(self.pnl_video, label=u'Unnamed device')
         self.dsp_label.Default = self.dsp_label.GetLabel()
         
-        sel_v_cap = Choice(self.pnl_video, choices=vdevices, name=u'vcapture')
-        sel_v_cap.defs = vdev_defs
-        sel_v_cap.SetSelection(0)
-        sel_v_cap.SetToolTipString(sel_v_cap.defs[0])
+        sel_vcodec = Choice(self.pnl_video, choices=vdevices, name=u'vcapture')
+        sel_vcodec.defs = vdev_defs
+        sel_vcodec.SetSelection(0)
+        sel_vcodec.SetToolTipString(sel_vcodec.defs[0])
         
         sel_vcodec = Choice(self.pnl_video, choices=sorted(vcodecs), name=u'vcodec')
         
@@ -123,16 +123,16 @@ class Options(wx.Dialog):
         # Filled with list of audio input device instances
         self.audio_inputs = []
         
-        self.sel_audio = Choice(self.pnl_audio, name=u'ainput')
+        self.sel_ain = Choice(self.pnl_audio, name=u'ainput')
         
         self.aud_label = wx.StaticText(self.pnl_audio, label=u'No devices')
         self.aud_label.Default = self.dsp_label.GetLabel()
         
-        self.sel_a_cap = Choice(self.pnl_audio, choices=adevices, name=u'acapture')
-        self.sel_a_cap.defs = adev_defs
-        self.sel_a_cap.SetToolTipString(self.sel_a_cap.defs[0])
+        self.sel_adev = Choice(self.pnl_audio, choices=adevices, name=u'acapture')
+        self.sel_adev.defs = adev_defs
+        self.sel_adev.SetToolTipString(self.sel_adev.defs[0])
         
-        self.sel_a_cap.Priority = (u'alsa',u'pulse',)
+        self.sel_adev.Priority = (u'alsa',u'pulse',)
         
         sel_acodec = Choice(self.pnl_audio, choices=sorted(acodecs), name=u'acodec')
         
@@ -174,11 +174,10 @@ class Options(wx.Dialog):
         self.chk_video.Bind(wx.EVT_CHECKBOX, self.ToggleOptions)
         self.chk_audio.Bind(wx.EVT_CHECKBOX, self.ToggleOptions)
         
-        sel_v_cap.Bind(wx.EVT_CHOICE, self.OnSelectDevice)
-        self.sel_a_cap.Bind(wx.EVT_CHOICE, self.OnSelectAudioCapture)
+        sel_vdev.Bind(wx.EVT_CHOICE, self.OnSelectDevice)
+        self.sel_adev.Bind(wx.EVT_CHOICE, self.OnSelectAudioCapture)
         
-        # TODO: Rename these to 'inputs'
-        self.sel_display.Bind(wx.EVT_CHOICE, self.OnSelectDisplay)
+        self.sel_vin.Bind(wx.EVT_CHOICE, self.OnSelectDisplay)
         
         btn_target.Bind(wx.EVT_BUTTON, self.OnSelectTarget)
         
@@ -194,13 +193,13 @@ class Options(wx.Dialog):
         # Row 1
         row = 0
         lyt_video.Add(wx.StaticText(self.pnl_video, label=u'Display'), (row, 0), flag=ALIGN_TEXT|wx.TOP, border=5)
-        lyt_video.Add(self.sel_display, (row, 1), flag=wx.EXPAND|wx.TOP, border=5)
+        lyt_video.Add(self.sel_vin, (row, 1), flag=wx.EXPAND|wx.TOP, border=5)
         lyt_video.Add(self.dsp_label, (row, 2), flag=ATEXT_LEFT|wx.TOP, border=5)
         
         # Row 2
         row += 1
         lyt_video.Add(wx.StaticText(self.pnl_video, label=u'Capture Device'), (row, 0), flag=ALIGN_TEXT, border=5)
-        lyt_video.Add(sel_v_cap, (row, 1), (1, 2))
+        lyt_video.Add(sel_vdev, (row, 1), (1, 2))
         
         # Row 3
         row += 1
@@ -232,13 +231,13 @@ class Options(wx.Dialog):
         # Row 1
         row = 0
         lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Audio Input'), (row, 0), flag=ALIGN_TEXT|wx.TOP, border=5)
-        lyt_audio.Add(self.sel_audio, (row, 1), flag=wx.TOP, border=5)
+        lyt_audio.Add(self.sel_ain, (row, 1), flag=wx.TOP, border=5)
         lyt_audio.Add(self.aud_label, (row, 2), flag=ATEXT_LEFT|wx.TOP, border=5)
         
         # Row 2
         row += 1
         lyt_audio.Add(wx.StaticText(self.pnl_audio, label=u'Capture Device'), (row, 0), flag=ALIGN_TEXT, border=5)
-        lyt_audio.Add(self.sel_a_cap, (row, 1), (1, 2))
+        lyt_audio.Add(self.sel_adev, (row, 1), (1, 2))
         
         # Row 3
         row += 1
@@ -301,14 +300,14 @@ class Options(wx.Dialog):
         self.SetSizer(lyt_main)
         self.Layout()
         
-        # *** Actions *** #
+        # *** Post-layout Actions *** #
         
         if not os.path.isfile(FILE_options):
             self.WriteDefaultOptions()
         
         self.ParseOptions()
         
-        # Call after ParseOptions
+        # Fill fields (call after ParseOptions)
         self.InitOptions()
         
         self.chk_video.SetValue(self.options[u'video'])
@@ -371,9 +370,9 @@ class Options(wx.Dialog):
         
         if self.displays:
             for X in range(len(self.displays)):
-                self.sel_display.Append(unicode(X))
+                self.sel_vin.Append(unicode(X))
             
-            self.sel_display.SetSelection(self.options[u'vinput'])
+            self.sel_vin.SetSelection(self.options[u'vinput'])
             self.SetDisplayName()
             
             return True
@@ -410,10 +409,9 @@ class Options(wx.Dialog):
                         pass
         
         # *** Actions to take after all fields are updated *** #
-        
         self.InitDisplays()
         
-        self.OnSelectAudioCapture(self.sel_a_cap)
+        self.OnSelectAudioCapture(self.sel_adev)
     
     
     ## Sets tooltips & updates audio input devices list
@@ -432,20 +430,20 @@ class Options(wx.Dialog):
             retval = False
             
             # Save index to update for new audio input device list
-            saved_index = self.sel_audio.GetSelection()
+            saved_index = self.sel_ain.GetSelection()
             
             # Input device list needs to be refreshed
-            self.sel_audio.Clear()
+            self.sel_ain.Clear()
             
             if capture_device == u'alsa':
                 retval = self.SetAlsaInput()
             
-            if self.sel_audio.GetCount():
+            if self.sel_ain.GetCount():
                 if saved_index == wx.NOT_FOUND:
-                    self.sel_audio.SetSelection(self.sel_audio.Default)
+                    self.sel_ain.SetSelection(self.sel_ain.Default)
                 
                 else:
-                    self.sel_audio.SetSelection(saved_index)
+                    self.sel_ain.SetSelection(saved_index)
             
             return retval
         
@@ -555,11 +553,11 @@ class Options(wx.Dialog):
         
         retval = False
         
-        index = self.sel_a_cap.FindString(u'alsa')
+        index = self.sel_adev.FindString(u'alsa')
         if index != wx.NOT_FOUND:
             # alsa requires arecord to find input devices
             if not CMD_arecord:
-                self.sel_a_cap.Delete(index)
+                self.sel_adev.Delete(index)
             
             else:
                 output = Execute((CMD_arecord, u'--list-devices',)).split(u'\n')
@@ -578,7 +576,7 @@ class Options(wx.Dialog):
                         
                         self.audio_inputs.append(AudioDevice(len(self.audio_inputs), card, card_name))
                         
-                        self.sel_audio.Append(hw_id)
+                        self.sel_ain.Append(hw_id)
                         
                         retval = True
         
@@ -603,7 +601,7 @@ class Options(wx.Dialog):
     
     ## TODO: Doxygen
     def SetDisplayName(self):
-        d_index = self.sel_display.GetSelection()
+        d_index = self.sel_vin.GetSelection()
         self.dsp_label.SetLabel(self.displays[d_index].GetName())
     
     
