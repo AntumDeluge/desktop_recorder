@@ -13,3 +13,6 @@
     - xdpyinfo
     - xrandr
     - ffprobe
+- Hack ComboBox to set background color when disabled in wx 2.8
+- Make 24px icons or use SVG
+- Add option to lock message to delete lock file
