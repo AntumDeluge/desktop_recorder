@@ -95,6 +95,11 @@ class Options(wx.Dialog):
         
         self.pnl_video = wx.Panel(page1, style=PANEL_BORDER)
         
+        sel_vdev = Choice(self.pnl_video, choices=vdevices, name=odef.VDEV)
+        sel_vdev.defs = vdev_defs
+        #sel_vdev.SetSelection(0)
+        #sel_vdev.SetToolTipString(sel_vdev.defs[0])
+        
         # Filled with list of Display instances when self.InitDisplays is called
         self.displays = []
         
