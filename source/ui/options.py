@@ -30,6 +30,31 @@ from globals.paths      import PATH_confdir
 from globals.paths      import PATH_home
 
 
+class odef:
+    # Video
+    VID = u'video'
+    VIN = u'vinput'
+    VDEV = u'vdevice'
+    VFR = u'framerate'
+    VCOD= u'vcodec'
+    VBR = u'vbitrate'
+    VQ = u'quality'
+    
+    # Audio
+    AUD = u'audio'
+    AIN = u'ainput'
+    ADEV = u'adevice'
+    ACOD = u'acodec'
+    ABR = u'abitrate'
+    ACHN = u'channels'
+    ASR = u'samplerate'
+    
+    # Output
+    ONAM = u'filename'
+    OCNT = u'container'
+    OTGT = u'target'
+
+
 ## Class for the options window
 class Options(wx.Dialog):
     def __init__(self, parent, window_id, title, style=wx.DEFAULT_DIALOG_STYLE):
@@ -73,14 +98,14 @@ class Options(wx.Dialog):
         
         # *** Video *** #
         
-        self.chk_video = CheckBox(page1, ID.VIDEO, True, u'Include Video', name=u'video')
+        self.chk_video = CheckBox(page1, ID.VIDEO, True, u'Include Video', name=odef.VID)
         
         self.pnl_video = wx.Panel(page1, style=PANEL_BORDER)
         
         # Filled with list of Display instances when self.InitDisplays is called
         self.displays = []
         
-        self.sel_vin = Choice(self.pnl_video, name=u'vinput')
+        self.sel_vin = Choice(self.pnl_video, name=odef.VIN)
         self.sel_vin.Default = 0
         
         self.dsp_label = wx.StaticText(self.pnl_video, label=u'Unnamed device')
@@ -105,36 +130,36 @@ class Options(wx.Dialog):
         
         sel_vcodec.SetStringSelection(sel_vcodec.Default)
         
-        sel_vbitrate = ComboBox(self.pnl_video, name=u'vbitrate')
+        sel_vbitrate = ComboBox(self.pnl_video, name=odef.VBR)
         
-        ti_quality = TextCtrl(self.pnl_video, name=u'quality')
+        ti_quality = TextCtrl(self.pnl_video, name=odef.VQ)
         ti_quality.Default = u'-1'
         
-        sel_framerate = Choice(self.pnl_video, choices=framerates, name=u'framerate')
+        sel_framerate = Choice(self.pnl_video, choices=framerates, name=odef.VFR)
         
         sel_framerate.Priority = (u'30', u'29.976', u'25', u'24.976',)
         
         # *** Audio *** #
         
-        self.chk_audio = CheckBox(page2, ID.AUDIO, True, u'Include Audio', name=u'audio')
+        self.chk_audio = CheckBox(page2, ID.AUDIO, True, u'Include Audio', name=odef.AUD)
         
         self.pnl_audio = wx.Panel(page2, style=PANEL_BORDER)
+        
+        self.sel_adev = Choice(self.pnl_audio, choices=adevices, name=odef.ADEV)
+        self.sel_adev.defs = adev_defs
+        self.sel_adev.SetToolTipString(self.sel_adev.defs[0])
         
         # Filled with list of audio input device instances
         self.audio_inputs = []
         
-        self.sel_ain = Choice(self.pnl_audio, name=u'ainput')
+        self.sel_ain = Choice(self.pnl_audio, name=odef.AIN)
         
         self.aud_label = wx.StaticText(self.pnl_audio, label=u'No devices')
         self.aud_label.Default = self.dsp_label.GetLabel()
         
-        self.sel_adev = Choice(self.pnl_audio, choices=adevices, name=u'acapture')
-        self.sel_adev.defs = adev_defs
-        self.sel_adev.SetToolTipString(self.sel_adev.defs[0])
+        self.sel_adev.Priority = (u'alsa', u'pulse',)
         
-        self.sel_adev.Priority = (u'alsa',u'pulse',)
-        
-        sel_acodec = Choice(self.pnl_audio, choices=sorted(acodecs), name=u'acodec')
+        sel_acodec = Choice(self.pnl_audio, choices=sorted(acodecs), name=odef.ACOD)
         
         # Override default audio codec list
         if u'audio' in codecs:
@@ -148,25 +173,25 @@ class Options(wx.Dialog):
         
         sel_acodec.SetStringSelection(sel_acodec.Default)
         
-        sel_bitrate = ComboBox(self.pnl_audio, choices=bitrates, name=u'bitrate')
+        sel_bitrate = ComboBox(self.pnl_audio, choices=bitrates, name=odef.ABR)
         sel_bitrate.Default = u'128k'
         
-        spin_channels = SpinCtrl(self.pnl_audio, name=u'channels')
+        spin_channels = SpinCtrl(self.pnl_audio, name=odef.ACHN)
         spin_channels.Default = 1
         
-        sel_samplerate = Choice(self.pnl_audio, choices=samplerates, name=u'samplerate')
+        sel_samplerate = Choice(self.pnl_audio, choices=samplerates, name=odef.ASR)
         sel_samplerate.Default = u'44100'
         
         # *** Output *** #
         
-        ti_filename = TextCtrl(self, name=u'filename')
+        ti_filename = TextCtrl(self, name=odef.ONAM)
         ti_filename.Default = u'out'
         
-        self.sel_container = Choice(self, choices=containers, name=u'container')
+        self.sel_container = Choice(self, choices=containers, name=odef.OCNT)
         self.sel_container.Default = u'avi'
         
         btn_target = wx.Button(self, label=u'Folder')
-        self.ti_target = TextCtrl(self, name=u'dest')
+        self.ti_target = TextCtrl(self, name=odef.OTGT)
         self.ti_target.Default = u'{}/Videos'.format(PATH_home)
         
         # *** Event handlers *** #
@@ -591,7 +616,7 @@ class Options(wx.Dialog):
     #    \b \e bool : True if list was set successfully
     def SetAudioCodecs(self, codec_list):
         for C in self.pnl_audio.GetChildren():
-            if isinstance(C, Choice) and C.GetName() == u'acodec':
+            if isinstance(C, Choice) and C.GetName() == odef.ACOD:
                 C.Set(codec_list)
                 
                 return True
