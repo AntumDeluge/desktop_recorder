@@ -68,9 +68,6 @@ class Options(wx.Dialog):
         
         containers = GetContainers()
         
-        # These basic lists are used if SetVideoCodecs & SetAudioCodecs fail (ordered in priority)
-        vcodecs = (u'libx264', u'mpeg4', u'libxvid', u'libtheora', u'flv', u'ffvhuff', u'huffyuv')
-        acodecs = (u'libfdk_aac', u'aac', u'libmp3lame', u'libvorbis', u'pcm_s16le', u'libtwolame', u'flac')
         codecs = GetEncoders()
         
         samplerates = (u'22050', u'44100', u'48000')
@@ -102,38 +99,33 @@ class Options(wx.Dialog):
         self.displays = []
         
         self.sel_vin = Choice(self.pnl_video, name=odef.VIN)
-        self.sel_vin.Default = 0
         
         self.dsp_label = wx.StaticText(self.pnl_video, label=u'Unnamed device')
         self.dsp_label.Default = self.dsp_label.GetLabel()
         
-        sel_vcodec = Choice(self.pnl_video, choices=vdevices, name=u'vcapture')
-        sel_vcodec.defs = vdev_defs
-        sel_vcodec.SetSelection(0)
-        sel_vcodec.SetToolTipString(sel_vcodec.defs[0])
-        
-        sel_vcodec = Choice(self.pnl_video, choices=sorted(vcodecs), name=u'vcodec')
-        
-        # Override default video codec list
-        if u'video' in codecs:
-            self.SetVideoCodecs(codecs[u'video'])
-        
-        sel_vcodec.Default = sel_vcodec.GetStrings()[0]
-        for C in vcodecs:
-            if C in sel_vcodec.GetStrings():
-                sel_vcodec.Default = C
-                break
-        
-        sel_vcodec.SetStringSelection(sel_vcodec.Default)
+        sel_vcodec = Choice(self.pnl_video, name=odef.VCOD)
+        sel_vcodec.Priority = (
+            u'libx264',
+            u'mpeg4',
+            u'libxvid',
+            u'libtheora',
+            u'flv',
+            u'ffvhuff',
+             u'huffyuv',
+            )
         
         sel_vbitrate = ComboBox(self.pnl_video, name=odef.VBR)
         
         ti_quality = TextCtrl(self.pnl_video, name=odef.VQ)
         ti_quality.Default = u'-1'
         
-        sel_framerate = Choice(self.pnl_video, choices=framerates, name=odef.VFR)
-        
-        sel_framerate.Priority = (u'30', u'29.976', u'25', u'24.976',)
+        sel_framerate = Choice(self.pnl_video, name=odef.VFR)
+        sel_framerate.Priority = (
+            u'30',
+            u'29.976',
+            u'25',
+            u'24.976',
+            )
         
         # *** Audio *** #
         
@@ -155,27 +147,24 @@ class Options(wx.Dialog):
         
         self.sel_adev.Priority = (u'alsa', u'pulse',)
         
-        sel_acodec = Choice(self.pnl_audio, choices=sorted(acodecs), name=odef.ACOD)
+        sel_acodec = Choice(self.pnl_audio, name=odef.ACOD)
+        sel_acodec.Priority = (
+            u'libfdk_aac',
+            u'aac',
+            u'libmp3lame',
+            u'libvorbis',
+            u'pcm_s16le',
+            u'libtwolame',
+            u'flac',
+            )
         
-        # Override default audio codec list
-        if u'audio' in codecs:
-            self.SetAudioCodecs(codecs[u'audio'])
-        
-        sel_acodec.Default = sel_acodec.GetStrings()[0]
-        for C in acodecs:
-            if C in sel_acodec.GetStrings():
-                sel_acodec.Default = C
-                break
-        
-        sel_acodec.SetStringSelection(sel_acodec.Default)
-        
-        sel_bitrate = ComboBox(self.pnl_audio, choices=bitrates, name=odef.ABR)
+        sel_bitrate = ComboBox(self.pnl_audio, name=odef.ABR)
         sel_bitrate.Default = u'128k'
         
         spin_channels = SpinCtrl(self.pnl_audio, name=odef.ACHN)
         spin_channels.Default = 1
         
-        sel_samplerate = Choice(self.pnl_audio, choices=samplerates, name=odef.ASR)
+        sel_samplerate = Choice(self.pnl_audio, name=odef.ASR)
         sel_samplerate.Default = u'44100'
         
         # *** Output *** #
@@ -183,7 +172,7 @@ class Options(wx.Dialog):
         ti_filename = TextCtrl(self, name=odef.ONAM)
         ti_filename.Default = u'out'
         
-        self.sel_container = Choice(self, choices=containers, name=odef.OCNT)
+        self.sel_container = Choice(self, name=odef.OCNT)
         self.sel_container.Default = u'avi'
         
         btn_target = wx.Button(self, label=u'Folder')
