@@ -60,10 +60,6 @@ class Options(wx.Dialog):
     def __init__(self, parent, window_id, title, style=wx.DEFAULT_DIALOG_STYLE):
         wx.Dialog.__init__(self, parent, window_id, title, size=(300, 450), style=style|wx.RESIZE_BORDER)
         
-        # Ensure that dialog is not initially displayed
-        # FIXME: Writes to options file
-        self.Show(False)
-        
         self.SetIcon(GetIcon(u'logo'))
         
         devices = GetInputDevices()
@@ -327,6 +323,9 @@ class Options(wx.Dialog):
         
         # *** Post-layout Actions *** #
         
+        self.SetMinSize(self.GetSize())
+        
+        # Call before ParseOptions
         if not os.path.isfile(FILE_options):
             self.WriteDefaultOptions()
         
@@ -335,6 +334,7 @@ class Options(wx.Dialog):
         # Fill fields (call after ParseOptions)
         self.InitOptions()
         
+        # FIXME: Need to catch KeyErrors & re-write options file
         self.chk_video.SetValue(self.options[u'video'])
         self.chk_audio.SetValue(self.options[u'audio'])
         
@@ -342,7 +342,10 @@ class Options(wx.Dialog):
         # Should be called after all fields' settings are initialized
         self.ToggleOptions()
         
-        self.SetMinSize(self.GetSize())
+        # Ensure that dialog is not initially displayed
+        # FIXME: Writes to options file
+        if self.IsShown():
+            self.Show(False)
     
     
     ## Checks if it is safe to begin recording
