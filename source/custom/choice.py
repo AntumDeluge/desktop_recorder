@@ -16,8 +16,11 @@ class Choice(wx.Choice):
         wx.Choice.__init__(self, parent, window_id, pos, size, choices, style, validator, name)
         
         self.DefaultIndex = 0
+        # FIXME: Use string for default???
         self.Default = self.DefaultIndex
         self.Priority = []
+        
+        self.SetSelection(self.DefaultIndex)
     
     
     ## Appends an item to the end of options
