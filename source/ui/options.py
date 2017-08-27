@@ -198,6 +198,16 @@ class Options(wx.Dialog):
         
         wx.EVT_SHOW(self, self.OnShow)
         
+        # *** Pre-layout Actions *** #
+        
+        # Set list of available video codecs
+        if u'video' in codecs:
+            self.SetVideoCodecs(codecs[u'video'])
+        
+        # Set list of available audio codecs
+        if u'audio' in codecs:
+            self.SetAudioCodecs(codecs[u'audio'])
+        
         # *** Layout *** #
         
         ALIGN_TEXT = wx.ALIGN_CENTER_VERTICAL|wx.LEFT
