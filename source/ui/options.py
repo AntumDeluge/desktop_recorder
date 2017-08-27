@@ -105,6 +105,7 @@ class Options(wx.Dialog):
         
         self.sel_vin = Choice(self.pnl_video, name=odef.VIN)
         
+        ## FIXME: Does this get reset to default setting???
         self.dsp_label = wx.StaticText(self.pnl_video, label=u'Unnamed device')
         self.dsp_label.Default = self.dsp_label.GetLabel()
         
