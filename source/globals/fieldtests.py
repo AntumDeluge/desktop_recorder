@@ -10,7 +10,7 @@ import wx
 
 
 ## Tests if a wx control/instance is enabled/disabled
-#  
+#
 #  Function for compatibility between wx versions
 #  \param field
 #    \b \e wx.Window : the wx control to check
@@ -21,13 +21,13 @@ import wx
 def FieldEnabled(field, enabled=True):
     if wx.MAJOR_VERSION > 2:
         return field.IsThisEnabled() == enabled
-    
+
     else:
         return field.IsEnabled() == enabled
 
 
 ## Tests if a wx control/instance is disabled
-#  
+#
 #  \param field
 #    \b \e wx.Window : The wx field to check
 #  \return
@@ -47,16 +47,16 @@ def FieldDisabled(field):
 def FieldsEnabled(fields, enabled=True):
     if not isinstance(fields, (tuple, list)):
         return FieldEnabled(fields, enabled)
-    
+
     for F in fields:
         if not FieldEnabled(F, enabled):
             return False
-    
+
     return True
 
 
 ## Tests if all fields are disabled
-#  
+#
 #  \param fields
 #    \b \e tuple|list : List of wx controls to be checked
 #  \return

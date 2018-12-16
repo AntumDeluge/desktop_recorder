@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ## \package globals.commandline
-#  
+#
 #  Retrieves the FFmpeg executable
 
 # MIT licensing
@@ -21,7 +21,7 @@ if len(sys.argv) > 1:
 def GetCommandArg():
     if args and not args[0].startswith(u'-'):
         return args[0]
-    
+
     return None
 
 
@@ -31,15 +31,15 @@ def GetOption(option):
     for A in args:
         if A.startswith(u'-') and A.lstrip(u'-') == option:
             opt_index = args.index(A)
-    
+
     if opt_index == None:
         return False
-    
+
     if len(args) > opt_index+1 and not args[opt_index+1].startswith(u'-'):
         value = unicode(args[opt_index+1])
         if value.isnumeric():
             value = int(value)
-        
+
         return value
-    
+
     return True

@@ -26,22 +26,22 @@ deletefile = None
 for A in args:
     if A.startswith(u'rmlocal-'):
         deletefile = u'{}/{}'.format(PATH_confdir, A.split(u'-')[1])
-        
+
         if not os.path.exists(deletefile):
             print(u'Warning: Cannot delete non-existent file: {}'.format(deletefile))
             sys.exit(errno.ENOENT)
-        
+
         if os.path.isdir(deletefile):
             shutil.rmtree(deletefile)
-        
+
         else:
             # This should throw an exception if the path is a directory & somehow wasn't removed by shutil
             os.remove(deletefile)
-        
+
         deleted = True
-        
+
         continue
-    
+
     if A == u'legacy':
         legacy = True
 
@@ -73,7 +73,7 @@ import wxversion
 if legacy:
     try:
         wxversion.select((u'2.8',))
-    
+
     except wxversion.VersionError:
         print(u'Warning:\n  Requested "legacy", but no compatible legacy wx version found.\n  Using default settings ...\n')
 
@@ -83,7 +83,7 @@ del legacy
 if not wxversion._selected:
     try:
         wxversion.select(wx_compat)
-    
+
     except wxversion.VersionError:
         print(u'Error:\n  You do not have a compatible version of wxPython installed.\n  One of the following versions is required: {}\n'.format(u', '.join(wx_compat)))
         sys.exit(1)
@@ -108,45 +108,45 @@ del wx_compat
 
 if __name__ == u'__main__':
     app = wx.App()
-    
+
     # --- Lock script so only one instance can be run
     if AppIsLocked():
         # Failsafe in case executable script name has not been set
         if not EXE_name:
             EXE_name = u'desktop-recorder'
-        
+
         err_li1 = u'An instance of {} is already running.'.format(APP_name)
         err_li2 = u'If this is an error, remove the lock file with the following command:'
         err_li3 = u'rm "{}"'.format(FILE_lock)
         err_li4 = u'Or, launch {} with the "rmlocal-lock" command:'.format(APP_name)
         err_li5 = u'{} rmlocal-lock'.format(EXE_name)
-        
+
         wx.MessageDialog(None, u'{}\n\n{}\n\t{}\n\n{}\n\t{}'.format(err_li1, err_li2, err_li3, err_li4, err_li5), u'Cannot Start', wx.OK|wx.ICON_ERROR).ShowModal()
-        
+
         sys.exit(1)
-    
+
     try:
         from ui.taskbar import Icon
-        
-        
+
+
         # FIXME: Method using processes to lock app???
         LockApp()
-        
+
         tray_icon = Icon()
         app.MainLoop()
-    
+
     except:
         import traceback
-        
-        
+
+
         UnlockApp()
-        
+
         err_msg = u'A fatal error has occured'
         err_info = unicode(traceback.format_exc())
-        
+
         print(u'\n{}:\n\n    {}'.format(err_msg, err_info))
         wx.MessageDialog(None, u'{}:\n\n{}'.format(err_msg, err_info), u'Error', style=wx.OK|wx.ICON_ERROR).ShowModal()
-        
+
         sys.exit(1)
 
 UnlockApp()

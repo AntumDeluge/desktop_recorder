@@ -15,7 +15,7 @@ class dmode:
     WARN = 2
     ERROR = 3
     DEBUG = 4
-    
+
     name = {
         QUIET: u'QUIET',
         INFO: u'INFO',
@@ -29,21 +29,21 @@ LogLevel = dmode.ERROR
 
 def SetLogLevel(lvl):
     global LogLevel
-    
+
     if isinstance(lvl, int):
         LogLevel = lvl
         return True
-    
+
     if isinstance(lvl, (unicode, str)):
         if lvl.isnumeric():
             LogLevel = int(lvl)
             return True
-        
+
         for L in dmode.name:
             if lvl.upper() == dmode.name[L]:
                 LogLevel = L
                 return True
-    
+
     return False
 
 new_level = GetOption(u'log-level')
@@ -56,12 +56,12 @@ def dprint(msg, mode, module=None, line=None, newline=True):
         if module != None:
             if line != None:
                 msg = u'[{}:{}] {}'.format(module, line, msg)
-        
+
         mode = dmode.name[mode]
-        
+
         if newline:
             mode = u'\n{}'.format(mode)
-        
+
         print(u'{}: {}'.format(mode, msg))
 
 

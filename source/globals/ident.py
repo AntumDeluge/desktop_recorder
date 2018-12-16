@@ -13,12 +13,12 @@ next_id = 2500
 
 def NewId():
     global next_id
-    
+
     new_id = next_id
     next_id += 1
-    
+
     return new_id
-    
+
 
 
 ABOUT = NewId()

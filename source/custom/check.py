@@ -14,14 +14,14 @@ class CheckBox(wx.CheckBox):
     def __init__(self, parent, win_id=wx.ID_ANY, value=False, label=wx.EmptyString, pos=wx.DefaultPosition,
             size=wx.DefaultSize, style=0, validator=wx.DefaultValidator, name=wx.CheckBoxNameStr):
         wx.CheckBox.__init__(self, parent, win_id, label, pos, size, style, validator, name)
-        
+
         self.SetValue(value)
-        
+
         self.Default = value
-    
-    
+
+
     ## Reset CheckBox to default value
     def Reset(self):
         self.SetValue(self.Default)
-        
+
         return self.Value == self.Default

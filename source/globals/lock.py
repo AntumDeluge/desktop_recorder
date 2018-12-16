@@ -21,10 +21,10 @@ def AppIsLocked():
 def LockApp():
     if AppIsLocked():
         return False
-    
+
     if not WriteEmptyFile(FILE_lock):
         return False
-    
+
     return AppIsLocked()
 
 
@@ -32,7 +32,7 @@ def LockApp():
 def UnlockApp():
     if not AppIsLocked():
         return False
-    
+
     os.remove(FILE_lock)
-    
+
     return not AppIsLocked()
